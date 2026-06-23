@@ -184,7 +184,7 @@
     .action-cell { display:flex; align-items:center; gap:6px; }
     .action-icon { color:#409EFF; cursor:pointer; display:flex; align-items:center; transition:opacity 0.15s; }
     .action-icon:hover { opacity:0.7; }
-    .action-icon.disabled { color:#C0C4CC; cursor:not-allowed; pointer-events:none; }
+    .action-icon.disabled { color:#C0C4CC; cursor:not-allowed; }
 
     /* ── Badges ──────────────────────────────────────── */
     .badge { display:inline-flex; align-items:center; justify-content:center; padding:3px 8px; border-radius:3px; font-size:12px; white-space:nowrap; }
@@ -220,7 +220,19 @@
     .form-row:last-child { margin-bottom:0; }
     .form-label { font-size:13px; color:#606266; text-align:right; white-space:nowrap; }
     .req { color:#F56C6C; margin-right:2px; }
-    .field-err { font-size:12px; color:#F56C6C; margin-top:4px; display:none; }
+    .field-err { font-size:12px; color:#F56C6C; margin-top:6px; display:none; }
+    .form-field { margin-bottom:24px; }
+    .form-field:last-child { margin-bottom:0; }
+    .form-field-label { display:block; font-size:13px; color:#303133; font-weight:500; margin-bottom:8px; }
+    .btn:disabled { cursor:not-allowed; }
+    .btn-primary:disabled { background:#a0cfff; opacity:1; }
+
+    /* ── Success Notify ──────────────────────────────── */
+    .success-notify-wrap { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:2000; align-items:center; justify-content:center; }
+    .success-notify-wrap.show { display:flex; }
+    .success-notify { background:#f0f9eb; border:1px solid #b3e19d; border-radius:8px; padding:32px 40px; display:flex; align-items:center; gap:24px; max-width:560px; width:90%; }
+    .success-notify-icon { width:52px; height:52px; border-radius:50%; background:#67C23A; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .success-notify-text { font-size:18px; font-weight:600; color:#67C23A; line-height:1.5; }
 
     /* ── Modal Alerts ────────────────────────────────── */
     .alert-box { display:flex; align-items:flex-start; gap:10px; padding:12px 14px; border-radius:4px; margin-bottom:20px; font-size:13px; line-height:1.6; }
@@ -298,25 +310,17 @@
     .el-checkbox--ro .el-checkbox__original:indeterminate + .el-checkbox__inner { background-color:#A0CFFF; border-color:#A0CFFF; }
     .el-checkbox--child.el-checkbox--ro .el-checkbox__label { color:#C0C4CC; }
 
-    /* ── Permission Tree ─────────────────────────────── */
-    .perm-section { background:#fff; border:1px solid #EBEEF5; border-radius:4px; padding:20px 24px; flex-shrink:0; }
-    .perm-section-title { font-size:14px; font-weight:600; color:#303133; margin-bottom:16px; }
-    .perm-group { margin-bottom:4px; }
-    .perm-parent { display:flex; align-items:center; gap:8px; padding:8px 0; }
-    .perm-toggle { color:#909399; cursor:pointer; display:flex; align-items:center; flex-shrink:0; transition:color 0.15s; }
-    .perm-toggle:hover { color:#606266; }
-    .perm-chevron { transition:transform 0.2s; }
-    .perm-parent-label { font-weight:500; }
-    .perm-children { padding:4px 0 8px 30px; display:flex; flex-wrap:wrap; gap:6px 0; border-bottom:1px solid #F2F6FC; }
-    .perm-children.collapsed { display:none; }
-    .perm-child-label { min-width:140px; padding:4px 0; }
-    /* Readonly 状态指示器 */
-    .perm-cb-ro { width:14px; height:14px; border:1px solid #DCDFE6; border-radius:2px; flex-shrink:0; display:inline-block; background:#fff; }
-    .perm-cb-ro.checked  { background:#409EFF; border-color:#409EFF; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 12 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 6l3 3 5-5' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-size:10px; background-repeat:no-repeat; background-position:center; }
-    .perm-cb-ro.partial  { background:#409EFF; border-color:#409EFF; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='6' width='10' height='2' fill='white'/%3E%3C/svg%3E"); background-size:12px; background-repeat:no-repeat; background-position:center; }
-    .perm-child-ro { display:flex; align-items:center; gap:6px; font-size:13px; color:#606266; min-width:140px; padding:4px 0; }
-    .perm-parent-ro { display:flex; align-items:center; gap:6px; font-size:13px; color:#303133; font-weight:500; }
-    .perm-group:last-child .perm-children { border-bottom:none; }
+    /* ── Permission Table ────────────────────────────── */
+    .perm-section { background:#fff; border:1px solid #EBEEF5; border-radius:4px; overflow:hidden; flex-shrink:0; }
+    .perm-section-title { font-size:14px; font-weight:600; color:#303133; padding:16px 20px; border-bottom:1px solid #EBEEF5; }
+    .perm-table { width:100%; border-collapse:collapse; }
+    .perm-group-hd td { padding:9px 20px; background:#F5F7FA; border-bottom:1px solid #EBEEF5; }
+    .perm-group-hd:not(:first-child) td { border-top:1px solid #EBEEF5; }
+    .perm-row { border-bottom:1px solid #F5F7FA; }
+    .perm-row:last-child { border-bottom:none; }
+    .perm-module { width:200px; padding:10px 16px 10px 32px; font-size:13px; color:#606266; white-space:nowrap; vertical-align:middle; border-right:1px solid #F5F7FA; }
+    .perm-ops-cell { padding:10px 20px; vertical-align:middle; }
+    .perm-ops { display:flex; flex-wrap:wrap; gap:8px 28px; align-items:center; min-height:32px; }
 
     /* ── Toast ───────────────────────────────────────── */
     .toast { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-120px); background:#fff; border:1px solid #EBEEF5; border-radius:4px; padding:10px 20px; font-size:13px; color:#606266; box-shadow:0 4px 16px rgba(0,0,0,0.12); transition:transform 0.25s ease; z-index:9999; display:flex; align-items:center; gap:8px; max-width:480px; }
@@ -603,7 +607,7 @@
     <div class="content-area">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
         <h2 class="page-title">用户与权限</h2>
-        <button class="btn btn-primary" onclick="openModal('createMemberModal')">
+        <button class="btn btn-primary" onclick="openCreateModal()">
           <i data-lucide="plus" size="14"></i>新增用户
         </button>
       </div>
@@ -710,10 +714,7 @@
         </div>
       </div>
 
-      <div class="perm-section">
-        <div class="perm-section-title">权限</div>
-        <div id="detailPermTree"></div>
-      </div>
+      <div id="detailPermTree"></div>
     </div>
   </div>
 
@@ -763,10 +764,7 @@
         </div>
       </div>
 
-      <div class="perm-section">
-        <div class="perm-section-title">权限</div>
-        <div id="editPermTree"></div>
-      </div>
+      <div id="editPermTree"></div>
     </div>
   </div>
 
@@ -817,27 +815,23 @@
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">新增用户</span>
-      <span class="modal-close" onclick="closeModal('createMemberModal')"><i data-lucide="x" size="16"></i></span>
+      <span class="modal-close" onclick="closeCreateModal()"><i data-lucide="x" size="16"></i></span>
     </div>
     <div class="modal-body">
-      <div class="form-row">
-        <label class="form-label"><span class="req">*</span>用户名：</label>
-        <div>
-          <input class="field-input" style="width:100%" id="newName" placeholder="请输入用户名">
-          <div class="field-err" id="newNameErr">请输入用户名</div>
-        </div>
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 用户名</label>
+        <input class="field-input" style="width:100%" id="newName" placeholder="请输入用户名" oninput="validateNewMember()">
+        <div class="field-err" id="newNameErr"></div>
       </div>
-      <div class="form-row">
-        <label class="form-label"><span class="req">*</span>邮箱：</label>
-        <div>
-          <input class="field-input" style="width:100%" id="newEmail" placeholder="请输入邮箱" type="email">
-          <div class="field-err" id="newEmailErr">请输入正确的邮箱</div>
-        </div>
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 邮箱</label>
+        <input class="field-input" style="width:100%" id="newEmail" placeholder="请输入邮箱" type="text" oninput="validateNewMember()">
+        <div class="field-err" id="newEmailErr"></div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-default btn-sm" onclick="closeModal('createMemberModal')">取消</button>
-      <button class="btn btn-primary btn-sm" onclick="createMember()">新增</button>
+      <button class="btn btn-default btn-sm" onclick="closeCreateModal()">取消</button>
+      <button class="btn btn-primary btn-sm" id="createMemberBtn" onclick="createMember()" disabled>新增</button>
     </div>
   </div>
 </div>
@@ -900,26 +894,102 @@
   <span id="toastMsg">操作成功</span>
 </div>
 
+<!-- 新增成功提示 -->
+<div class="success-notify-wrap" id="successNotifyWrap">
+  <div class="success-notify">
+    <div class="success-notify-icon">
+      <i data-lucide="check" size="26" style="color:#fff;stroke-width:3"></i>
+    </div>
+    <span class="success-notify-text">用户创建成功，请通知用户尽快激活账号。</span>
+  </div>
+</div>
+
 <script>
 /* ─────────────────────────────────────────────────────
    数据
 ───────────────────────────────────────────────────── */
-const PERM_TREE = [
-  { id:'overview',   label:'概览',      items:[{ id:'overview_view',    label:'查看' }] },
-  { id:'wallet',     label:'子钱包',    items:[{ id:'deposit_view',     label:'充值查看' },{ id:'withdraw_view',  label:'提现查看' },{ id:'withdraw_apply', label:'提现申请' }] },
-  { id:'asset',      label:'资产',      items:[{ id:'balance_view',     label:'余额查看' },{ id:'chain_view',     label:'链上余额查看' }] },
-  { id:'risk',       label:'风控管理',  items:[{ id:'risk_view',        label:'审核查看' },{ id:'risk_approve',   label:'提现审核' }] },
-  { id:'statement',  label:'每日对账单', items:[{ id:'statement_view',  label:'查看' },   { id:'statement_export', label:'导出' }] },
-  { id:'developer',  label:'开发者',    items:[{ id:'api_user',         label:'API 子用户' },{ id:'api_key', label:'API 密钥' },{ id:'webhook', label:'Webhook' }] },
-  { id:'settings',   label:'系统设置',  items:[{ id:'member_view',      label:'用户查看' },{ id:'member_manage', label:'用户管理' }] }
+const PERM_GROUPS = [
+  { id:'overview', label:'概览', rows:[
+    { id:'overview', label:'概览', items:[
+      { id:'overview_view',     label:'查看' },
+      { id:'overview_deposit',  label:'充币' },
+      { id:'overview_withdraw', label:'提币' }
+    ]}
+  ]},
+  { id:'wallet', label:'子钱包', rows:[
+    { id:'wallet', label:'子钱包管理', items:[
+      { id:'wallet_view', label:'查看' }
+    ]}
+  ]},
+  { id:'asset', label:'资产', rows:[
+    { id:'asset_deposit',  label:'充币', items:[
+      { id:'asset_deposit_view', label:'查看' }
+    ]},
+    { id:'asset_withdraw', label:'提币', items:[
+      { id:'asset_withdraw_view',  label:'查看' },
+      { id:'asset_withdraw_do',    label:'提币' },
+      { id:'asset_withdraw_batch', label:'批量提币' }
+    ]},
+    { id:'asset_hist_dep', label:'历史记录 / 充币', items:[
+      { id:'hist_dep_view',   label:'查看' },
+      { id:'hist_dep_export', label:'导出' }
+    ]},
+    { id:'asset_hist_wdr', label:'历史记录 / 提币', items:[
+      { id:'hist_wdr_view',   label:'查看' },
+      { id:'hist_wdr_export', label:'导出' }
+    ]},
+    { id:'asset_hist_ord', label:'历史记录 / 订单', items:[
+      { id:'hist_ord_view',   label:'查看' },
+      { id:'hist_ord_export', label:'导出' }
+    ]},
+    { id:'asset_token',    label:'代币', items:[
+      { id:'asset_token_view', label:'查看' }
+    ]}
+  ]},
+  { id:'risk', label:'风控管理', rows:[
+    { id:'risk_rule',    label:'风控规则', items:[
+      { id:'risk_rule_view',   label:'查看' },
+      { id:'risk_rule_create', label:'创建' }
+    ]},
+    { id:'risk_process', label:'风控处理', items:[
+      { id:'risk_proc_view', label:'查看' },
+      { id:'risk_proc_do',   label:'处理' }
+    ]}
+  ]},
+  { id:'statement', label:'每日对账单', rows:[
+    { id:'statement', label:'每日对账单', items:[
+      { id:'statement_view', label:'查看' }
+    ]}
+  ]},
+  { id:'developer', label:'开发者', rows:[
+    { id:'dev_apikeys',  label:'API Keys', items:[
+      { id:'dev_apikeys_view',   label:'查看' },
+      { id:'dev_apikeys_create', label:'创建' }
+    ]},
+    { id:'dev_webhooks', label:'Webhooks', items:[
+      { id:'dev_webhooks_view',     label:'查看' },
+      { id:'dev_webhooks_register', label:'注册' }
+    ]},
+    { id:'dev_docs',     label:'文档', items:[
+      { id:'dev_docs_view', label:'查看' }
+    ]}
+  ]},
+  { id:'settings', label:'系统设置', rows:[
+    { id:'settings_member', label:'用户与权限', items:[
+      { id:'settings_member_view',     label:'查看' },
+      { id:'settings_member_add',      label:'新增' },
+      { id:'settings_member_edit',     label:'编辑' },
+      { id:'settings_member_activate', label:'激活' }
+    ]}
+  ]}
 ];
 
-const ALL_PERMS = PERM_TREE.flatMap(g => g.items.map(i => i.id));
+const ALL_PERMS = PERM_GROUPS.flatMap(g => g.rows.flatMap(r => r.items.map(i => i.id)));
 
 const MEMBERS = [
   { id:1, name:'张伟明', email:'zhangweiming@example.com', role:'owner',  status:'active',   createdAt:'2026-06-15 11:56:04', updatedAt:'2026-06-15 11:56:04', perms: ALL_PERMS.slice() },
-  { id:2, name:'李晓燕', email:'lixiaoyan@example.com',   role:'member', status:'active',   createdAt:'2026-06-15 11:56:04', updatedAt:'2026-06-15 11:56:04', perms:['overview_view','deposit_view','withdraw_view','withdraw_apply','statement_view','statement_export'] },
-  { id:3, name:'王建国', email:'wangjianguo@example.com', role:'member', status:'disabled', createdAt:'2026-06-15 11:56:04', updatedAt:'2026-06-16 09:12:33', perms:['overview_view','deposit_view'] },
+  { id:2, name:'李晓燕', email:'lixiaoyan@example.com',   role:'member', status:'active',   createdAt:'2026-06-15 11:56:04', updatedAt:'2026-06-15 11:56:04', perms:['overview_view','wallet_view','asset_deposit_view','asset_withdraw_view','hist_dep_view','hist_wdr_view','hist_ord_view','statement_view'] },
+  { id:3, name:'王建国', email:'wangjianguo@example.com', role:'member', status:'disabled', createdAt:'2026-06-15 11:56:04', updatedAt:'2026-06-16 09:12:33', perms:['overview_view','asset_deposit_view'] },
   { id:4, name:'陈思思', email:'chensisi@example.com',    role:'member', status:'inactive', createdAt:'2026-06-15 11:56:04', updatedAt:'2026-06-15 11:56:04', perms:[] },
   { id:5, name:'刘浩然', email:'liuhaoran@example.com',   role:'member', status:'inactive', createdAt:'2026-06-15 11:56:04', updatedAt:'2026-06-15 11:56:04', perms:[] }
 ];
@@ -948,7 +1018,7 @@ function renderMemberList(list) {
       ? '<span class="action-icon" title="编辑" onclick="openEditPage(' + m.id + ')"><i data-lucide="pencil" size="14"></i></span>'
       : '';
     const activateBtn = m.status === 'inactive'
-      ? '<span class="action-icon" title="激活" id="actBtn_' + m.id + '" onclick="openActivateModal(' + m.id + ')"><i data-lucide="mail" size="14"></i></span>'
+      ? '<span class="action-icon" data-tip="发送邀请链接" id="actBtn_' + m.id + '" onclick="tryActivate(' + m.id + ')"><i data-lucide="mail" size="14"></i></span>'
       : '';
     return '<tr>'
       + '<td>' + m.name + '</td>'
@@ -994,76 +1064,84 @@ function resetMemberFilter() {
 function renderPermTree(containerId, perms, editable) {
   var container = document.getElementById(containerId);
   if (!container) return;
-  var html = '';
-  PERM_TREE.forEach(function(group) {
-    var checkedCount = group.items.filter(function(i) { return perms.indexOf(i.id) !== -1; }).length;
-    var allChk  = checkedCount === group.items.length;
-    var someChk = checkedCount > 0 && !allChk;
 
-    var childHtml = group.items.map(function(item) {
-      var isChk = perms.indexOf(item.id) !== -1;
-      if (editable) {
-        return '<label class="el-checkbox el-checkbox--child perm-child-label">'
+  var sections = '';
+  PERM_GROUPS.forEach(function(sect) {
+    var rows = '';
+    sect.rows.forEach(function(row) {
+      var allItemIds = row.items.map(function(i) { return i.id; });
+      var checkedN   = allItemIds.filter(function(id) { return perms.indexOf(id) !== -1; }).length;
+      var allChk     = checkedN === allItemIds.length;
+      var someChk    = checkedN > 0 && !allChk;
+
+      var ops = row.items.map(function(item) {
+        var isChk = perms.indexOf(item.id) !== -1;
+        if (editable) {
+          return '<label class="el-checkbox" style="margin:0">'
+            + '<span class="el-checkbox__input">'
+            + '<input type="checkbox" class="el-checkbox__original perm-child-cb" data-group="' + row.id + '" data-perm="' + item.id + '" ' + (isChk ? 'checked' : '') + ' onchange="onChildChange(this)">'
+            + '<span class="el-checkbox__inner"></span>'
+            + '</span>'
+            + '<span class="el-checkbox__label">' + item.label + '</span>'
+            + '</label>';
+        }
+        return '<label class="el-checkbox el-checkbox--ro" style="margin:0">'
           + '<span class="el-checkbox__input">'
-          + '<input type="checkbox" class="el-checkbox__original perm-child-cb" data-group="' + group.id + '" data-perm="' + item.id + '" ' + (isChk ? 'checked' : '') + ' onchange="onChildChange(this)">'
+          + '<input type="checkbox" class="el-checkbox__original" ' + (isChk ? 'checked' : '') + ' tabindex="-1">'
           + '<span class="el-checkbox__inner"></span>'
           + '</span>'
           + '<span class="el-checkbox__label">' + item.label + '</span>'
           + '</label>';
-      }
-      return '<label class="el-checkbox el-checkbox--child el-checkbox--ro perm-child-label">'
-        + '<span class="el-checkbox__input">'
-        + '<input type="checkbox" class="el-checkbox__original" ' + (isChk ? 'checked' : '') + ' tabindex="-1">'
-        + '<span class="el-checkbox__inner"></span>'
-        + '</span>'
-        + '<span class="el-checkbox__label">' + item.label + '</span>'
-        + '</label>';
-    }).join('');
+      }).join('');
 
-    if (editable) {
-      html += '<div class="perm-group" id="pgrp_' + group.id + '">'
-        + '<div class="perm-parent">'
-        + '<span class="perm-toggle" onclick="togglePermGroup(this)"><i data-lucide="chevron-down" class="perm-chevron" size="12"></i></span>'
-        + '<label class="el-checkbox perm-parent-label">'
-        + '<span class="el-checkbox__input">'
-        + '<input type="checkbox" id="pcb_' + group.id + '" class="el-checkbox__original" data-group="' + group.id + '" ' + (allChk ? 'checked' : '') + ' onchange="onParentChange(this)">'
-        + '<span class="el-checkbox__inner"></span>'
-        + '</span>'
-        + '<span class="el-checkbox__label" style="font-weight:500;color:#303133">' + group.label + '</span>'
-        + '</label>'
-        + '</div>'
-        + '<div class="perm-children" id="pch_' + group.id + '">' + childHtml + '</div>'
-        + '</div>';
-    } else {
-      html += '<div class="perm-group" id="pgrp_' + group.id + '">'
-        + '<div class="perm-parent">'
-        + '<span class="perm-toggle" onclick="togglePermGroup(this)"><i data-lucide="chevron-down" class="perm-chevron" size="12"></i></span>'
-        + '<label class="el-checkbox el-checkbox--ro perm-parent-label">'
-        + '<span class="el-checkbox__input">'
-        + '<input type="checkbox" id="ro_pcb_' + group.id + '" class="el-checkbox__original" ' + (allChk ? 'checked' : '') + ' tabindex="-1">'
-        + '<span class="el-checkbox__inner"></span>'
-        + '</span>'
-        + '<span class="el-checkbox__label" style="font-weight:500;color:#303133">' + group.label + '</span>'
-        + '</label>'
-        + '</div>'
-        + '<div class="perm-children" id="pch_' + group.id + '">' + childHtml + '</div>'
-        + '</div>';
-    }
+      var groupCbHtml = '';
+      if (editable) {
+        groupCbHtml = '<label class="el-checkbox" style="margin:0">'
+          + '<span class="el-checkbox__input">'
+          + '<input type="checkbox" class="el-checkbox__original perm-group-cb" id="gcb_' + row.id + '" data-group="' + row.id + '" ' + (allChk ? 'checked' : '') + ' onchange="onGroupChange(this)">'
+          + '<span class="el-checkbox__inner"></span>'
+          + '</span>'
+          + '<span class="el-checkbox__label" style="font-weight:500;color:#303133">' + row.label + '</span>'
+          + '</label>';
+      } else {
+        groupCbHtml = '<label class="el-checkbox el-checkbox--ro" style="margin:0">'
+          + '<span class="el-checkbox__input">'
+          + '<input type="checkbox" class="el-checkbox__original" ' + (allChk ? 'checked' : '') + ' tabindex="-1" id="gcb_ro_' + row.id + '">'
+          + '<span class="el-checkbox__inner"></span>'
+          + '</span>'
+          + '<span class="el-checkbox__label" style="font-weight:500;color:#303133">' + row.label + '</span>'
+          + '</label>';
+      }
+
+      rows += '<tr class="perm-row">'
+        + '<td class="perm-module">' + groupCbHtml + '</td>'
+        + '<td class="perm-ops-cell"><div class="perm-ops">' + ops + '</div></td>'
+        + '</tr>';
+    });
+
+    sections += '<div class="perm-section" style="margin-bottom:12px">'
+      + '<div class="perm-section-title">' + sect.label + '</div>'
+      + '<table class="perm-table"><tbody>' + rows + '</tbody></table>'
+      + '</div>';
   });
-  container.innerHTML = html;
+
+  container.innerHTML = sections;
   lucide.createIcons();
 
-  var prefix = editable ? 'pcb_' : 'ro_pcb_';
-  PERM_TREE.forEach(function(group) {
-    var n = group.items.filter(function(i) { return perms.indexOf(i.id) !== -1; }).length;
-    if (n > 0 && n < group.items.length) {
-      var pcb = document.getElementById(prefix + group.id);
-      if (pcb) pcb.indeterminate = true;
-    }
+  // set indeterminate state for group checkboxes
+  PERM_GROUPS.forEach(function(sect) {
+    sect.rows.forEach(function(row) {
+      var allIds = row.items.map(function(i) { return i.id; });
+      var n = allIds.filter(function(id) { return perms.indexOf(id) !== -1; }).length;
+      if (n > 0 && n < allIds.length) {
+        var gcb = document.getElementById('gcb_' + row.id) || document.getElementById('gcb_ro_' + row.id);
+        if (gcb) gcb.indeterminate = true;
+      }
+    });
   });
 }
 
-function onParentChange(cb) {
+function onGroupChange(cb) {
   var gid = cb.dataset.group;
   document.querySelectorAll('.perm-child-cb[data-group="' + gid + '"]').forEach(function(c) { c.checked = cb.checked; });
   cb.indeterminate = false;
@@ -1071,21 +1149,12 @@ function onParentChange(cb) {
 function onChildChange(cb) {
   var gid = cb.dataset.group;
   var cbs = Array.from(document.querySelectorAll('.perm-child-cb[data-group="' + gid + '"]'));
-  var pcb = document.getElementById('pcb_' + gid);
-  if (!pcb) return;
+  var gcb = document.getElementById('gcb_' + gid);
+  if (!gcb) return;
   var n = cbs.filter(function(c) { return c.checked; }).length;
-  if (n === 0)          { pcb.checked = false; pcb.indeterminate = false; }
-  else if (n === cbs.length) { pcb.checked = true;  pcb.indeterminate = false; }
-  else                       { pcb.checked = false; pcb.indeterminate = true;  }
-}
-function togglePermGroup(el) {
-  var grp = el.closest('.perm-group');
-  if (!grp) return;
-  var ch = grp.querySelector('.perm-children');
-  var cv = grp.querySelector('.perm-chevron');
-  if (!ch) return;
-  ch.classList.toggle('collapsed');
-  if (cv) cv.style.transform = ch.classList.contains('collapsed') ? 'rotate(-90deg)' : '';
+  if (n === 0)             { gcb.checked = false; gcb.indeterminate = false; }
+  else if (n === cbs.length) { gcb.checked = true;  gcb.indeterminate = false; }
+  else                       { gcb.checked = false; gcb.indeterminate = true;  }
 }
 
 /* ─────────────────────────────────────────────────────
@@ -1154,30 +1223,72 @@ function saveEdit() {
 /* ─────────────────────────────────────────────────────
    新增用户
 ───────────────────────────────────────────────────── */
+function validateNewMember() {
+  var name = document.getElementById('newName').value.trim();
+  var email = document.getElementById('newEmail').value.trim();
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var fmtOk = emailRe.test(email);
+  var dup = fmtOk && !!MEMBERS.find(function(m) { return m.email === email; });
+
+  var nameErrEl = document.getElementById('newNameErr');
+  var emailErrEl = document.getElementById('newEmailErr');
+
+  if (!name) {
+    nameErrEl.textContent = '请输入用户名';
+    nameErrEl.style.display = 'block';
+  } else {
+    nameErrEl.style.display = 'none';
+  }
+
+  if (!email || !fmtOk) {
+    emailErrEl.textContent = '请输入正确的邮箱';
+    emailErrEl.style.display = 'block';
+  } else if (dup) {
+    emailErrEl.textContent = '邮箱已被使用，请更换邮箱';
+    emailErrEl.style.display = 'block';
+  } else {
+    emailErrEl.style.display = 'none';
+  }
+
+  document.getElementById('createMemberBtn').disabled = !name || !fmtOk || dup;
+}
+
+function openCreateModal() {
+  document.getElementById('newName').value = '';
+  document.getElementById('newEmail').value = '';
+  var nameErr = document.getElementById('newNameErr');
+  var emailErr = document.getElementById('newEmailErr');
+  nameErr.textContent  = '请输入用户名';
+  nameErr.style.display  = 'block';
+  emailErr.textContent = '请输入正确的邮箱';
+  emailErr.style.display = 'block';
+  document.getElementById('createMemberBtn').disabled = true;
+  openModal('createMemberModal');
+}
+
+function closeCreateModal() {
+  closeModal('createMemberModal');
+}
+
 function createMember() {
   var name  = document.getElementById('newName').value.trim();
   var email = document.getElementById('newEmail').value.trim();
-  var ok = true;
-  document.getElementById('newNameErr').style.display  = 'none';
-  document.getElementById('newEmailErr').style.display = 'none';
-  if (!name) { document.getElementById('newNameErr').style.display = ''; ok = false; }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    document.getElementById('newEmailErr').textContent  = !email ? '请输入邮箱' : '请输入正确的邮箱';
-    document.getElementById('newEmailErr').style.display = ''; ok = false;
-  } else if (MEMBERS.find(function(m) { return m.email === email; })) {
-    document.getElementById('newEmailErr').textContent  = '邮箱已被使用';
-    document.getElementById('newEmailErr').style.display = ''; ok = false;
-  }
-  if (!ok) return;
   var now = '2026-06-23 ' + new Date().toTimeString().slice(0,8);
   var maxId = Math.max.apply(null, MEMBERS.map(function(m) { return m.id; }));
   MEMBERS.push({ id: maxId + 1, name: name, email: email, role:'member', status:'inactive', createdAt:now, updatedAt:now, perms:[] });
-  closeModal('createMemberModal');
-  document.getElementById('newName').value  = '';
-  document.getElementById('newEmail').value = '';
-  showToast('用户创建成功，请通知用户尽快激活账号。');
+  closeCreateModal();
   renderMemberList(MEMBERS);
   document.getElementById('memberPagTotal').textContent = '共 ' + MEMBERS.length + ' 条';
+  showSuccessNotify();
+}
+
+var successNotifyTimer = null;
+function showSuccessNotify() {
+  var wrap = document.getElementById('successNotifyWrap');
+  wrap.classList.add('show');
+  lucide.createIcons();
+  if (successNotifyTimer) clearTimeout(successNotifyTimer);
+  successNotifyTimer = setTimeout(function() { wrap.classList.remove('show'); }, 3500);
 }
 
 /* ─────────────────────────────────────────────────────
@@ -1190,6 +1301,11 @@ function openActivateModal(memberId) {
   document.getElementById('activateModalEmail').textContent = m.email;
   openModal('activateModal');
 }
+function tryActivate(id) {
+  var btn = document.getElementById('actBtn_' + id);
+  if (btn && btn.classList.contains('disabled')) return;
+  openActivateModal(id);
+}
 function confirmActivate() {
   var mid = currentMemberId;
   closeModal('activateModal');
@@ -1197,16 +1313,14 @@ function confirmActivate() {
   var btn = document.getElementById('actBtn_' + mid);
   if (!btn) return;
   btn.classList.add('disabled');
-  btn.title = '60s 后可重新发送';
+  btn.setAttribute('data-tip', '请稍后再试');
   var t = 60;
   var timer = setInterval(function() {
     t--;
-    var b = document.getElementById('actBtn_' + mid);
-    if (b) b.title = t + 's 后可重新发送';
     if (t <= 0) {
       clearInterval(timer);
       var b2 = document.getElementById('actBtn_' + mid);
-      if (b2) { b2.classList.remove('disabled'); b2.title = '激活'; }
+      if (b2) { b2.classList.remove('disabled'); b2.setAttribute('data-tip', '发送邀请链接'); }
     }
   }, 1000);
 }
@@ -1317,6 +1431,43 @@ function toggleSidebar() {
   icon.setAttribute('data-lucide', sidebar.classList.contains('collapsed') ? 'chevrons-right' : 'chevrons-left');
   lucide.createIcons();
 }
+
+/* ─────────────────────────────────────────────────────
+   Tooltip（固定定位，免受 overflow 裁剪）
+───────────────────────────────────────────────────── */
+(function() {
+  var box = document.createElement('div');
+  box.style.cssText = 'position:fixed;background:#303133;color:#fff;font-size:12px;line-height:1;padding:7px 10px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s;font-family:"Noto Sans SC",sans-serif;';
+  var arr = document.createElement('div');
+  arr.style.cssText = 'position:fixed;width:0;height:0;border:5px solid transparent;border-top-color:#303133;pointer-events:none;z-index:9998;opacity:0;transition:opacity .15s;';
+  document.body.appendChild(box);
+  document.body.appendChild(arr);
+  function place(el) {
+    box.textContent = el.getAttribute('data-tip');
+    box.style.opacity = '0';
+    requestAnimationFrame(function() {
+      var r = el.getBoundingClientRect();
+      var bw = box.offsetWidth, bh = box.offsetHeight;
+      box.style.left = Math.round(r.left + r.width / 2 - bw / 2) + 'px';
+      box.style.top  = Math.round(r.top - bh - 8) + 'px';
+      arr.style.left = Math.round(r.left + r.width / 2 - 5) + 'px';
+      arr.style.top  = Math.round(r.top - 9) + 'px';
+      box.style.opacity = '1';
+      arr.style.opacity = '1';
+    });
+  }
+  function hide() { box.style.opacity = '0'; arr.style.opacity = '0'; }
+  document.addEventListener('mouseover', function(e) {
+    var el = e.target.closest('[data-tip]');
+    if (el) place(el); else hide();
+  });
+  document.addEventListener('mouseout', function(e) {
+    var from = e.target.closest('[data-tip]');
+    if (!from) return;
+    var to = e.relatedTarget && e.relatedTarget.closest('[data-tip]');
+    if (to !== from) hide();
+  });
+})();
 
 /* ─────────────────────────────────────────────────────
    初始化
