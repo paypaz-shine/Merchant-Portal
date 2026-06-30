@@ -312,7 +312,7 @@
 
     /* ── Permission Table ────────────────────────────── */
     .perm-section { background:#fff; border:1px solid #EBEEF5; border-radius:4px; overflow:hidden; flex-shrink:0; }
-    .perm-section-title { font-size:14px; font-weight:600; color:#303133; padding:16px 20px; border-bottom:1px solid #EBEEF5; }
+    .perm-section-title { font-size:14px; font-weight:600; color:#303133; padding:12px 20px; border-bottom:1px solid #EBEEF5; display:flex; align-items:center; gap:10px; }
     .perm-table { width:100%; border-collapse:collapse; }
     .perm-group-hd td { padding:9px 20px; background:#F5F7FA; border-bottom:1px solid #EBEEF5; }
     .perm-group-hd:not(:first-child) td { border-top:1px solid #EBEEF5; }
@@ -321,6 +321,12 @@
     .perm-module { width:200px; padding:10px 16px 10px 32px; font-size:13px; color:#606266; white-space:nowrap; vertical-align:middle; border-right:1px solid #F5F7FA; }
     .perm-ops-cell { padding:10px 20px; vertical-align:middle; }
     .perm-ops { display:flex; flex-wrap:wrap; gap:8px 28px; align-items:center; min-height:32px; }
+
+    /* ── Overview Empty State ───────────────────────── */
+    .ov-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; flex:1; min-height:320px; background:#fff; border:1px solid #EBEEF5; border-radius:4px; }
+    .ov-empty-icon { width:48px!important; height:48px!important; color:#C0C4CC; }
+    .ov-empty-title { font-size:14px; color:#909399; }
+    .ov-empty-desc { font-size:12px; color:#C0C4CC; text-align:center; line-height:1.8; }
 
     /* ── Toast ───────────────────────────────────────── */
     .toast { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-120px); background:#fff; border:1px solid #EBEEF5; border-radius:4px; padding:10px 20px; font-size:13px; color:#606266; box-shadow:0 4px 16px rgba(0,0,0,0.12); transition:transform 0.25s ease; z-index:9999; display:flex; align-items:center; gap:8px; max-width:480px; }
@@ -504,7 +510,7 @@
     <div class="content-area">
       <h2 class="page-title">概览</h2>
 
-      <div class="stat-card">
+      <div class="stat-card" id="ovCardAsset">
         <div class="section-label">总资产</div>
         <div class="stat-row">
           <div class="stat-item">
@@ -519,13 +525,13 @@
           </div>
           <div class="stat-spacer"></div>
           <div class="stat-actions">
-            <button class="btn btn-primary">充币</button>
-            <button class="btn btn-default">提币</button>
+            <button class="btn btn-primary" id="ovBtnDeposit">充币</button>
+            <button class="btn btn-default" id="ovBtnWithdraw">提币</button>
           </div>
         </div>
       </div>
 
-      <div>
+      <div id="ovCardProgress">
         <div class="section-header"><span class="section-label">提币单进度</span></div>
         <div class="progress-cards">
           <div class="progress-card progress-card-warning" onclick="switchSubPage('pageRiskReview','提现审核')">
@@ -546,8 +552,8 @@
         </div>
       </div>
 
-      <div class="charts-row">
-        <div class="chart-card">
+      <div class="charts-row" id="ovChartsRow">
+        <div class="chart-card" id="ovCardChart">
           <div class="chart-header">
             <span class="chart-title">7D 充币/提币</span>
             <div style="display:flex;align-items:center;gap:8px">
@@ -591,7 +597,7 @@
             </svg>
           </div>
         </div>
-        <div class="pending-card">
+        <div class="pending-card" id="ovCardPending">
           <div class="pending-header">
             <span class="pending-title">提币中</span>
             <span class="pending-more" onclick="switchSubPage('pageWithdrawAsset','提币')">更多 &gt;</span>
@@ -601,6 +607,11 @@
             <span class="empty-text">没有数据</span>
           </div>
         </div>
+      </div>
+
+      <div id="ovEmptyState" class="ov-empty" style="display:none">
+        <i data-lucide="layout-dashboard" class="ov-empty-icon"></i>
+        <span class="ov-empty-title">暂无权限</span>
       </div>
     </div>
   </div>
@@ -1352,7 +1363,9 @@ const PERM_GROUPS = [
   ]},
   { id:'wallet', label:'子钱包', rows:[
     { id:'wallet', label:'子钱包管理', items:[
-      { id:'wallet_view', label:'查看' }
+      { id:'wallet_view',    label:'查看' },
+      { id:'wallet_edit',    label:'编辑' },
+      { id:'wallet_history', label:'历史记录' }
     ]}
   ]},
   { id:'asset', label:'资产', rows:[
@@ -1366,14 +1379,18 @@ const PERM_GROUPS = [
     ]},
     { id:'asset_hist_dep', label:'历史记录 / 充币', items:[
       { id:'hist_dep_view',   label:'查看' },
+      { id:'hist_dep_detail', label:'详情' },
       { id:'hist_dep_export', label:'导出' }
     ]},
     { id:'asset_hist_wdr', label:'历史记录 / 提币', items:[
       { id:'hist_wdr_view',   label:'查看' },
+      { id:'hist_wdr_detail', label:'详情' },
       { id:'hist_wdr_export', label:'导出' }
     ]},
     { id:'asset_hist_ord', label:'历史记录 / 订单', items:[
       { id:'hist_ord_view',   label:'查看' },
+      { id:'hist_ord_detail', label:'详情' },
+      { id:'hist_ord_edit',   label:'编辑' },
       { id:'hist_ord_export', label:'导出' }
     ]},
     { id:'asset_hist_ramp_in',  label:'历史记录 / 入金', items:[
@@ -1384,14 +1401,20 @@ const PERM_GROUPS = [
       { id:'hist_ramp_out_view',   label:'查看' },
       { id:'hist_ramp_out_export', label:'导出' }
     ]},
-    { id:'asset_token',    label:'代币', items:[
-      { id:'asset_token_view', label:'查看' }
+    { id:'asset_token', label:'代币', items:[
+      { id:'asset_token_view',     label:'查看' },
+      { id:'asset_token_deposit',  label:'充币' },
+      { id:'asset_token_withdraw', label:'提币' },
+      { id:'asset_token_history',  label:'历史记录' }
     ]}
   ]},
   { id:'risk', label:'风控管理', rows:[
     { id:'risk_rule',    label:'风控规则', items:[
       { id:'risk_rule_view',   label:'查看' },
-      { id:'risk_rule_create', label:'创建' }
+      { id:'risk_rule_create', label:'创建' },
+      { id:'risk_rule_detail', label:'详情' },
+      { id:'risk_rule_edit',   label:'编辑' },
+      { id:'risk_rule_delete', label:'删除' }
     ]},
     { id:'risk_process', label:'风控处理', items:[
       { id:'risk_proc_view', label:'查看' },
@@ -1405,23 +1428,30 @@ const PERM_GROUPS = [
   ]},
   { id:'developer', label:'开发者', rows:[
     { id:'dev_apikeys',  label:'API Keys', items:[
-      { id:'dev_apikeys_view',   label:'查看' },
-      { id:'dev_apikeys_create', label:'创建' }
+      { id:'dev_apikeys_view',    label:'查看' },
+      { id:'dev_apikeys_create',  label:'创建' },
+      { id:'dev_apikeys_edit',    label:'编辑' },
+      { id:'dev_apikeys_disable', label:'禁用' }
     ]},
     { id:'dev_webhooks', label:'Webhooks', items:[
-      { id:'dev_webhooks_view',     label:'查看' },
-      { id:'dev_webhooks_register', label:'注册' }
+      { id:'dev_webhooks_view',       label:'查看' },
+      { id:'dev_webhooks_register',   label:'注册' },
+      { id:'dev_webhooks_edit',       label:'编辑' },
+      { id:'dev_webhooks_invalidate', label:'失效' },
+      { id:'dev_webhooks_detail',     label:'详情' }
     ]},
-    { id:'dev_docs',     label:'文档', items:[
+    { id:'dev_docs', label:'文档', items:[
       { id:'dev_docs_view', label:'查看' }
     ]}
   ]},
   { id:'settings', label:'系统设置', rows:[
     { id:'settings_member', label:'用户与权限', items:[
       { id:'settings_member_view',     label:'查看' },
+      { id:'settings_member_detail',   label:'详情' },
       { id:'settings_member_add',      label:'新增' },
       { id:'settings_member_edit',     label:'编辑' },
-      { id:'settings_member_activate', label:'激活' }
+      { id:'settings_member_activate', label:'激活' },
+      { id:'settings_member_delete',   label:'删除' }
     ]}
   ]}
 ];
@@ -1507,19 +1537,41 @@ function renderPermTree(containerId, perms, editable) {
 
   var sections = '';
   PERM_GROUPS.forEach(function(sect) {
+    // Section-level check state
+    var sectAllIds = [];
+    sect.rows.forEach(function(r) { r.items.forEach(function(i) { sectAllIds.push(i.id); }); });
+    var sectCheckedN = sectAllIds.filter(function(id) { return perms.indexOf(id) !== -1; }).length;
+    var sectAllChk   = sectCheckedN === sectAllIds.length && sectAllIds.length > 0;
+
+    var sectCbHtml = '';
+    if (editable) {
+      sectCbHtml = '<label class="el-checkbox" style="margin:0">'
+        + '<span class="el-checkbox__input">'
+        + '<input type="checkbox" class="el-checkbox__original perm-sect-cb" id="scb_' + sect.id + '" data-sect="' + sect.id + '" ' + (sectAllChk ? 'checked' : '') + ' onchange="onSectionChange(this)">'
+        + '<span class="el-checkbox__inner"></span>'
+        + '</span>'
+        + '</label>';
+    } else {
+      sectCbHtml = '<label class="el-checkbox el-checkbox--ro" style="margin:0">'
+        + '<span class="el-checkbox__input">'
+        + '<input type="checkbox" class="el-checkbox__original" id="scb_ro_' + sect.id + '" ' + (sectAllChk ? 'checked' : '') + ' tabindex="-1">'
+        + '<span class="el-checkbox__inner"></span>'
+        + '</span>'
+        + '</label>';
+    }
+
     var rows = '';
     sect.rows.forEach(function(row) {
       var allItemIds = row.items.map(function(i) { return i.id; });
       var checkedN   = allItemIds.filter(function(id) { return perms.indexOf(id) !== -1; }).length;
       var allChk     = checkedN === allItemIds.length;
-      var someChk    = checkedN > 0 && !allChk;
 
       var ops = row.items.map(function(item) {
         var isChk = perms.indexOf(item.id) !== -1;
         if (editable) {
           return '<label class="el-checkbox" style="margin:0">'
             + '<span class="el-checkbox__input">'
-            + '<input type="checkbox" class="el-checkbox__original perm-child-cb" data-group="' + row.id + '" data-perm="' + item.id + '" ' + (isChk ? 'checked' : '') + ' onchange="onChildChange(this)">'
+            + '<input type="checkbox" class="el-checkbox__original perm-child-cb" data-sect="' + sect.id + '" data-group="' + row.id + '" data-perm="' + item.id + '" ' + (isChk ? 'checked' : '') + ' onchange="onChildChange(this)">'
             + '<span class="el-checkbox__inner"></span>'
             + '</span>'
             + '<span class="el-checkbox__label">' + item.label + '</span>'
@@ -1538,7 +1590,7 @@ function renderPermTree(containerId, perms, editable) {
       if (editable) {
         groupCbHtml = '<label class="el-checkbox" style="margin:0">'
           + '<span class="el-checkbox__input">'
-          + '<input type="checkbox" class="el-checkbox__original perm-group-cb" id="gcb_' + row.id + '" data-group="' + row.id + '" ' + (allChk ? 'checked' : '') + ' onchange="onGroupChange(this)">'
+          + '<input type="checkbox" class="el-checkbox__original perm-group-cb" id="gcb_' + row.id + '" data-sect="' + sect.id + '" data-group="' + row.id + '" ' + (allChk ? 'checked' : '') + ' onchange="onGroupChange(this)">'
           + '<span class="el-checkbox__inner"></span>'
           + '</span>'
           + '<span class="el-checkbox__label" style="font-weight:500;color:#303133">' + row.label + '</span>'
@@ -1560,7 +1612,7 @@ function renderPermTree(containerId, perms, editable) {
     });
 
     sections += '<div class="perm-section" style="margin-bottom:12px">'
-      + '<div class="perm-section-title">' + sect.label + '</div>'
+      + '<div class="perm-section-title">' + sectCbHtml + sect.label + '</div>'
       + '<table class="perm-table"><tbody>' + rows + '</tbody></table>'
       + '</div>';
   });
@@ -1568,7 +1620,7 @@ function renderPermTree(containerId, perms, editable) {
   container.innerHTML = sections;
   lucide.createIcons();
 
-  // set indeterminate state for group checkboxes
+  // Set indeterminate states
   PERM_GROUPS.forEach(function(sect) {
     sect.rows.forEach(function(row) {
       var allIds = row.items.map(function(i) { return i.id; });
@@ -1578,13 +1630,32 @@ function renderPermTree(containerId, perms, editable) {
         if (gcb) gcb.indeterminate = true;
       }
     });
+    var sectAllIds = [];
+    sect.rows.forEach(function(r) { r.items.forEach(function(i) { sectAllIds.push(i.id); }); });
+    var sectN = sectAllIds.filter(function(id) { return perms.indexOf(id) !== -1; }).length;
+    if (sectN > 0 && sectN < sectAllIds.length) {
+      var scb = document.getElementById('scb_' + sect.id) || document.getElementById('scb_ro_' + sect.id);
+      if (scb) scb.indeterminate = true;
+    }
   });
 }
 
+function onSectionChange(cb) {
+  var sectId = cb.dataset.sect;
+  document.querySelectorAll('.perm-group-cb[data-sect="' + sectId + '"]').forEach(function(gcb) {
+    gcb.checked = cb.checked;
+    gcb.indeterminate = false;
+  });
+  document.querySelectorAll('.perm-child-cb[data-sect="' + sectId + '"]').forEach(function(c) {
+    c.checked = cb.checked;
+  });
+  cb.indeterminate = false;
+}
 function onGroupChange(cb) {
   var gid = cb.dataset.group;
   document.querySelectorAll('.perm-child-cb[data-group="' + gid + '"]').forEach(function(c) { c.checked = cb.checked; });
   cb.indeterminate = false;
+  updateSectionCb(cb.dataset.sect);
 }
 function onChildChange(cb) {
   var gid = cb.dataset.group;
@@ -1592,9 +1663,20 @@ function onChildChange(cb) {
   var gcb = document.getElementById('gcb_' + gid);
   if (!gcb) return;
   var n = cbs.filter(function(c) { return c.checked; }).length;
-  if (n === 0)             { gcb.checked = false; gcb.indeterminate = false; }
+  if (n === 0)               { gcb.checked = false; gcb.indeterminate = false; }
   else if (n === cbs.length) { gcb.checked = true;  gcb.indeterminate = false; }
   else                       { gcb.checked = false; gcb.indeterminate = true;  }
+  updateSectionCb(cb.dataset.sect);
+}
+function updateSectionCb(sectId) {
+  if (!sectId) return;
+  var allChildCbs = Array.from(document.querySelectorAll('.perm-child-cb[data-sect="' + sectId + '"]'));
+  var scb = document.getElementById('scb_' + sectId);
+  if (!scb) return;
+  var n = allChildCbs.filter(function(c) { return c.checked; }).length;
+  if (n === 0)                    { scb.checked = false; scb.indeterminate = false; }
+  else if (n === allChildCbs.length) { scb.checked = true;  scb.indeterminate = false; }
+  else                            { scb.checked = false; scb.indeterminate = true;  }
 }
 
 /* ─────────────────────────────────────────────────────
@@ -2287,10 +2369,54 @@ function confirmApiKeyToggle() {
 }
 
 /* ─────────────────────────────────────────────────────
+   概览权限控制
+   URL 参数 ?ovp= 支持：
+     none               → 全空（空状态）
+     view               → 仅总资产 + 7D 图表
+     withdraw           → 仅提币相关卡片
+     view,withdraw      → 无充币按钮
+     all（默认）         → 全部展示
+───────────────────────────────────────────────────── */
+function getOverviewPerms() {
+  var params = new URLSearchParams(window.location.search);
+  var ovp = params.get('ovp');
+  if (!ovp || ovp === 'all') return ['overview_view', 'overview_deposit', 'overview_withdraw'];
+  if (ovp === 'none') return [];
+  if (ovp === 'view') return ['overview_view'];
+  if (ovp === 'withdraw') return ['overview_withdraw'];
+  if (ovp === 'deposit') return ['overview_deposit'];
+  return ovp.split(',').map(function(s) { return s.trim(); });
+}
+
+function applyOverviewPerms() {
+  var perms   = getOverviewPerms();
+  var hasView = perms.indexOf('overview_view') !== -1;
+  var hasDep  = perms.indexOf('overview_deposit') !== -1;
+  var hasWdr  = perms.indexOf('overview_withdraw') !== -1;
+  var hasAny  = perms.length > 0;
+
+  function vis(id, show) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = show ? '' : 'none';
+  }
+  vis('ovCardAsset',    hasView);
+  vis('ovBtnDeposit',   hasDep);
+  vis('ovBtnWithdraw',  hasWdr);
+  vis('ovCardProgress', hasWdr);
+  vis('ovCardChart',    hasView);
+  vis('ovCardPending',  hasWdr);
+  vis('ovChartsRow',    hasView || hasWdr);
+
+  var empty = document.getElementById('ovEmptyState');
+  if (empty) empty.style.display = hasAny ? 'none' : 'flex';
+}
+
+/* ─────────────────────────────────────────────────────
    初始化
 ───────────────────────────────────────────────────── */
 lucide.createIcons();
 activeTopNavEl = document.querySelector('.nav-item.active');
+applyOverviewPerms();
 renderMemberList(MEMBERS);
 renderApiKeyList();
 initDrp(document.getElementById('drpTopupArr'));
