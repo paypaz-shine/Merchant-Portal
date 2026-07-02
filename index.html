@@ -240,6 +240,41 @@
     .alert-warning { background:#fdf6ec; border:1px solid #faecd8; color:#E6A23C; }
     .alert-box .alert-icon { flex-shrink:0; margin-top:1px; }
     .modal-detail-row { display:grid; grid-template-columns:80px 1fr 80px 1fr; gap:12px 8px; align-items:center; font-size:13px; }
+    .dep-section { padding:16px 20px 20px; }
+    .dep-section + .dep-section { border-top:1px solid #EBEEF5; }
+    .dep-section-title { font-size:13px; font-weight:600; color:#303133; margin-bottom:14px; }
+    .dep-empty { display:flex; flex-direction:column; align-items:center; padding:20px 0 24px; gap:10px; }
+    .dep-empty-text { font-size:13px; color:#909399; }
+    /* ── 关联订单弹窗 ── */
+    .lo-sec-title { font-size:16px; font-weight:600; color:#303133; }
+    .lo-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; }
+    .lo-info-item { display:flex; align-items:center; gap:16px; }
+    .lo-info-label { font-size:14px; color:#909399; white-space:nowrap; min-width:72px; }
+    .lo-info-value { font-size:14px; color:#303133; }
+    .lo-summary-bar { display:flex; background:#F5F7FA; border-radius:4px; padding:16px; }
+    .lo-summary-item { flex:1; display:flex; flex-direction:column; gap:6px; padding:0 16px; border-right:1px solid #E4E7ED; }
+    .lo-summary-item:first-child { padding-left:0; }
+    .lo-summary-item:last-child { border-right:none; padding-right:0; }
+    .lo-summary-label { font-size:13px; color:#909399; }
+    .lo-summary-value { font-size:15px; font-weight:700; color:#303133; font-family:Inter,sans-serif; }
+    .lo-summary-value.green { color:#67C23A; }
+    .lo-tip { background:#ECF5FF; border:1px solid #D9ECFF; border-radius:4px; padding:9px 16px; font-size:13px; color:#606266; line-height:1.6; }
+    .lo-dep-item { display:flex; align-items:flex-start; gap:12px; background:#F5F7FA; border-radius:4px; padding:12px 16px; cursor:pointer; }
+    .lo-dep-item.selected { background:#ECF5FF; outline:1.5px solid #409EFF; outline-offset:-1px; }
+    .lo-ck { width:16px; height:16px; flex-shrink:0; margin-top:2px; border-radius:2px; border:1.5px solid #DCDFE6; background:#FFF; display:flex; align-items:center; justify-content:center; }
+    .lo-ck.checked { background:#409EFF; border-color:#409EFF; }
+    .lo-dep-info { flex:1; display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .lo-dep-no { font-size:14px; font-weight:500; color:#303133; }
+    .lo-dep-meta { font-size:13px; color:#909399; display:flex; align-items:center; gap:4px; }
+    .lo-dep-right { display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
+    .lo-dep-amount { font-size:15px; font-weight:700; color:#67C23A; font-family:Inter,sans-serif; }
+    .lo-dep-fee, .lo-dep-netamt { font-size:12px; color:#909399; font-family:Inter,sans-serif; }
+    .lo-empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 0; gap:12px; }
+    .lo-empty-state span { font-size:14px; color:#909399; }
+    .dep-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 32px; }
+    .dep-field { display:flex; flex-direction:column; gap:5px; }
+    .dep-empty { display:flex; flex-direction:column; align-items:center; gap:8px; padding:24px 0 8px; color:#C0C4CC; }
+    .dep-empty-text { font-size:13px; }
     .modal-detail-label { color:#909399; }
     .modal-detail-value { color:#303133; font-weight:500; }
 
@@ -855,22 +890,151 @@
     <div class="hist-pane active" id="histDep">
       <div class="filter-card">
         <div class="filter-grid">
-          <div class="filter-item"><span class="filter-label-el">UserID：</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已完成</option><option>无效充值</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">到账时间：</span><div class="filter-control"><div class="drp-wrap" id="drpHistDepArr"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">流水号</span><div class="filter-control"><input class="field-input" placeholder="请输入流水号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">哈希</span><div class="filter-control"><input class="field-input" placeholder="请输入交易哈希"></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已到账</option><option>待匹配订单</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">到账时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistDepArr"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">3</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th style="width:120px">UserID</th><th style="width:80px">代币</th><th style="width:80px">网络</th><th style="width:120px">充币金额</th><th style="width:220px">交易哈希</th><th style="width:160px">到账时间</th><th style="width:80px">状态</th></tr></thead>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">10</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1480px">
+          <thead><tr><th style="width:160px">流水号</th><th style="width:150px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:90px">手续费</th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
           <tbody>
-            <tr><td class="asset-num">291654802</td><td>USDT</td><td>TRON</td><td class="asset-num">130.00</td><td><div class="copy-cell"><span>TQn7rXdK…a8Yp2F</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-16 09:23:41</td><td><span class="badge badge-green">已完成</span></td></tr>
-            <tr><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">8.00</td><td><div class="copy-cell"><span>TXpqZ3mN…b5Kw1E</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-17 14:05:18</td><td><span class="badge badge-green">已完成</span></td></tr>
-            <tr><td class="asset-num">291654802</td><td>USDC</td><td>Ethereum</td><td class="asset-num">663.25</td><td><div class="copy-cell"><span>0xa4b3c2d1…e9f8</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 10:30:22</td><td><span class="badge badge-green">已完成</span></td></tr>
+            <tr>
+              <td class="asset-num">52521855237376</td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">1.00</td><td class="asset-num">0.01</td>
+              <td class="asset-num" style="color:#67C23A">+0.99</td>
+              <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TN3xK...p7Wq2</span><span class="copy-icon" onclick="copyText('TN3xKbmRvLp7Wq2')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-02 13:51:37</td>
+              <td><span class="badge badge-orange">待匹配订单</span></td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('待匹配订单',false)"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联订单" onclick="histDepLinkOrder('460466237')" style="color:#409EFF"><i data-lucide="link" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52481425811712</td>
+              <td class="asset-num">635102950</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">80.00</td><td class="asset-num">0.80</td>
+              <td class="asset-num" style="color:#67C23A">+79.20</td>
+              <td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TF8mR...Np3Yk</span><span class="copy-icon" onclick="copyText('TF8mRvXdKNp3Yk')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-30 17:59:29</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td class="asset-num">11063302</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',true)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52481312721664</td>
+              <td class="asset-num">635102950</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">10.00</td><td class="asset-num">0.10</td>
+              <td class="asset-num" style="color:#67C23A">+9.90</td>
+              <td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TK2nP...Qw4Zm</span><span class="copy-icon" onclick="copyText('TK2nPbsXeQw4Zm')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-30 17:52:07</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td class="asset-num">56676553</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',true)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52481307064576</td>
+              <td class="asset-num">635102950</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">48.00</td><td class="asset-num">0.48</td>
+              <td class="asset-num" style="color:#67C23A">+47.52</td>
+              <td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TR5vW...Jd8Lp</span><span class="copy-icon" onclick="copyText('TR5vWxmNbJd8Lp')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-30 17:51:45</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td class="asset-num">56676553</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',true)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52480453955328</td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">5.00</td><td class="asset-num">0.05</td>
+              <td class="asset-num" style="color:#67C23A">+4.95</td>
+              <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TG9bN...Yz5Kx</span><span class="copy-icon" onclick="copyText('TG9bNwpVmYz5Kx')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-30 16:56:13</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td class="asset-num">53013777</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',true)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52480365752320</td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">0.09</td><td class="asset-num">0.01</td>
+              <td class="asset-num" style="color:#67C23A">+0.08</td>
+              <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TP4wQ...Rb6Jn</span><span class="copy-icon" onclick="copyText('TP4wQxkMsRb6Jn')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-30 16:50:28</td>
+              <td><span class="badge badge-orange">待匹配订单</span></td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('待匹配订单',false)"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联订单" onclick="histDepLinkOrder('460466237')" style="color:#409EFF"><i data-lucide="link" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52480238319104</td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">6.00</td><td class="asset-num">1.00</td>
+              <td class="asset-num" style="color:#67C23A">+5.00</td>
+              <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TM7cX...Hk2Nv</span><span class="copy-icon" onclick="copyText('TM7cXpqRbHk2Nv')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-30 16:42:10</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',false)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52480064350976</td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">3.00</td><td class="asset-num">0.01</td>
+              <td class="asset-num" style="color:#67C23A">+2.99</td>
+              <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TJ6dY...Wn9Bq</span><span class="copy-icon" onclick="copyText('TJ6dYmvKpWn9Bq')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-30 16:30:51</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',false)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52457354919936</td>
+              <td class="asset-num">291654802</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">0.75</td><td class="asset-num">0.01</td>
+              <td class="asset-num" style="color:#67C23A">+0.74</td>
+              <td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TV9yX...mQW3b</span><span class="copy-icon" onclick="copyText('TV9yXLSY9mQW3b')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-29 15:52:22</td>
+              <td><span class="badge badge-orange">待匹配订单</span></td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('待匹配订单',false)"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联订单" onclick="histDepLinkOrder('291654802')" style="color:#409EFF"><i data-lucide="link" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52323771746816</td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">1.00</td><td class="asset-num">0.01</td>
+              <td class="asset-num" style="color:#67C23A">+0.99</td>
+              <td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>TB8pX...Su2Gn</span><span class="copy-icon" onclick="copyText('TB8pXsowuSu2Gn')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-23 14:55:33</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',false)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
           </tbody>
         </table></div>
         <div class="pagination-bar"><span class="pagination-total">共 3 条</span><select class="page-size-select"><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button></div>
@@ -906,38 +1070,56 @@
     <div class="hist-pane" id="histOrd">
       <div class="filter-card">
         <div class="filter-grid">
-          <div class="filter-item"><span class="filter-label-el">UserID：</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">订单号：</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已完成</option><option>处理中</option><option>已退款</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">日期：</span><div class="filter-control"><div class="drp-wrap" id="drpHistOrdDate"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input id="histOrdUidInput" class="field-input" placeholder="请输入用户ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select id="histOrdStatusSelect" class="field-select"><option value="">全部</option><option selected>处理中</option><option>未足额支付</option><option>已完成</option><option>已过期</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">日期</span><div class="filter-control"><div class="drp-wrap" id="drpHistOrdDate"></div></div></div>
         </div>
-        <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="resetHistOrd()">重置</button><button class="btn btn-primary" onclick="filterHistOrd()">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">22</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th style="width:210px">订单号</th><th style="width:110px">UserID</th><th style="width:80px">代币</th><th style="width:70px">网络</th><th style="width:100px">应付金额</th><th style="width:140px">已付金额(净入账)</th><th style="width:160px">创建时间</th><th style="width:80px">状态</th><th style="width:60px">操作</th></tr></thead>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="histOrdCount">26</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1520px">
+          <thead><tr>
+            <th style="width:200px">订单号</th>
+            <th style="width:160px">用户ID</th>
+            <th style="width:70px">代币</th>
+            <th style="width:80px">网络</th>
+            <th style="width:100px">应付金额</th>
+            <th style="width:100px">实付金额</th>
+            <th style="width:90px">手续费</th>
+            <th style="width:100px">净入账</th>
+            <th style="width:150px">充值地址</th>
+            <th style="width:160px">创建时间</th>
+            <th style="width:160px">完成时间</th>
+            <th style="width:90px">状态</th>
+            <th style="width:60px">操作</th>
+          </tr></thead>
           <tbody>
-            <tr><td><div class="copy-cell"><span>291654802-5232…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802</td><td>USDT1</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">0.99</td><td style="font-family:Inter">2026-06-23 14:54:35</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5232…2</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802</td><td>USDT1</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">0.99</td><td style="font-family:Inter">2026-06-23 14:48:30</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5232…3</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802</td><td>USDT1</td><td>TRON</td><td class="asset-num">3.00</td><td class="asset-num">2.99</td><td style="font-family:Inter">2026-06-23 14:05:26</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5232…4</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802</td><td>USDT1</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">0.99</td><td style="font-family:Inter">2026-06-23 13:04:36</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5232…5</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802</td><td>USDT1</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">0.99</td><td style="font-family:Inter">2026-06-23 13:54:38</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:11:27</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…2</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:10:56</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…3</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:10:27</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…4</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:09:54</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…5</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:09:24</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…6</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:08:52</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…7</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:08:20</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…8</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:07:49</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…9</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:07:18</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…10</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 11:06:46</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5220…11</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.09</td><td style="font-family:Inter">2026-06-18 10:50:44</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
-            <tr><td><div class="copy-cell"><span>291654802-5217…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT1</td><td>TRON</td><td class="asset-num">0.99</td><td class="asset-num">0.98</td><td style="font-family:Inter">2026-06-16 18:05:01</td><td><span class="badge badge-orange">异常退款</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>460466237-ORD-2626…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">460466237</td><td>USDT</td><td>TRON</td><td class="asset-num">95.00</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-07-01 10:23:41</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">处理中</span></td><td><div class="action-cell"><span class="action-icon" title="详情"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联充币" onclick="openLinkOrderModal(0)" style="color:#409EFF"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>635102950-ORD-2626…2</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">50.00</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-07-01 10:15:08</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">处理中</span></td><td><div class="action-cell"><span class="action-icon" title="详情"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联充币" onclick="openLinkOrderModal(1)" style="color:#409EFF"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-ORD-2626…3</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDC</td><td>ETH</td><td class="asset-num">200.00</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>0x7Af1...b2E3</span><span class="copy-icon" onclick="copyText('0x7Af1c3d9e2b2E3')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-07-01 09:58:22</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">处理中</span></td><td><div class="action-cell"><span class="action-icon" title="详情"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联充币" onclick="openLinkOrderModal(2)" style="color:#409EFF"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>460466237-ORD-2625…4</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">460466237</td><td>USDT</td><td>TRON</td><td class="asset-num">120.00</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-30 16:44:55</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">处理中</span></td><td><div class="action-cell"><span class="action-icon" title="详情"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联充币" onclick="openLinkOrderModal(3)" style="color:#409EFF"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5232…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 14:54:35</td><td style="font-family:Inter">2026-06-23 14:56:41</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5232…2</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 14:48:30</td><td style="font-family:Inter">2026-06-23 14:50:37</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5232…3</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">3.00</td><td class="asset-num">3.00</td><td class="asset-num">0.03</td><td class="asset-num" style="color:#67C23A">+2.97</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 14:05:26</td><td style="font-family:Inter">2026-06-23 14:07:33</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5232…4</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 13:04:36</td><td style="font-family:Inter">2026-06-23 13:06:43</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5232…5</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 13:54:38</td><td style="font-family:Inter">2026-06-23 13:56:45</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:11:27</td><td style="font-family:Inter">2026-06-18 11:13:34</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…2</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:10:56</td><td style="font-family:Inter">2026-06-18 11:13:03</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…3</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:10:27</td><td style="font-family:Inter">2026-06-18 11:12:34</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…4</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:09:54</td><td style="font-family:Inter">2026-06-18 11:12:01</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…5</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:09:24</td><td style="font-family:Inter">2026-06-18 11:11:31</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…6</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:08:52</td><td style="font-family:Inter">2026-06-18 11:10:59</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…7</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:08:20</td><td style="font-family:Inter">2026-06-18 11:10:27</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…8</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:07:49</td><td style="font-family:Inter">2026-06-18 11:09:56</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…9</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:07:18</td><td style="font-family:Inter">2026-06-18 11:09:25</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…10</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.10</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.09</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 11:06:46</td><td style="font-family:Inter">2026-06-18 11:08:53</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5220…11</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.10</td><td class="asset-num">0.05</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.04</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-18 10:50:44</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">未足额支付</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr><td><div class="copy-cell"><span>291654802-5217…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">0.99</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-16 18:05:01</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-gray">已过期</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
           </tbody>
         </table></div>
-        <div class="pagination-bar"><span class="pagination-total">共 22 条</span><select class="page-size-select"><option>20 条/页</option><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button></div>
+        <div class="pagination-bar"><span class="pagination-total">共 26 条</span><select class="page-size-select"><option>20 条/页</option><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button></div>
       </div>
     </div>
 
@@ -1143,24 +1325,119 @@
 
 <!-- 充值详情 -->
 <div class="modal-overlay" id="depositDetailModal">
-  <div class="modal">
+  <div class="modal" style="width:560px">
     <div class="modal-header">
-      <span class="modal-title">充值详情</span>
+      <span class="modal-title">充币详情</span>
       <span class="modal-close" onclick="closeModal('depositDetailModal')"><i data-lucide="x" size="16"></i></span>
     </div>
-    <div class="modal-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px">
-        <div><div class="info-item-label">订单号</div><div class="info-item-value inter" style="margin-top:4px">DEP-20260617-00001</div></div>
-        <div><div class="info-item-label">状态</div><div style="margin-top:4px"><span class="badge badge-green">已完成</span></div></div>
-        <div><div class="info-item-label">代币</div><div class="info-item-value" style="margin-top:4px">USDT</div></div>
-        <div><div class="info-item-label">网络</div><div class="info-item-value" style="margin-top:4px">TRC20</div></div>
-        <div><div class="info-item-label">充值金额</div><div class="info-item-value inter" style="margin-top:4px">130.00 USDT</div></div>
-        <div><div class="info-item-label">到账时间</div><div class="info-item-value inter" style="margin-top:4px">2026-06-16 09:23:41</div></div>
-        <div style="grid-column:span 2"><div class="info-item-label">交易哈希</div><div class="info-item-value inter" style="margin-top:4px;word-break:break-all">TQn7rXdKabcdefghijklmnopqrstuvwxyz1234567890a8Yp2F</div></div>
-        <div style="grid-column:span 2"><div class="info-item-label">充值地址</div><div class="info-item-value inter" style="margin-top:4px;word-break:break-all">TRx9YmKpQ1a2b3c4d5e6f7g8h9i0j1k2l3m4</div></div>
+    <div class="modal-body" style="padding:0;display:block">
+      <div class="dep-section">
+        <div class="dep-section-title">基本信息</div>
+        <div class="dep-grid">
+          <div class="dep-field">
+            <span class="info-item-label">金额</span>
+            <span class="info-item-value inter">5.00 USDT1</span>
+          </div>
+          <div class="dep-field">
+            <span class="info-item-label">网络</span>
+            <span class="info-item-value">TRON</span>
+          </div>
+          <div class="dep-field">
+            <span class="info-item-label">地址</span>
+            <div class="info-item-value inter"><div class="copy-cell"><span>TYrpiLaTjGzcqF5rEe9b9...</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF5rEe9b9dVkQmNxBhR')"><i data-lucide="copy" size="13"></i></span></div></div>
+          </div>
+          <div class="dep-field">
+            <span class="info-item-label">Hash</span>
+            <div class="info-item-value inter"><div class="copy-cell"><span>1265105d62b337c839feb...</span><span class="copy-icon" onclick="copyText('1265105d62b337c839feb4a7d08e2c51f6930b84')"><i data-lucide="copy" size="13"></i></span></div></div>
+          </div>
+          <div class="dep-field">
+            <span class="info-item-label">手续费</span>
+            <span class="info-item-value inter">0.05 USDT1</span>
+          </div>
+          <div class="dep-field">
+            <span class="info-item-label">净入账</span>
+            <span class="info-item-value inter" style="color:#67C23A">+4.95 USDT1</span>
+          </div>
+          <div class="dep-field">
+            <span class="info-item-label">时间</span>
+            <span class="info-item-value inter">2026-06-30 16:56:13</span>
+          </div>
+          <div class="dep-field">
+            <span class="info-item-label">状态</span>
+            <div class="info-item-value"><span id="depStatusBadge" class="badge badge-green">已到账</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="dep-section">
+        <div class="dep-section-title">订单信息</div>
+        <div id="depOrderContent"></div>
       </div>
     </div>
     <div class="modal-footer"><button class="btn btn-default btn-sm" onclick="closeModal('depositDetailModal')">关闭</button></div>
+  </div>
+</div>
+
+<!-- 订单详情弹窗 -->
+<div class="modal-overlay" id="ordDetailModal">
+  <div class="modal" style="width:720px">
+    <div class="modal-header">
+      <span class="modal-title">订单详情</span>
+      <span class="modal-close" onclick="closeModal('ordDetailModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body" style="display:block;padding:20px;max-height:62vh;overflow-y:auto">
+      <div class="lo-sec-title" style="margin-bottom:14px">订单信息</div>
+      <div class="lo-info-grid">
+        <div class="lo-info-item"><span class="lo-info-label">订单号</span><span id="odOrdNo" class="lo-info-value" style="font-family:Inter">—</span></div>
+        <div class="lo-info-item"><span class="lo-info-label">代币/网络</span><span id="odTokenNet" class="lo-info-value">—</span></div>
+        <div class="lo-info-item"><span class="lo-info-label">应付金额</span><span id="odDue" class="lo-info-value" style="font-family:Inter">—</span></div>
+        <div class="lo-info-item"><span class="lo-info-label">当前状态</span><span id="odStatusBadge" class="badge badge-green">—</span></div>
+      </div>
+      <div class="lo-sec-title" style="margin-top:20px;margin-bottom:12px">充值记录</div>
+      <div class="lo-summary-bar" style="margin-bottom:12px">
+        <div class="lo-summary-item"><span class="lo-summary-label">条数</span><span id="odCount" class="lo-summary-value">0 笔</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">应付金额</span><span id="odDueBar" class="lo-summary-value">—</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">合计实付</span><span id="odTotalPaid" class="lo-summary-value green">—</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">合计手续费</span><span id="odTotalFee" class="lo-summary-value green">—</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">合计净入账</span><span id="odTotalNet" class="lo-summary-value green">—</span></div>
+      </div>
+      <div id="odDepList" style="display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('ordDetailModal')">关 闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 关联订单弹窗 -->
+<div class="modal-overlay" id="linkOrderModal">
+  <div class="modal" style="width:720px">
+    <div class="modal-header">
+      <span class="modal-title">编辑订单</span>
+      <span class="modal-close" onclick="closeModal('linkOrderModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body" style="display:block;padding:20px;max-height:62vh;overflow-y:auto">
+      <div class="lo-sec-title" style="margin-bottom:14px">订单信息</div>
+      <div class="lo-info-grid">
+        <div class="lo-info-item"><span class="lo-info-label">订单号</span><span id="loOrdNo" class="lo-info-value" style="font-family:Inter">—</span></div>
+        <div class="lo-info-item"><span class="lo-info-label">代币/网络</span><span id="loTokenNet" class="lo-info-value">—</span></div>
+        <div class="lo-info-item"><span class="lo-info-label">应付金额</span><span id="loDue" class="lo-info-value" style="font-family:Inter">—</span></div>
+        <div class="lo-info-item"><span class="lo-info-label">当前状态</span><span class="badge badge-orange">处理中</span></div>
+      </div>
+      <div class="lo-sec-title" style="margin-top:20px;margin-bottom:12px">充值记录</div>
+      <div class="lo-summary-bar" style="margin-bottom:12px">
+        <div class="lo-summary-item"><span class="lo-summary-label">已选条数</span><span id="loCount" class="lo-summary-value">0 笔</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">应付金额</span><span id="loDueBar" class="lo-summary-value">—</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">合计实付</span><span id="loTotalPaid" class="lo-summary-value green">—</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">合计手续费</span><span id="loTotalFee" class="lo-summary-value green">—</span></div>
+        <div class="lo-summary-item"><span class="lo-summary-label">合计净入账</span><span id="loTotalNet" class="lo-summary-value green">—</span></div>
+      </div>
+      <div class="lo-tip" style="margin-bottom:12px">仅展示同代币、同链、未匹配的充币记录。点击「匹配入账」完成匹配，订单状态将根据合计金额自动更新。</div>
+      <div id="loDepList" style="display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('linkOrderModal')">取 消</button>
+      <button id="loConfirmBtn" class="btn btn-sm" style="background:#F4F4F5;color:#909399;border:none;cursor:not-allowed" onclick="loConfirm()">匹配入账</button>
+    </div>
   </div>
 </div>
 
@@ -1994,6 +2271,234 @@ function toggleSidebar() {
 /* ─────────────────────────────────────────────────────
    历史记录 Tab
 ───────────────────────────────────────────────────── */
+/* ── 关联订单弹窗 ── */
+var LO_ORDERS = [
+  { ord:'460466237-ORD-2626…1', token:'USDT', network:'TRON', due:'95.00',
+    deposits:[
+      { no:'52521866123456', time:'2026-07-02 13:30', hash:'TN3xK...p7Wq2', amount:50.00, fee:0.50 },
+      { no:'52521866789012', time:'2026-07-02 13:45', hash:'TG9bN...Yz5Kx', amount:45.00, fee:0.45 },
+    ]
+  },
+  { ord:'635102950-ORD-2626…2', token:'USDT', network:'TRON', due:'50.00',
+    deposits:[
+      { no:'52481425811712', time:'2026-06-30 17:59', hash:'TF8mR...Np3Yk', amount:50.00, fee:0.50 },
+    ]
+  },
+  { ord:'291654802-ORD-2626…3', token:'USDC', network:'ETH', due:'200.00', deposits:[] },
+  { ord:'460466237-ORD-2625…4', token:'USDT', network:'TRON', due:'120.00', deposits:[] },
+];
+var loSelected = new Set();
+var loCurrent = null;
+
+function openLinkOrderModal(idx) {
+  loCurrent = LO_ORDERS[idx];
+  loSelected = new Set();
+  document.getElementById('loOrdNo').textContent = loCurrent.ord;
+  document.getElementById('loTokenNet').textContent = loCurrent.token + ' / ' + loCurrent.network;
+  document.getElementById('loDue').textContent = loCurrent.due + ' ' + loCurrent.token;
+  document.getElementById('loDueBar').textContent = loCurrent.due + ' ' + loCurrent.token;
+  loRender();
+  openModal('linkOrderModal');
+}
+
+function loRender() {
+  var d = loCurrent.deposits;
+  var el = document.getElementById('loDepList');
+  if (!d || d.length === 0) {
+    el.innerHTML = '<div class="lo-empty-state">'
+      + '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C0C4CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>'
+      + '<span>暂无记录</span></div>';
+  } else {
+    el.innerHTML = d.map(function(dep, i) {
+      var sel = loSelected.has(i);
+      var net = (dep.amount - dep.fee).toFixed(2);
+      return '<div class="lo-dep-item' + (sel ? ' selected' : '') + '" onclick="loToggle(' + i + ')">'
+        + '<div class="lo-ck' + (sel ? ' checked' : '') + '">' + (sel ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '') + '</div>'
+        + '<div class="lo-dep-info"><div class="lo-dep-no">流水号：' + dep.no + '</div>'
+        + '<div class="lo-dep-meta">Hash: ' + dep.hash
+        + '  <span class="copy-icon" onclick="copyText(\'' + dep.hash + '\');event.stopPropagation()"><i data-lucide="copy" size="13"></i></span>'
+        + '</div>'
+        + '<div class="lo-dep-meta">' + dep.time + '</div>'
+        + '</div>'
+        + '<div class="lo-dep-right">'
+        + '<div class="lo-dep-amount">+' + dep.amount.toFixed(2) + ' ' + loCurrent.token + '</div>'
+        + '<div class="lo-dep-fee">手续费：' + dep.fee.toFixed(2) + ' ' + loCurrent.token + '</div>'
+        + '<div class="lo-dep-netamt">净入账：' + net + ' ' + loCurrent.token + '</div>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+    lucide.createIcons();
+  }
+  loUpdateSummary();
+}
+
+function loToggle(i) {
+  if (loSelected.has(i)) loSelected.delete(i); else loSelected.add(i);
+  loRender();
+}
+
+function loUpdateSummary() {
+  var d = loCurrent.deposits;
+  var count = loSelected.size;
+  var totalAmt = 0, totalFee = 0;
+  loSelected.forEach(function(i) { totalAmt += d[i].amount; totalFee += d[i].fee; });
+  document.getElementById('loCount').textContent = count + ' 笔';
+  var t = loCurrent.token;
+  document.getElementById('loTotalPaid').textContent = count > 0 ? totalAmt.toFixed(2) + ' ' + t : '—';
+  document.getElementById('loTotalFee').textContent  = count > 0 ? totalFee.toFixed(2) + ' ' + t : '—';
+  document.getElementById('loTotalNet').textContent  = count > 0 ? (totalAmt - totalFee).toFixed(2) + ' ' + t : '—';
+  var btn = document.getElementById('loConfirmBtn');
+  if (btn) {
+    btn.style.background = count > 0 ? '#409EFF' : '#F4F4F5';
+    btn.style.color      = count > 0 ? '#FFF'    : '#909399';
+    btn.style.cursor     = count > 0 ? 'pointer' : 'not-allowed';
+  }
+}
+
+function loConfirm() {
+  if (loSelected.size === 0) return;
+  closeModal('linkOrderModal');
+  showToast('匹配入账成功');
+}
+
+function openDepositDetail(status, hasOrder) {
+  var badge = document.getElementById('depStatusBadge');
+  if (badge) {
+    badge.textContent = status;
+    badge.className = status === '待匹配订单' ? 'badge badge-orange' : 'badge badge-green';
+  }
+  var el = document.getElementById('depOrderContent');
+  if (el) {
+    if (hasOrder) {
+      el.innerHTML = '<div class="dep-grid">'
+        + '<div class="dep-field"><span class="info-item-label">订单号</span><div class="info-item-value inter"><div class="copy-cell"><span>53013777</span><span class="copy-icon" onclick="copyText(\'53013777\')"><i data-lucide="copy" size="13"></i></span></div></div></div>'
+        + '<div class="dep-field"><span class="info-item-label">应付金额</span><span class="info-item-value inter">5.00 USDT1</span></div>'
+        + '<div class="dep-field"><span class="info-item-label">实付金额</span><span class="info-item-value inter">5.00 USDT1</span></div>'
+        + '<div class="dep-field"><span class="info-item-label">创建时间</span><span class="info-item-value inter">2026-06-29 17:27:45</span></div>'
+        + '</div>';
+      lucide.createIcons();
+    } else {
+      el.innerHTML = '<div class="dep-empty">'
+        + '<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">'
+        + '<rect x="14" y="38" width="52" height="28" rx="3" fill="#ECF5FF" stroke="#DCDFE6" stroke-width="1.5"/>'
+        + '<rect x="26" y="38" width="28" height="2" fill="#DCDFE6"/>'
+        + '<path d="M14 38 L40 29 L66 38" fill="none" stroke="#DCDFE6" stroke-width="1.5"/>'
+        + '<path d="M14 38 L40 29 L40 38 Z" fill="#B3D8FF" stroke="#DCDFE6" stroke-width="1.5" stroke-linejoin="round"/>'
+        + '<path d="M40 29 L66 38 L40 38 Z" fill="#ECF5FF" stroke="#DCDFE6" stroke-width="1.5" stroke-linejoin="round"/>'
+        + '<path d="M57 13 L58.2 16.8 L62 18 L58.2 19.2 L57 23 L55.8 19.2 L52 18 L55.8 16.8 Z" fill="#F7BA2A" opacity="0.85"/>'
+        + '<path d="M17 9 L17.9 11.6 L20.5 12.5 L17.9 13.4 L17 16 L16.1 13.4 L13.5 12.5 L16.1 11.6 Z" fill="#F7BA2A" opacity="0.7"/>'
+        + '<line x1="63" y1="28" x2="63" y2="34" stroke="#B3D8FF" stroke-width="1.5" stroke-linecap="round"/>'
+        + '<line x1="60" y1="31" x2="66" y2="31" stroke="#B3D8FF" stroke-width="1.5" stroke-linecap="round"/>'
+        + '</svg>'
+        + '<span class="dep-empty-text">暂无数据</span>'
+        + '</div>';
+    }
+  }
+  openModal('depositDetailModal');
+}
+
+function histDepLinkOrder(userId) {
+  switchSubPage('pageHistory', '历史记录');
+  var ordTabEl = document.querySelector('#pageHistory .hist-tab-item[onclick*="histOrd"]');
+  if (ordTabEl) switchHistTab('histOrd', ordTabEl);
+  var uidInput = document.getElementById('histOrdUidInput');
+  if (uidInput) { uidInput.value = userId; }
+  var statusSel = document.getElementById('histOrdStatusSelect');
+  if (statusSel) { statusSel.value = '处理中'; }
+  filterHistOrd();
+}
+
+function filterHistOrd() {
+  var uid    = (document.getElementById('histOrdUidInput')?.value || '').trim();
+  var status = (document.getElementById('histOrdStatusSelect')?.value || '');
+  var rows   = document.querySelectorAll('#histOrd tbody tr');
+  var count  = 0;
+  rows.forEach(function(tr) {
+    var rowUid    = (tr.cells[1]?.textContent || '').trim();
+    var rowStatus = (tr.cells[11]?.textContent || '').trim();
+    var match = (!uid || rowUid.includes(uid)) && (!status || rowStatus === status);
+    tr.style.display = match ? '' : 'none';
+    if (match) count++;
+  });
+  var countEl = document.getElementById('histOrdCount');
+  if (countEl) countEl.textContent = count;
+}
+
+function resetHistOrd() {
+  var uidInput = document.getElementById('histOrdUidInput');
+  if (uidInput) uidInput.value = '';
+  var statusSel = document.getElementById('histOrdStatusSelect');
+  if (statusSel) statusSel.value = '';
+  filterHistOrd();
+}
+
+function openOrdDetail(tr) {
+  var c = tr.cells;
+  var ord     = (c[0].querySelector('span') || c[0]).textContent.trim();
+  var token   = c[2].textContent.trim();
+  var network = c[3].textContent.trim();
+  var due     = c[4].textContent.trim();
+  var paid    = c[5].textContent.trim();
+  var fee     = c[6].textContent.trim();
+  var netAmt  = c[7].textContent.trim();
+  var createT = c[9].textContent.trim();
+  var status  = c[11].textContent.trim();
+
+  document.getElementById('odOrdNo').textContent    = ord;
+  document.getElementById('odTokenNet').textContent = token + ' / ' + network;
+  document.getElementById('odDue').textContent      = due + ' ' + token;
+
+  var sb = document.getElementById('odStatusBadge');
+  var clsMap = { '已完成':'badge-green', '处理中':'badge-orange', '未足额支付':'badge-orange', '已过期':'badge-gray' };
+  sb.className = 'badge ' + (clsMap[status] || 'badge-gray');
+  sb.textContent = status;
+
+  var hasDeposit = paid !== '—' && paid !== '';
+  document.getElementById('odCount').textContent    = hasDeposit ? '1 笔' : '0 笔';
+  document.getElementById('odDueBar').textContent   = due + ' ' + token;
+  document.getElementById('odTotalPaid').textContent = hasDeposit ? paid + ' ' + token : '—';
+  document.getElementById('odTotalFee').textContent  = hasDeposit ? fee + ' ' + token : '—';
+  document.getElementById('odTotalNet').textContent  = hasDeposit ? netAmt + ' ' + token : '—';
+
+  var listEl = document.getElementById('odDepList');
+  if (hasDeposit) {
+    var netDisplay = netAmt.replace('+', '');
+    listEl.innerHTML =
+      '<div class="lo-dep-item" style="cursor:default;pointer-events:none">'
+      + '<div class="lo-dep-info">'
+      + '<div class="lo-dep-no">流水号：52481430008320</div>'
+      + '<div class="lo-dep-meta">Hash: 3fab...de01'
+      + '  <span class="copy-icon" onclick="copyText(\'3fab...de01\')"><i data-lucide="copy" size="13"></i></span>'
+      + '</div>'
+      + '<div class="lo-dep-meta">' + createT + '</div>'
+      + '</div>'
+      + '<div class="lo-dep-right">'
+      + '<div class="lo-dep-amount">+' + paid + ' ' + token + '</div>'
+      + '<div class="lo-dep-fee">手续费：' + fee + ' ' + token + '</div>'
+      + '<div class="lo-dep-netamt">净入账：' + netDisplay + ' ' + token + '</div>'
+      + '</div>'
+      + '</div>';
+    lucide.createIcons();
+  } else {
+    listEl.innerHTML =
+      '<div class="lo-empty-state">'
+      + '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C0C4CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>'
+      + '<span>暂无记录</span>'
+      + '</div>';
+  }
+  openModal('ordDetailModal');
+}
+
+// Event delegation: eye icon clicks in histOrd table open order detail
+document.querySelector('#histOrd tbody')?.addEventListener('click', function(e) {
+  var icon = e.target.closest('.action-icon');
+  if (!icon) return;
+  var oc = icon.getAttribute('onclick') || '';
+  if (oc.includes('openLinkOrderModal')) return;
+  var tr = icon.closest('tr');
+  if (tr) openOrdDetail(tr);
+});
+
 function switchHistTab(paneId, el) {
   document.querySelectorAll('#pageHistory .hist-tab-item').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
@@ -2417,6 +2922,7 @@ function applyOverviewPerms() {
 lucide.createIcons();
 activeTopNavEl = document.querySelector('.nav-item.active');
 applyOverviewPerms();
+filterHistOrd();
 renderMemberList(MEMBERS);
 renderApiKeyList();
 initDrp(document.getElementById('drpTopupArr'));
