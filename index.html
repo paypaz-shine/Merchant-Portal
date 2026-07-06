@@ -1045,24 +1045,155 @@
     <div class="hist-pane" id="histWdr">
       <div class="filter-card">
         <div class="filter-grid">
-          <div class="filter-item"><span class="filter-label-el">UserID：</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已完成</option><option>提币失败</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">提币时间：</span><div class="filter-control"><div class="drp-wrap" id="drpHistWdrTime"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">用户 ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户 ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已到账</option><option>提币失败</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">提币时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistWdrTime"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">到账时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistWdrArr"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">2</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th style="width:120px">UserID</th><th style="width:80px">代币</th><th style="width:80px">网络</th><th style="width:120px">提币金额</th><th style="width:100px">手续费</th><th style="width:220px">到账地址</th><th style="width:160px">提币时间</th><th style="width:80px">状态</th></tr></thead>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">75</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1600px">
+          <thead><tr>
+            <th style="width:200px">订单号</th>
+            <th style="width:160px">用户 ID</th>
+            <th style="width:70px">代币</th>
+            <th style="width:80px">网络</th>
+            <th style="width:100px">提币金额</th>
+            <th style="width:90px">手续费</th>
+            <th style="width:100px">资产余额</th>
+            <th style="width:150px">到账地址</th>
+            <th style="width:150px">哈希</th>
+            <th style="width:160px">提币时间</th>
+            <th style="width:160px">到账时间</th>
+            <th style="width:90px">状态</th>
+            <th style="width:60px">操作</th>
+          </tr></thead>
           <tbody>
-            <tr><td class="asset-num">291654802</td><td>USDT</td><td>TRON</td><td class="asset-num">50.00</td><td class="asset-num">0.00</td><td><div class="copy-cell"><span>TG1xjV3…bkJzh</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-20 11:15:44</td><td><span class="badge badge-green">已完成</span></td></tr>
-            <tr><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">20.00</td><td class="asset-num">0.00</td><td><div class="copy-cell"><span>TB9wqY2…mP4vX</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-21 09:42:18</td><td><span class="badge badge-green">已完成</span></td></tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260702-00512</span><span class="copy-icon" onclick="copyText('WDR-20260702-00512')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466236</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-2.01</td><td style="color:#C0C4CC">—</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="copy-cell"><span>TAd9zH…9umQ2</span><span class="copy-icon" onclick="copyText('TAd9zHCayg9LumQ2')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="color:#C0C4CC">—</td>
+              <td style="font-family:Inter">2026-07-02 15:08:46</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><span class="badge badge-red">提币失败</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260702-00512')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260702-00511</span><span class="copy-icon" onclick="copyText('WDR-20260702-00511')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-2.01</td><td style="color:#C0C4CC">—</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="copy-cell"><span>TAd9zH…9umQ2</span><span class="copy-icon" onclick="copyText('TAd9zHCayg9LumQ2')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="color:#C0C4CC">—</td>
+              <td style="font-family:Inter">2026-07-02 15:07:01</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><span class="badge badge-red">提币失败</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260702-00511')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260702-00510</span><span class="copy-icon" onclick="copyText('WDR-20260702-00510')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-2.01</td><td class="asset-num">-0.01</td>
+              <td class="asset-num">847.68</td>
+              <td><div class="copy-cell"><span>TAd9zH…9umQ2</span><span class="copy-icon" onclick="copyText('TAd9zHCayg9LumQ2')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>30877…2575e</span><span class="copy-icon" onclick="copyText('30877432d1026706d7e805da846a32c3bb81e3c29b62179273c8eb5bb682575e')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-02 15:06:36</td>
+              <td style="font-family:Inter">2026-07-02 15:07:52</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260702-00510')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260702-00509</span><span class="copy-icon" onclick="copyText('WDR-20260702-00509')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-2.01</td><td class="asset-num">-0.01</td>
+              <td class="asset-num">849.69</td>
+              <td><div class="copy-cell"><span>TAd9zH…9umQ2</span><span class="copy-icon" onclick="copyText('TAd9zHCayg9LumQ2')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>c87a1…f03b9</span><span class="copy-icon" onclick="copyText('c87a171ac826a6fce48478dcb74f21345d2cce8038a39d5e0853964b50af03b9')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-02 15:05:21</td>
+              <td style="font-family:Inter">2026-07-02 15:06:33</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260702-00509')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260629-00305</span><span class="copy-icon" onclick="copyText('WDR-20260629-00305')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466235</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-0.74</td><td class="asset-num">-0.01</td>
+              <td class="asset-num">702.52</td>
+              <td><div class="copy-cell"><span>TRLwjV…KPP9n</span><span class="copy-icon" onclick="copyText('TRLwjVSxEkPP9nQ4')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>71722…766e4</span><span class="copy-icon" onclick="copyText('71722f244f58d669cbee3772a077021721a278f64f7fd633dbdde131ca3766e4')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-29 16:42:24</td>
+              <td style="font-family:Inter">2026-06-29 16:43:41</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260629-00305')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260629-00304</span><span class="copy-icon" onclick="copyText('WDR-20260629-00304')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466235</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-0.70</td><td class="asset-num">-0.01</td>
+              <td class="asset-num">705.30</td>
+              <td><div class="copy-cell"><span>TRLwjV…KPP9n</span><span class="copy-icon" onclick="copyText('TRLwjVSxEkPP9nQ4')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>d58e7…9ea20</span><span class="copy-icon" onclick="copyText('d58e72e310275dff6c15c0c8e9df469611a11f5125227c3712da86a78c49ea20')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-29 16:38:53</td>
+              <td style="font-family:Inter">2026-06-29 16:40:10</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260629-00304')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260624-00128</span><span class="copy-icon" onclick="copyText('WDR-20260624-00128')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-74.01</td><td class="asset-num">-0.01</td>
+              <td class="asset-num">709.25</td>
+              <td><div class="copy-cell"><span>TPeH4F…PTGq7</span><span class="copy-icon" onclick="copyText('TPeH4FLWrPTGq7Xs')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>e3268…bd475</span><span class="copy-icon" onclick="copyText('e32684b27b95e909348334896a68f812d810a485ed03241b4d419b1b673bd475')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-24 16:26:32</td>
+              <td style="font-family:Inter">2026-06-24 16:27:58</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260624-00128')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260624-00127</span><span class="copy-icon" onclick="copyText('WDR-20260624-00127')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-7.31</td><td class="asset-num">-0.01</td>
+              <td class="asset-num">783.26</td>
+              <td><div class="copy-cell"><span>TPeH4F…PTGq7</span><span class="copy-icon" onclick="copyText('TPeH4FLWrPTGq7Xs')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>5d05a…c946d</span><span class="copy-icon" onclick="copyText('5d05ad7853c1f76eb97706ca828bca0385813dbad3c681d06bd2aa399dac946d')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-24 16:24:48</td>
+              <td style="font-family:Inter">2026-06-24 16:26:05</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260624-00127')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>WDR-20260624-00126</span><span class="copy-icon" onclick="copyText('WDR-20260624-00126')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">-7.21</td><td style="color:#C0C4CC">—</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="copy-cell"><span>TPeH4F…PTGq7</span><span class="copy-icon" onclick="copyText('TPeH4FLWrPTGq7Xs')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="color:#C0C4CC">—</td>
+              <td style="font-family:Inter">2026-06-24 16:11:02</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><span class="badge badge-red">提币失败</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20260624-00126')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
           </tbody>
         </table></div>
-        <div class="pagination-bar"><span class="pagination-total">共 2 条</span><select class="page-size-select"><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button></div>
+        <div class="pagination-bar"><span class="pagination-total">共 75 条</span><select class="page-size-select"><option>20 条/页</option><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">4</button><button class="page-btn"><i data-lucide="chevron-right" size="14"></i></button></div>
       </div>
     </div>
 
@@ -1455,6 +1586,22 @@
       </div>
     </div>
     <div class="modal-footer"><button class="btn btn-default btn-sm" onclick="closeModal('rampDetailModal')">关闭</button></div>
+  </div>
+</div>
+
+<!-- 提币详情弹窗 -->
+<div class="modal-overlay" id="wdrDetailModal">
+  <div class="modal" style="width:560px">
+    <div class="modal-header">
+      <span class="modal-title">提币详情</span>
+      <span class="modal-close" onclick="closeModal('wdrDetailModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px" id="wdrDetailBody">
+        <!-- filled by JS -->
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-default btn-sm" onclick="closeModal('wdrDetailModal')">关闭</button></div>
   </div>
 </div>
 
@@ -2527,6 +2674,44 @@ var RAMP_OUT_DATA = {
 };
 var RAMP_STATUS_MAP = { '已完成':'badge-green', '处理中':'badge-orange', '追加验证中':'badge-orange', '失败':'badge-red', '待处理':'badge-gray', '等待付款':'badge-blue' };
 
+var WDR_HIST_DATA = {
+  'WDR-20260702-00512': { uid:'460466236', main:false, token:'USDT1', network:'TRON', amount:'2.01', fee:'—', net:'—', addr:'TAd9zHCayg9LumQ2', wdTime:'2026-07-02 15:08:46', arrTime:'—', status:'提币失败' },
+  'WDR-20260702-00511': { uid:'460466237', main:false, token:'USDT1', network:'TRON', amount:'2.01', fee:'—', net:'—', addr:'TAd9zHCayg9LumQ2', wdTime:'2026-07-02 15:07:01', arrTime:'—', status:'提币失败' },
+  'WDR-20260702-00510': { uid:'460466237', main:false, token:'USDT1', network:'TRON', amount:'2.01', fee:'0.01', net:'-2.01', addr:'TAd9zHCayg9LumQ2', wdTime:'2026-07-02 15:06:36', arrTime:'2026-07-02 15:07:52', status:'已到账' },
+  'WDR-20260702-00509': { uid:'460466237', main:false, token:'USDT1', network:'TRON', amount:'2.01', fee:'0.01', net:'-2.01', addr:'TAd9zHCayg9LumQ2', wdTime:'2026-07-02 15:05:21', arrTime:'2026-07-02 15:06:33', status:'已到账' },
+  'WDR-20260629-00305': { uid:'460466235', main:false, token:'USDT1', network:'TRON', amount:'0.74', fee:'0.01', net:'-0.74', addr:'TRLwjVSxEkPP9nQ4', wdTime:'2026-06-29 16:42:24', arrTime:'2026-06-29 16:43:41', status:'已到账' },
+  'WDR-20260629-00304': { uid:'460466235', main:false, token:'USDT1', network:'TRON', amount:'0.70', fee:'0.01', net:'-0.70', addr:'TRLwjVSxEkPP9nQ4', wdTime:'2026-06-29 16:38:53', arrTime:'2026-06-29 16:40:10', status:'已到账' },
+  'WDR-20260624-00128': { uid:'291654802', main:true,  token:'USDT1', network:'TRON', amount:'74.01', fee:'0.01', net:'-74.01', addr:'TPeH4FLWrPTGq7Xs', wdTime:'2026-06-24 16:26:32', arrTime:'2026-06-24 16:27:58', status:'已到账' },
+  'WDR-20260624-00127': { uid:'291654802', main:true,  token:'USDT1', network:'TRON', amount:'7.31', fee:'0.01', net:'-7.31', addr:'TPeH4FLWrPTGq7Xs', wdTime:'2026-06-24 16:24:48', arrTime:'2026-06-24 16:26:05', status:'已到账' },
+  'WDR-20260624-00126': { uid:'291654802', main:true,  token:'USDT1', network:'TRON', amount:'7.21', fee:'—', net:'—', addr:'TPeH4FLWrPTGq7Xs', wdTime:'2026-06-24 16:11:02', arrTime:'—', status:'提币失败' }
+};
+var WDR_STATUS_MAP = { '已到账':'badge-green', '提币失败':'badge-red' };
+
+function openWdrDetail(orderId) {
+  var d = WDR_HIST_DATA[orderId];
+  if (!d) return;
+  var statusCls = WDR_STATUS_MAP[d.status] || 'badge-gray';
+  var uidVal = d.uid + (d.main ? '&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span>' : '');
+  var netVal = d.net === '—' ? d.net : '<span style="color:#F56C6C">' + d.net + '</span>';
+  var rows = [
+    ['订单号', orderId],
+    ['用户 ID', uidVal],
+    ['代币 / 网络', d.token + ' / ' + d.network],
+    ['提币金额', d.amount + ' ' + d.token],
+    ['手续费', d.fee === '—' ? d.fee : d.fee + ' ' + d.token],
+    ['净入账', netVal],
+    ['到账地址', '<span style="word-break:break-all">' + d.addr + '</span>'],
+    ['提币时间', d.wdTime],
+    ['到账时间', d.arrTime],
+    ['状态', '<span class="badge ' + statusCls + '">' + d.status + '</span>']
+  ];
+  document.getElementById('wdrDetailBody').innerHTML = rows.map(function(r) {
+    return '<div><div class="info-item-label">' + r[0] + '</div><div class="info-item-value" style="margin-top:4px">' + r[1] + '</div></div>';
+  }).join('');
+  openModal('wdrDetailModal');
+  lucide.createIcons();
+}
+
 function openRampDetail(type, orderId) {
   var d = type === 'in' ? RAMP_IN_DATA[orderId] : RAMP_OUT_DATA[orderId];
   if (!d) return;
@@ -2933,6 +3118,7 @@ initDrp(document.getElementById('drpWithdrawReq'));
 initDrp(document.getElementById('drpMemberCreate'));
 initDrp(document.getElementById('drpHistDepArr'));
 initDrp(document.getElementById('drpHistWdrTime'));
+initDrp(document.getElementById('drpHistWdrArr'));
 initDrp(document.getElementById('drpHistOrdCreate'));
 initDrp(document.getElementById('drpHistOrdDone'));
 initDrp(document.getElementById('drpRampInCreate'));
