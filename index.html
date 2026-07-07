@@ -1203,6 +1203,8 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
           <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input id="histOrdUidInput" class="field-input" placeholder="请输入用户ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select id="histOrdTokenSelect" class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select id="histOrdNetworkSelect" class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
           <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select id="histOrdStatusSelect" class="field-select"><option value="">全部</option><option selected>处理中</option><option>未足额支付</option><option>已完成</option><option>已过期</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
           <div class="filter-item"><span class="filter-label-el">创建时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistOrdCreate"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">完成时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistOrdDone"></div></div></div>
@@ -2557,14 +2559,19 @@ function histDepLinkOrder(userId) {
 }
 
 function filterHistOrd() {
-  var uid    = (document.getElementById('histOrdUidInput')?.value || '').trim();
-  var status = (document.getElementById('histOrdStatusSelect')?.value || '');
-  var rows   = document.querySelectorAll('#histOrd tbody tr');
-  var count  = 0;
+  var uid     = (document.getElementById('histOrdUidInput')?.value || '').trim();
+  var token   = (document.getElementById('histOrdTokenSelect')?.value || '');
+  var network = (document.getElementById('histOrdNetworkSelect')?.value || '');
+  var status  = (document.getElementById('histOrdStatusSelect')?.value || '');
+  var rows    = document.querySelectorAll('#histOrd tbody tr');
+  var count   = 0;
   rows.forEach(function(tr) {
-    var rowUid    = (tr.cells[1]?.textContent || '').trim();
-    var rowStatus = (tr.cells[11]?.textContent || '').trim();
-    var match = (!uid || rowUid.includes(uid)) && (!status || rowStatus === status);
+    var rowUid     = (tr.cells[1]?.textContent || '').trim();
+    var rowToken   = (tr.cells[2]?.textContent || '').trim();
+    var rowNetwork = (tr.cells[3]?.textContent || '').trim();
+    var rowStatus  = (tr.cells[11]?.textContent || '').trim();
+    var match = (!uid || rowUid.includes(uid)) && (!token || rowToken === token)
+      && (!network || rowNetwork === network) && (!status || rowStatus === status);
     tr.style.display = match ? '' : 'none';
     if (match) count++;
   });
@@ -2575,6 +2582,10 @@ function filterHistOrd() {
 function resetHistOrd() {
   var uidInput = document.getElementById('histOrdUidInput');
   if (uidInput) uidInput.value = '';
+  var tokenSel = document.getElementById('histOrdTokenSelect');
+  if (tokenSel) tokenSel.value = '';
+  var networkSel = document.getElementById('histOrdNetworkSelect');
+  if (networkSel) networkSel.value = '';
   var statusSel = document.getElementById('histOrdStatusSelect');
   if (statusSel) statusSel.value = '';
   filterHistOrd();
