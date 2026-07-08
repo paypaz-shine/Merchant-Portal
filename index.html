@@ -147,11 +147,17 @@
     .field-input::placeholder { color:#C0C4CC; }
     .field-input:focus,.field-select:focus { border-color:#409EFF; }
     .field-input.f-readonly { background:#F5F7FA; color:#909399; cursor:default; }
+    .field-input.is-error { border-color:#F56C6C; }
+    .field-input.is-error:focus { border-color:#F56C6C; }
+    .wd-code-field { position:relative; }
+    .wd-code-field .field-input { width:100%; padding-right:60px; }
+    .wd-code-send { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:13px; color:#409EFF; cursor:pointer; user-select:none; }
+    .wd-code-send.disabled { color:#C0C4CC; cursor:not-allowed; }
     .select-wrap { position:relative; display:inline-flex; align-items:center; }
     .select-wrap .select-caret { position:absolute; right:8px; pointer-events:none; color:#C0C4CC; }
     .field-select { padding-right:28px; cursor:pointer; }
 
-    .btn { height:32px; padding:0 15px; border-radius:4px; font-size:13px; font-family:'Noto Sans SC',sans-serif; cursor:pointer; display:inline-flex; align-items:center; gap:6px; border:none; white-space:nowrap; transition:opacity 0.15s; }
+    .btn { height:32px; padding:0 15px; border-radius:4px; font-size:13px; font-family:'Noto Sans SC',sans-serif; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; border:none; white-space:nowrap; transition:opacity 0.15s; }
     .btn:hover { opacity:0.85; }
     .btn-primary { background:#409EFF; color:#fff; }
     .btn-default { background:#fff; color:#606266; border:1px solid #DCDFE6; }
@@ -430,6 +436,55 @@
     .hist-tab-item.active { color:#409EFF; border-bottom-color:#409EFF; font-weight:500; }
     .hist-pane { display:none; flex:1; overflow-y:auto; overflow-x:hidden; min-height:0; flex-direction:column; gap:16px; padding:16px 20px; }
     .hist-pane.active { display:flex; }
+
+    /* ── 提币页 · 单笔提币表单 ─────────────────────────── */
+    .wd-form-card { background:#fff; border:1px solid #EBEEF5; border-radius:4px; padding:28px 32px; max-width:520px; }
+    .wd-step { display:flex; gap:14px; }
+    .wd-step + .wd-step { margin-top:28px; }
+    .wd-step-num { width:22px; height:22px; border-radius:50%; background:#303133; color:#fff; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Inter',sans-serif; transition:background .15s,color .15s; }
+    .wd-step-num.pending { background:#F4F4F5; color:#C0C4CC; }
+    .wd-step-body { flex:1; min-width:0; }
+    .wd-step-title { font-size:14px; font-weight:600; color:#303133; margin-bottom:14px; transition:color .15s; }
+    .wd-step-title.pending { color:#C0C4CC; }
+    .wd-field { margin-bottom:16px; }
+    .wd-field:last-child { margin-bottom:0; }
+    .wd-field-label { font-size:12px; color:#909399; margin-bottom:6px; display:block; }
+    .wd-balance-row { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:#909399; margin-top:6px; }
+    .wd-balance-row .wd-max-link { color:#409EFF; cursor:pointer; }
+    .wd-summary-row { display:flex; justify-content:space-between; font-size:13px; color:#606266; padding:8px 0; }
+    .wd-summary-row + .wd-summary-row { border-top:1px dashed #EBEEF5; }
+
+    /* ── 提币页 · 批量提币上传 ─────────────────────────── */
+    .wd-dropzone { border:1px dashed #DCDFE6; border-radius:4px; padding:32px 20px; text-align:center; cursor:pointer; transition:border-color .15s,background .15s; }
+    .wd-dropzone:hover { border-color:#409EFF; background:#ECF5FF; }
+    .wd-dropzone .wd-dropzone-file-icon { color:#409EFF; margin:0 auto 10px; }
+    .wd-dropzone-text { font-size:13px; color:#606266; }
+    .wd-dropzone-hint { font-size:12px; color:#C0C4CC; margin-top:4px; }
+    .wd-alert-row { display:flex; align-items:center; justify-content:space-between; width:100%; gap:12px; }
+    .wd-alert-link { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:#409EFF; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+
+    /* ── 批量提币向导（三步）───────────────────────────── */
+    .wd-wizard { display:flex; align-items:flex-start; margin-bottom:22px; }
+    .wd-wizard-step { flex:1; text-align:center; position:relative; }
+    .wd-wizard-step:not(:first-child)::before { content:''; position:absolute; top:4px; left:-50%; width:100%; height:1px; background:#EBEEF5; }
+    .wd-wizard-dot { width:8px; height:8px; border-radius:50%; background:#DCDFE6; margin:0 auto 8px; position:relative; z-index:1; }
+    .wd-wizard-step.active .wd-wizard-dot,
+    .wd-wizard-step.done .wd-wizard-dot { background:#409EFF; }
+    .wd-wizard-label { font-size:13px; color:#C0C4CC; }
+    .wd-wizard-step.active .wd-wizard-label { color:#303133; font-weight:600; }
+    .wd-wizard-panel { display:none; }
+    .wd-wizard-panel.active { display:block; }
+    .wd-confirm-cards { display:flex; gap:14px; margin-bottom:14px; }
+    .wd-confirm-card { flex:1; border-radius:6px; padding:14px 16px; background:#F5F7FA; }
+    .wd-confirm-card-label { font-size:13px; color:#606266; margin-bottom:8px; }
+    .wd-confirm-card-value { font-size:22px; font-weight:700; color:#303133; font-family:'Inter',sans-serif; }
+    .wd-confirm-card-pass { background:#f0f9eb; }
+    .wd-confirm-card-pass .wd-confirm-card-value { color:#67C23A; }
+    .wd-confirm-card-fail { background:#fef0f0; }
+    .wd-confirm-card-fail .wd-confirm-card-value { color:#F56C6C; }
+    .wd-confirm-total-bar { background:#fdf6ec; border-radius:4px; padding:10px 14px; font-size:13px; color:#303133; margin-bottom:14px; }
+    .wd-confirm-total-bar b { color:#E6A23C; font-family:'Inter',sans-serif; font-weight:700; margin-left:6px; }
+    .wd-confirm-tip { font-size:13px; font-weight:600; color:#303133; margin-bottom:10px; }
   </style>
 </head>
 <body>
@@ -870,7 +925,165 @@
   <!-- ══ 占位页面 ═══════════════════════════════════════════ -->
   <div class="page" id="pageAddress"><div class="content-area"><h2 class="page-title">收款地址</h2><div style="margin-top:60px;text-align:center;color:#C0C4CC;font-size:13px">页面开发中…</div></div></div>
   <div class="page" id="pageDepositAsset"><div class="content-area"><h2 class="page-title">充币</h2><div style="margin-top:60px;text-align:center;color:#C0C4CC;font-size:13px">页面开发中…</div></div></div>
-  <div class="page" id="pageWithdrawAsset"><div class="content-area"><h2 class="page-title">提币</h2><div style="margin-top:60px;text-align:center;color:#C0C4CC;font-size:13px">页面开发中…</div></div></div>
+  <!-- ══ 提币 ═══════════════════════════════════════════ -->
+  <div class="page" id="pageWithdrawAsset">
+
+    <div class="hist-page-hdr">
+      <h2 class="page-title" style="margin-bottom:14px">提币</h2>
+      <div class="hist-tab-nav">
+        <div class="hist-tab-item active" onclick="switchWdTab('wdSingle',this)">单笔</div>
+        <div class="hist-tab-item" onclick="switchWdTab('wdBatch',this)">批量</div>
+      </div>
+    </div>
+
+    <!-- ── 单笔提币 Pane ── -->
+    <div class="hist-pane active" id="wdSingle">
+      <div class="wd-form-card">
+
+        <div class="wd-step">
+          <div class="wd-step-num" id="wdStep1Num">1</div>
+          <div class="wd-step-body">
+            <div class="wd-step-title" id="wdStep1Title">选择币种</div>
+            <div class="wd-field">
+              <div class="select-wrap" style="width:100%">
+                <select class="field-select" style="width:100%" id="wdToken" onchange="wdUpdateToken()">
+                  <option>USDT1</option>
+                  <option>USDT</option>
+                  <option>USDC</option>
+                </select>
+                <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wd-step">
+          <div class="wd-step-num" id="wdStep2Num">2</div>
+          <div class="wd-step-body">
+            <div class="wd-step-title" id="wdStep2Title">选择收款人</div>
+            <div class="wd-field">
+              <span class="wd-field-label">网络</span>
+              <div class="select-wrap" style="width:100%">
+                <select class="field-select" style="width:100%" id="wdNetwork" onchange="wdCheckStep3()">
+                  <option value="">选择网络</option>
+                  <option>TRON</option>
+                  <option>Ethereum</option>
+                </select>
+                <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+              </div>
+            </div>
+            <div class="wd-field">
+              <span class="wd-field-label">地址</span>
+              <input class="field-input" style="width:100%" id="wdAddress" placeholder="请输入一个地址" oninput="wdCheckStep3()">
+            </div>
+          </div>
+        </div>
+
+        <div class="wd-step">
+          <div class="wd-step-num pending" id="wdStep3Num">3</div>
+          <div class="wd-step-body">
+            <div class="wd-step-title pending" id="wdStep3Title">设置提现金额</div>
+            <div id="wdStep3Content" style="display:none">
+              <div class="wd-field">
+                <span class="wd-field-label">提现金额</span>
+                <input class="field-input" style="width:100%" id="wdAmount" type="number" placeholder="请输入提现金额" oninput="wdCalcNet()">
+                <div class="wd-balance-row">
+                  <span>可用余额：<span style="font-family:Inter;color:#606266" id="wdBalance">1,284.30</span>&nbsp;<span id="wdBalanceToken">USDT1</span></span>
+                  <span class="wd-max-link" onclick="wdFillMax()">全部</span>
+                </div>
+              </div>
+              <div class="wd-summary-row"><span>手续费</span><span style="font-family:Inter">0.01 <span id="wdFeeToken">USDT1</span></span></div>
+              <div class="wd-summary-row"><span>实际到账</span><span style="font-family:Inter;font-weight:600" id="wdNetAmount">—</span></div>
+              <button class="btn btn-primary" style="width:100%;margin-top:20px;height:36px" onclick="submitSingleWithdraw()">提交提币申请</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 批量提币 Pane ── -->
+    <div class="hist-pane" id="wdBatch">
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn btn-primary" onclick="wdBatchModalOpen()">
+          <i data-lucide="upload" size="14"></i>批量提币
+        </button>
+      </div>
+      <div class="table-card">
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">6</span><span class="count-label">条</span></div>
+        <div class="table-wrap"><table style="min-width:900px">
+          <thead><tr>
+            <th style="width:180px">批次号</th>
+            <th style="width:160px">发起时间</th>
+            <th style="width:160px">完成时间</th>
+            <th style="width:100px">申请</th>
+            <th style="width:100px">成功</th>
+            <th style="width:100px">失败</th>
+            <th style="width:80px">操作</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="copy-cell"><span>BWD-20260706-0007</span><span class="copy-icon" onclick="copyText('BWD-20260706-0007')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-06 15:40:11</td>
+              <td class="cell-empty">—</td>
+              <td class="asset-num">8</td>
+              <td class="asset-num" style="color:#67C23A">5</td>
+              <td class="asset-num" style="color:#C0C4CC">0</td>
+              <td><div class="action-cell"><span class="action-icon" title="下载申请文件" data-batch="BWD-20260706-0007" data-total="8" data-fail="0" data-reason="" onclick="downloadBatchFile(this)"><i data-lucide="download" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>BWD-20260706-0006</span><span class="copy-icon" onclick="copyText('BWD-20260706-0006')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-06 11:20:08</td>
+              <td style="font-family:Inter">2026-07-06 11:24:35</td>
+              <td class="asset-num">20</td>
+              <td class="asset-num" style="color:#67C23A">20</td>
+              <td class="asset-num" style="color:#C0C4CC">0</td>
+              <td><div class="action-cell"><span class="action-icon" title="下载申请文件" data-batch="BWD-20260706-0006" data-total="20" data-fail="0" data-reason="" onclick="downloadBatchFile(this)"><i data-lucide="download" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>BWD-20260705-0005</span><span class="copy-icon" onclick="copyText('BWD-20260705-0005')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-05 16:03:52</td>
+              <td style="font-family:Inter">2026-07-05 16:09:17</td>
+              <td class="asset-num">15</td>
+              <td class="asset-num" style="color:#67C23A">12</td>
+              <td class="asset-num" style="color:#F56C6C">3</td>
+              <td><div class="action-cell"><span class="action-icon" title="下载申请文件" data-batch="BWD-20260705-0005" data-total="15" data-fail="3" data-reason="收款地址格式校验不通过" onclick="downloadBatchFile(this)"><i data-lucide="download" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>BWD-20260703-0004</span><span class="copy-icon" onclick="copyText('BWD-20260703-0004')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-03 09:12:30</td>
+              <td style="font-family:Inter">2026-07-03 09:18:44</td>
+              <td class="asset-num">50</td>
+              <td class="asset-num" style="color:#67C23A">47</td>
+              <td class="asset-num" style="color:#F56C6C">3</td>
+              <td><div class="action-cell"><span class="action-icon" title="下载申请文件" data-batch="BWD-20260703-0004" data-total="50" data-fail="3" data-reason="链上广播超时" onclick="downloadBatchFile(this)"><i data-lucide="download" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>BWD-20260701-0003</span><span class="copy-icon" onclick="copyText('BWD-20260701-0003')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-07-01 14:05:19</td>
+              <td style="font-family:Inter">2026-07-01 14:07:52</td>
+              <td class="asset-num">5</td>
+              <td class="asset-num" style="color:#67C23A">5</td>
+              <td class="asset-num" style="color:#C0C4CC">0</td>
+              <td><div class="action-cell"><span class="action-icon" title="下载申请文件" data-batch="BWD-20260701-0003" data-total="5" data-fail="0" data-reason="" onclick="downloadBatchFile(this)"><i data-lucide="download" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>BWD-20260624-0002</span><span class="copy-icon" onclick="copyText('BWD-20260624-0002')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="font-family:Inter">2026-06-24 10:33:07</td>
+              <td style="font-family:Inter">2026-06-24 10:36:21</td>
+              <td class="asset-num">10</td>
+              <td class="asset-num" style="color:#67C23A">10</td>
+              <td class="asset-num" style="color:#C0C4CC">0</td>
+              <td><div class="action-cell"><span class="action-icon" title="下载申请文件" data-batch="BWD-20260624-0002" data-total="10" data-fail="0" data-reason="" onclick="downloadBatchFile(this)"><i data-lucide="download" size="14"></i></span></div></td>
+            </tr>
+          </tbody>
+        </table></div>
+        <div class="pagination-bar"><span class="pagination-total">共 6 条</span><select class="page-size-select"><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button></div>
+      </div>
+    </div>
+
+  </div>
+
   <!-- ══ 历史记录 ═══════════════════════════════════════════ -->
   <div class="page" id="pageHistory">
 
@@ -1604,6 +1817,106 @@
       </div>
     </div>
     <div class="modal-footer"><button class="btn btn-default btn-sm" onclick="closeModal('wdrDetailModal')">关闭</button></div>
+  </div>
+</div>
+
+<!-- 批量提币上传弹窗 -->
+<div class="modal-overlay" id="batchWithdrawModal">
+  <div class="modal" style="width:600px">
+    <div class="modal-header">
+      <span class="modal-title">批量提币</span>
+      <span class="modal-close" onclick="wdBatchModalClose()"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+
+      <div class="wd-wizard">
+        <div class="wd-wizard-step active" id="wdWizStep1"><div class="wd-wizard-dot"></div><div class="wd-wizard-label">文件上传</div></div>
+        <div class="wd-wizard-step" id="wdWizStep2"><div class="wd-wizard-dot"></div><div class="wd-wizard-label">申请确认</div></div>
+        <div class="wd-wizard-step" id="wdWizStep3"><div class="wd-wizard-dot"></div><div class="wd-wizard-label">身份验证</div></div>
+      </div>
+
+      <!-- Step 1 · 文件上传 -->
+      <div class="wd-wizard-panel active" id="wdWizPanel1">
+        <div class="alert-box alert-warning">
+          <i data-lucide="lightbulb" class="alert-icon" size="16"></i>
+          <div class="wd-alert-row">
+            <span>建议先下载标准模板，按格式填写后上传</span>
+            <span class="wd-alert-link" onclick="downloadBatchTemplate()"><i data-lucide="download" size="13"></i>下载模板</span>
+          </div>
+        </div>
+        <div class="wd-dropzone" id="wdDropzone" onclick="document.getElementById('wdBatchFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='#409EFF'" ondragleave="this.style.borderColor='#DCDFE6'" ondrop="wdBatchDrop(event)">
+          <input type="file" id="wdBatchFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="wdBatchFileChosen(this)">
+          <i data-lucide="file-spreadsheet" class="wd-dropzone-file-icon" size="36"></i>
+          <div class="wd-dropzone-text" id="wdBatchFileText">点击选择文件，或将 Excel 拖拽到此处</div>
+          <div class="wd-dropzone-hint">.xlsx / .xls / .csv（文件大小不能超过 10MB）</div>
+        </div>
+      </div>
+
+      <!-- Step 2 · 申请确认 -->
+      <div class="wd-wizard-panel" id="wdWizPanel2">
+        <div class="wd-confirm-cards">
+          <div class="wd-confirm-card">
+            <div class="wd-confirm-card-label">总申请</div>
+            <div class="wd-confirm-card-value" id="wdConfirmCount">0 条</div>
+          </div>
+          <div class="wd-confirm-card wd-confirm-card-pass">
+            <div class="wd-confirm-card-label">验证通过</div>
+            <div class="wd-confirm-card-value" id="wdConfirmPassCount">0 条</div>
+          </div>
+          <div class="wd-confirm-card wd-confirm-card-fail">
+            <div class="wd-confirm-card-label">验证失败</div>
+            <div class="wd-confirm-card-value" id="wdConfirmFailCount">0 条</div>
+          </div>
+        </div>
+        <div class="wd-confirm-total-bar">有效提币总金额 <b id="wdConfirmTotal">—</b></div>
+        <div class="wd-confirm-tip">以下 <b id="wdConfirmSubmitCount">0</b> 笔提币申请将被提交，请仔细核对：</div>
+        <div class="table-wrap" style="max-height:240px;border:1px solid #EBEEF5;border-radius:4px">
+          <table style="min-width:680px">
+            <thead><tr>
+              <th style="width:140px">交易号</th>
+              <th style="width:100px">子账户</th>
+              <th style="width:160px">地址</th>
+              <th style="width:60px">链</th>
+              <th style="width:60px">币种</th>
+              <th style="width:80px">金额</th>
+              <th style="width:140px">备注</th>
+            </tr></thead>
+            <tbody id="wdConfirmTbody"></tbody>
+          </table>
+        </div>
+        <div class="alert-box alert-warning" style="margin-top:14px;margin-bottom:0">
+          <i data-lucide="triangle-alert" class="alert-icon" size="16"></i>
+          <span>确认提交后将进入身份验证，验证成功后系统将立即开始处理这 <b id="wdConfirmSubmitCount2">0</b> 笔提币，操作不可撤销，请认真核对地址和金额。</span>
+        </div>
+      </div>
+
+      <!-- Step 3 · 身份验证 -->
+      <div class="wd-wizard-panel" id="wdWizPanel3">
+        <div class="form-field">
+          <label class="form-field-label"><span class="req">*</span> 邮箱验证码</label>
+          <div class="wd-code-field">
+            <input class="field-input" id="wdEmailCode" maxlength="6" placeholder="请输入邮箱验证码" oninput="wdBatchValidateStep3()">
+            <span class="wd-code-send" id="wdEmailSendBtn" onclick="wdSendEmailCode()">发送</span>
+          </div>
+          <div class="field-err" id="wdEmailCodeErr">请输入6位验证码</div>
+        </div>
+        <div class="form-field">
+          <label class="form-field-label"><span class="req">*</span> 谷歌验证码</label>
+          <input class="field-input" style="width:100%" id="wdAuthCode" maxlength="6" placeholder="请输入谷歌验证码" oninput="wdBatchValidateStep3()">
+          <div class="field-err" id="wdAuthCodeErr">请输入6位验证码</div>
+        </div>
+        <div class="alert-box alert-warning" style="margin-bottom:0">
+          <i data-lucide="triangle-alert" class="alert-icon" size="16"></i>
+          <span>本次批量提币将提取 <b id="wdBatchAlertTotal">—</b>（<b id="wdBatchAlertCount">0</b> 笔），请确认已核对全部信息。</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="wdBatchModalClose()">取消</button>
+      <button class="btn btn-default btn-sm" id="wdBatchPrevBtn" style="display:none" onclick="wdBatchPrev()">上一步</button>
+      <button class="btn btn-primary btn-sm" id="wdBatchNextBtn" disabled onclick="wdBatchNext()">下一步</button>
+    </div>
   </div>
 </div>
 
@@ -2666,6 +2979,257 @@ function switchHistTab(paneId, el) {
   document.querySelectorAll('#pageHistory .hist-pane').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById(paneId).classList.add('active');
   lucide.createIcons();
+}
+
+/* ─────────────────────────────────────────────────────
+   提币 · 单笔 / 批量 Tab
+───────────────────────────────────────────────────── */
+function switchWdTab(paneId, el) {
+  document.querySelectorAll('#pageWithdrawAsset .hist-tab-item').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.querySelectorAll('#pageWithdrawAsset .hist-pane').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById(paneId).classList.add('active');
+  lucide.createIcons();
+}
+
+function wdCheckStep3() {
+  var ready = !!document.getElementById('wdNetwork').value && !!document.getElementById('wdAddress').value.trim();
+  document.getElementById('wdStep3Num').classList.toggle('pending', !ready);
+  document.getElementById('wdStep3Title').classList.toggle('pending', !ready);
+  document.getElementById('wdStep3Content').style.display = ready ? 'block' : 'none';
+}
+
+function wdUpdateToken() {
+  var token = document.getElementById('wdToken').value;
+  document.getElementById('wdBalanceToken').textContent = token;
+  document.getElementById('wdFeeToken').textContent = token;
+  wdCalcNet();
+}
+
+function wdFillMax() {
+  document.getElementById('wdAmount').value = document.getElementById('wdBalance').textContent.replace(/,/g, '');
+  wdCalcNet();
+}
+
+function wdCalcNet() {
+  var amount = parseFloat(document.getElementById('wdAmount').value);
+  var netEl = document.getElementById('wdNetAmount');
+  if (!amount || amount <= 0) { netEl.textContent = '—'; return; }
+  var token = document.getElementById('wdToken').value;
+  netEl.textContent = Math.max(amount - 0.01, 0).toFixed(2) + ' ' + token;
+}
+
+function submitSingleWithdraw() {
+  var network = document.getElementById('wdNetwork').value;
+  var address = document.getElementById('wdAddress').value.trim();
+  var amount  = parseFloat(document.getElementById('wdAmount').value);
+  if (!network || !address) { showToast('请先选择网络并填写收款地址', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('请输入提现金额', 'error'); return; }
+  showToast('提币申请已提交，等待处理');
+  document.getElementById('wdNetwork').value = '';
+  document.getElementById('wdAddress').value = '';
+  document.getElementById('wdAmount').value  = '';
+  wdCheckStep3();
+  wdCalcNet();
+}
+
+/* ── 批量提币 · 三步向导 ── */
+var wdBatchStep = 1;
+var WD_BATCH_MOCK_ROWS = [
+  { no:'shine00000000000001', uid:'291654802', addr:'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', chain:'TRON', token:'USDT', amount:'7.10', valid:true, remark:'' },
+  { no:'shine00000000000002', uid:'291654802', addr:'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', chain:'TRON', token:'USDT', amount:'7.20', valid:true, remark:'' },
+  { no:'shine00000000000003', uid:'460466237', addr:'TAd9zHCayg9LumQ2Kx5nWbYh8Rc', chain:'TRON', token:'USDT', amount:'12.50', valid:false, remark:'地址格式不合法' }
+];
+
+function wdBatchModalOpen() {
+  wdBatchGoStep(1);
+  openModal('batchWithdrawModal');
+}
+
+function wdBatchModalClose() {
+  closeModal('batchWithdrawModal');
+  document.getElementById('wdBatchFileInput').value = '';
+  document.getElementById('wdBatchFileText').textContent = '点击选择文件，或将 Excel 拖拽到此处';
+  document.getElementById('wdEmailCode').value = '';
+  document.getElementById('wdAuthCode').value = '';
+  wdStopEmailCountdown();
+  wdBatchGoStep(1);
+}
+
+function wdBatchGoStep(n) {
+  wdBatchStep = n;
+  [1, 2, 3].forEach(function(i) {
+    document.getElementById('wdWizStep' + i).classList.toggle('active', i === n);
+    document.getElementById('wdWizStep' + i).classList.toggle('done', i < n);
+    document.getElementById('wdWizPanel' + i).classList.toggle('active', i === n);
+  });
+  document.getElementById('wdBatchPrevBtn').style.display = n === 1 ? 'none' : '';
+  document.getElementById('wdBatchNextBtn').textContent = n === 3 ? '确认提交' : '下一步';
+  if (n === 3) { wdBatchFillStep3Alert(); }
+  wdBatchValidateStep3();
+  wdBatchUpdateNextDisabled();
+}
+
+function wdBatchFillStep3Alert() {
+  var validRows = WD_BATCH_MOCK_ROWS.filter(function(r) { return r.valid; });
+  var total = validRows.reduce(function(sum, r) { return sum + parseFloat(r.amount); }, 0);
+  document.getElementById('wdBatchAlertTotal').textContent = validRows.length ? (total.toFixed(2) + ' ' + validRows[0].token) : '—';
+  document.getElementById('wdBatchAlertCount').textContent = validRows.length;
+}
+
+function wdBatchUpdateNextDisabled() {
+  var nextBtn = document.getElementById('wdBatchNextBtn');
+  if (wdBatchStep === 1) {
+    nextBtn.disabled = !document.getElementById('wdBatchFileInput').files.length;
+  } else if (wdBatchStep === 3) {
+    var emailOk = document.getElementById('wdEmailCode').value.trim().length === 6;
+    var authOk = document.getElementById('wdAuthCode').value.trim().length === 6;
+    nextBtn.disabled = !emailOk || !authOk;
+  } else {
+    nextBtn.disabled = false;
+  }
+}
+
+function wdBatchNext() {
+  if (wdBatchStep === 1) {
+    wdBatchBuildConfirmPreview();
+    wdBatchGoStep(2);
+  } else if (wdBatchStep === 2) {
+    wdBatchGoStep(3);
+  } else {
+    wdBatchSubmit();
+  }
+}
+
+function wdBatchPrev() {
+  wdBatchGoStep(wdBatchStep - 1);
+}
+
+function wdBatchFileChosen(input) {
+  var f = input.files && input.files[0];
+  document.getElementById('wdBatchFileText').textContent = f ? f.name : '点击选择文件，或将 Excel 拖拽到此处';
+  wdBatchUpdateNextDisabled();
+}
+
+function wdBatchDrop(e) {
+  e.preventDefault();
+  document.getElementById('wdDropzone').style.borderColor = '#DCDFE6';
+  var files = e.dataTransfer.files;
+  if (files && files[0]) {
+    document.getElementById('wdBatchFileInput').files = files;
+    wdBatchFileChosen(document.getElementById('wdBatchFileInput'));
+  }
+}
+
+function wdBatchBuildConfirmPreview() {
+  var rows = WD_BATCH_MOCK_ROWS;
+  var validRows = rows.filter(function(r) { return r.valid; });
+  var passCount = validRows.length;
+  var failCount = rows.length - passCount;
+  var validTotal = validRows.reduce(function(sum, r) { return sum + parseFloat(r.amount); }, 0);
+  document.getElementById('wdConfirmCount').textContent = rows.length + ' 条';
+  document.getElementById('wdConfirmPassCount').textContent = passCount + ' 条';
+  document.getElementById('wdConfirmFailCount').textContent = failCount + ' 条';
+  document.getElementById('wdConfirmTotal').textContent = validRows.length ? (validTotal.toFixed(2) + ' ' + validRows[0].token) : '—';
+  document.getElementById('wdConfirmSubmitCount').textContent = passCount;
+  document.getElementById('wdConfirmSubmitCount2').textContent = passCount;
+  document.getElementById('wdConfirmTbody').innerHTML = rows.map(function(r) {
+    var remark = r.valid ? '—' : '<span class="badge badge-red">' + r.remark + '</span>';
+    return '<tr><td style="font-family:Inter">' + r.no + '</td><td class="asset-num">' + r.uid + '</td>'
+      + '<td style="font-family:Inter">' + r.addr.slice(0, 6) + '...' + r.addr.slice(-6) + '</td>'
+      + '<td>' + r.chain + '</td><td>' + r.token + '</td><td class="asset-num">' + r.amount + '</td>'
+      + '<td>' + remark + '</td></tr>';
+  }).join('');
+}
+
+function wdBatchValidateStep3() {
+  var emailInput = document.getElementById('wdEmailCode');
+  var authInput = document.getElementById('wdAuthCode');
+  var emailErr = document.getElementById('wdEmailCodeErr');
+  var authErr = document.getElementById('wdAuthCodeErr');
+  var emailOk = emailInput.value.trim().length === 6;
+  var authOk = authInput.value.trim().length === 6;
+  emailInput.classList.toggle('is-error', !emailOk);
+  emailErr.style.display = emailOk ? 'none' : 'block';
+  authInput.classList.toggle('is-error', !authOk);
+  authErr.style.display = authOk ? 'none' : 'block';
+  wdBatchUpdateNextDisabled();
+}
+
+var wdEmailCountdownTimer = null;
+
+function wdSendEmailCode() {
+  var btn = document.getElementById('wdEmailSendBtn');
+  if (btn.classList.contains('disabled')) { return; }
+  showToast('验证码已发送至您的邮箱');
+  var seconds = 60;
+  btn.classList.add('disabled');
+  btn.textContent = seconds + 's后重发';
+  wdEmailCountdownTimer = setInterval(function() {
+    seconds--;
+    if (seconds <= 0) {
+      wdStopEmailCountdown();
+    } else {
+      btn.textContent = seconds + 's后重发';
+    }
+  }, 1000);
+}
+
+function wdStopEmailCountdown() {
+  if (wdEmailCountdownTimer) { clearInterval(wdEmailCountdownTimer); wdEmailCountdownTimer = null; }
+  var btn = document.getElementById('wdEmailSendBtn');
+  btn.classList.remove('disabled');
+  btn.textContent = '发送';
+}
+
+function wdBatchSubmit() {
+  wdBatchModalClose();
+  showToast('批量提币申请已提交');
+}
+
+/* ── 批量提币 · CSV 下载 ── */
+function csvDownload(filename, rows) {
+  var csv = rows.map(function(r) {
+    return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
+  }).join('\r\n');
+  var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function downloadBatchTemplate() {
+  csvDownload('Paypaz_withdraw_template.csv', [
+    ['TRANSACTION_NO', 'CLIENT_SUB_USERID', 'ADDRESS', 'CHAIN', 'TOKEN', 'AMOUNT'],
+    ['shine00000000000001', '291654802', 'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', 'TRON', 'USDT', '7.1'],
+    ['shine00000000000002', '291654802', 'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', 'TRON', 'USDT', '7.2']
+  ]);
+  showToast('模板下载中…');
+}
+
+function downloadBatchFile(el) {
+  var total  = parseInt(el.dataset.total, 10);
+  var fail   = parseInt(el.dataset.fail, 10) || 0;
+  var reason = el.dataset.reason || '';
+  var rows = [['TRANSACTION_NO', 'CLIENT_SUB_USERID', 'ADDRESS', 'CHAIN', 'TOKEN', 'AMOUNT', '备注（失败原因）']];
+  for (var i = 1; i <= total; i++) {
+    var isFail = i > total - fail;
+    rows.push([
+      'shine' + String(i).padStart(14, '0'),
+      '291654802',
+      'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ',
+      'TRON', 'USDT',
+      (5 + i * 0.3).toFixed(2),
+      isFail ? reason : ''
+    ]);
+  }
+  csvDownload(el.dataset.batch + '.csv', rows);
+  showToast('文件下载中…');
 }
 
 /* ─────────────────────────────────────────────────────
