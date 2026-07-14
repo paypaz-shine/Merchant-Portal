@@ -482,8 +482,6 @@
     .wd-confirm-card-pass .wd-confirm-card-value { color:#67C23A; }
     .wd-confirm-card-fail { background:#fef0f0; }
     .wd-confirm-card-fail .wd-confirm-card-value { color:#F56C6C; }
-    .wd-confirm-total-bar { background:#fdf6ec; border-radius:4px; padding:10px 14px; font-size:13px; color:#303133; margin-bottom:14px; }
-    .wd-confirm-total-bar b { color:#E6A23C; font-family:'Inter',sans-serif; font-weight:700; margin-left:6px; }
     .wd-confirm-tip { font-size:13px; font-weight:600; color:#303133; margin-bottom:10px; }
   </style>
 </head>
@@ -1882,13 +1880,27 @@
             <div class="wd-confirm-card-value" id="wdConfirmFailCount">0 条</div>
           </div>
         </div>
-        <div class="wd-confirm-total-bar">有效提币总金额 <b id="wdConfirmTotal">—</b></div>
-        <div class="wd-confirm-tip">以下 <b id="wdConfirmSubmitCount">0</b> 笔提币申请将被提交，请仔细核对：</div>
+        <div class="wd-confirm-tip">账户</div>
+        <div class="table-wrap" style="border:1px solid #EBEEF5;border-radius:4px;margin-bottom:14px">
+          <table>
+            <thead><tr>
+              <th>代币</th>
+              <th>网络</th>
+              <th>余额</th>
+              <th>提币金额（合计）</th>
+            </tr></thead>
+            <tbody id="wdConfirmBalanceTbody"></tbody>
+          </table>
+        </div>
+        <div class="wd-confirm-tip" style="display:flex;align-items:center;justify-content:space-between">
+          <span>提币申请</span>
+          <span style="font-weight:400;color:#606266">笔数：<b id="wdConfirmSubmitCount" style="font-family:'Inter',sans-serif;color:#303133">0</b> 笔</span>
+        </div>
         <div class="table-wrap" style="max-height:240px;border:1px solid #EBEEF5;border-radius:4px">
           <table style="min-width:680px">
             <thead><tr>
               <th style="width:140px">交易号</th>
-              <th style="width:100px">子账户</th>
+              <th style="width:100px">客户 ID</th>
               <th style="width:160px">地址</th>
               <th style="width:60px">链</th>
               <th style="width:60px">币种</th>
@@ -3052,8 +3064,17 @@ var wdBatchStep = 1;
 var WD_BATCH_MOCK_ROWS = [
   { no:'shine00000000000001', uid:'291654802', addr:'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', chain:'TRON', token:'USDT', amount:'7.10', valid:true, remark:'' },
   { no:'shine00000000000002', uid:'291654802', addr:'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', chain:'TRON', token:'USDT', amount:'7.20', valid:true, remark:'' },
-  { no:'shine00000000000003', uid:'460466237', addr:'TAd9zHCayg9LumQ2Kx5nWbYh8Rc', chain:'TRON', token:'USDT', amount:'12.50', valid:false, remark:'地址格式不合法' }
+  { no:'shine00000000000003', uid:'460466237', addr:'TAd9zHCayg9LumQ2Kx5nWbYh8Rc', chain:'TRON', token:'USDT', amount:'12.50', valid:false, remark:'地址格式不合法' },
+  { no:'shine00000000000004', uid:'635102950', addr:'0x8f3Cc1B5a9E2d4F6a7B8c9D0e1F2a3B4c5D6e7F8', chain:'Ethereum', token:'USDT', amount:'15.00', valid:true, remark:'' },
+  { no:'shine00000000000005', uid:'635102950', addr:'0x2a1B4c6D8e0F2a4B6c8D0e2F4a6B8c0D2e4F6a8B', chain:'Ethereum', token:'USDC', amount:'20.00', valid:true, remark:'' },
+  { no:'shine00000000000006', uid:'460466237', addr:'TXpqZ3mNc4o6P8r0T2v4X6z8B0d2F4h6J8Kx1nWb', chain:'TRON', token:'USDC', amount:'5.00', valid:true, remark:'' }
 ];
+var WD_BATCH_BALANCE = {
+  'USDT|TRON': 5138.48,
+  'USDT|Ethereum': 3450.60,
+  'USDC|TRON': 2110.32,
+  'USDC|Ethereum': 4780.00
+};
 
 function wdBatchModalOpen() {
   wdBatchGoStep(1);
@@ -3086,8 +3107,9 @@ function wdBatchGoStep(n) {
 
 function wdBatchFillStep3Alert() {
   var validRows = WD_BATCH_MOCK_ROWS.filter(function(r) { return r.valid; });
-  var total = validRows.reduce(function(sum, r) { return sum + parseFloat(r.amount); }, 0);
-  document.getElementById('wdBatchAlertTotal').textContent = validRows.length ? (total.toFixed(2) + ' ' + validRows[0].token) : '—';
+  var groups = wdGroupRowsByTokenChain(validRows);
+  var totalText = groups.length ? groups.map(function(g) { return g.total.toFixed(2) + ' ' + g.token; }).join('、') : '—';
+  document.getElementById('wdBatchAlertTotal').textContent = totalText;
   document.getElementById('wdBatchAlertCount').textContent = validRows.length;
 }
 
@@ -3140,19 +3162,39 @@ function wdBatchBuildConfirmPreview() {
   var validRows = rows.filter(function(r) { return r.valid; });
   var passCount = validRows.length;
   var failCount = rows.length - passCount;
-  var validTotal = validRows.reduce(function(sum, r) { return sum + parseFloat(r.amount); }, 0);
   document.getElementById('wdConfirmCount').textContent = rows.length + ' 条';
   document.getElementById('wdConfirmPassCount').textContent = passCount + ' 条';
   document.getElementById('wdConfirmFailCount').textContent = failCount + ' 条';
-  document.getElementById('wdConfirmTotal').textContent = validRows.length ? (validTotal.toFixed(2) + ' ' + validRows[0].token) : '—';
   document.getElementById('wdConfirmSubmitCount').textContent = passCount;
   document.getElementById('wdConfirmSubmitCount2').textContent = passCount;
+  wdBatchBuildBalanceSummary(validRows);
   document.getElementById('wdConfirmTbody').innerHTML = rows.map(function(r) {
-    var remark = r.valid ? '—' : '<span class="badge badge-red">' + r.remark + '</span>';
+    var remark = r.valid ? '' : '<span class="badge badge-red">' + r.remark + '</span>';
     return '<tr><td style="font-family:Inter">' + r.no + '</td><td class="asset-num">' + r.uid + '</td>'
       + '<td style="font-family:Inter">' + r.addr.slice(0, 6) + '...' + r.addr.slice(-6) + '</td>'
       + '<td>' + r.chain + '</td><td>' + r.token + '</td><td class="asset-num">' + r.amount + '</td>'
       + '<td>' + remark + '</td></tr>';
+  }).join('');
+}
+
+function wdGroupRowsByTokenChain(rows) {
+  var groups = {};
+  var order = [];
+  rows.forEach(function(r) {
+    var key = r.token + '|' + r.chain;
+    if (!groups[key]) { groups[key] = { token: r.token, chain: r.chain, total: 0 }; order.push(key); }
+    groups[key].total += parseFloat(r.amount);
+  });
+  return order.map(function(key) { return groups[key]; });
+}
+
+function wdBatchBuildBalanceSummary(validRows) {
+  var groups = wdGroupRowsByTokenChain(validRows);
+  document.getElementById('wdConfirmBalanceTbody').innerHTML = groups.map(function(g) {
+    var balance = WD_BATCH_BALANCE[g.token + '|' + g.chain];
+    var balanceText = balance != null ? balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+    return '<tr><td>' + g.token + '</td><td>' + g.chain + '</td><td class="asset-num">' + balanceText + '</td>'
+      + '<td class="asset-num" style="color:#F56C6C">-' + g.total.toFixed(2) + '</td></tr>';
   }).join('');
 }
 
