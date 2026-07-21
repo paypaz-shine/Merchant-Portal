@@ -267,6 +267,7 @@
     .lo-tip { background:#ECF5FF; border:1px solid #D9ECFF; border-radius:4px; padding:9px 16px; font-size:13px; color:#606266; line-height:1.6; }
     .lo-dep-item { display:flex; align-items:flex-start; gap:12px; background:#F5F7FA; border-radius:4px; padding:12px 16px; cursor:pointer; }
     .lo-dep-item.selected { background:#ECF5FF; outline:1.5px solid #409EFF; outline-offset:-1px; }
+    .lo-dep-item.warn { background:#fdf6ec; }
     .lo-ck { width:16px; height:16px; flex-shrink:0; margin-top:2px; border-radius:2px; border:1.5px solid #DCDFE6; background:#FFF; display:flex; align-items:center; justify-content:center; }
     .lo-ck.checked { background:#409EFF; border-color:#409EFF; }
     .lo-dep-info { flex:1; display:flex; flex-direction:column; gap:4px; min-width:0; }
@@ -1459,7 +1460,7 @@
             <tr><td><div class="copy-cell"><span>635102950-ORD-2626…2</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">635102950</td><td>USDT</td><td>TRON</td><td class="asset-num">50.00</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-07-01 10:15:08</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">处理中</span></td><td><div class="action-cell"><span class="action-icon" title="详情"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联充币" onclick="openLinkOrderModal(1)" style="color:#409EFF"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></div></td></tr>
             <tr><td><div class="copy-cell"><span>291654802-ORD-2626…3</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDC</td><td>ETH</td><td class="asset-num">200.00</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>0x7Af1...b2E3</span><span class="copy-icon" onclick="copyText('0x7Af1c3d9e2b2E3')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-07-01 09:58:22</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">处理中</span></td><td><div class="action-cell"><span class="action-icon" title="详情"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联充币" onclick="openLinkOrderModal(2)" style="color:#409EFF"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></div></td></tr>
             <tr><td><div class="copy-cell"><span>460466237-ORD-2625…4</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">460466237</td><td>USDT</td><td>TRON</td><td class="asset-num">120.00</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td style="color:#C0C4CC">—</td><td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-30 16:44:55</td><td style="color:#C0C4CC">—</td><td><span class="badge badge-orange">处理中</span></td><td><div class="action-cell"><span class="action-icon" title="详情"><i data-lucide="eye" size="14"></i></span><span class="action-icon" title="关联充币" onclick="openLinkOrderModal(3)" style="color:#409EFF"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span></div></td></tr>
-            <tr data-manual="1"><td><div class="copy-cell"><span>291654802-5232…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 14:54:35</td><td style="font-family:Inter">2026-06-23 14:56:41</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
+            <tr data-manual="1" data-dep-network="BSC"><td><div class="copy-cell"><span>291654802-5232…1</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 14:54:35</td><td style="font-family:Inter">2026-06-23 14:56:41</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
             <tr><td><div class="copy-cell"><span>291654802-5232…2</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 14:48:30</td><td style="font-family:Inter">2026-06-23 14:50:37</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
             <tr><td><div class="copy-cell"><span>291654802-5232…3</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">3.00</td><td class="asset-num">3.00</td><td class="asset-num">0.03</td><td class="asset-num" style="color:#67C23A">+2.97</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 14:05:26</td><td style="font-family:Inter">2026-06-23 14:07:33</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
             <tr data-manual="1"><td><div class="copy-cell"><span>291654802-5232…4</span><span class="copy-icon"><i data-lucide="copy" size="13"></i></span></div></td><td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 5px">主账号</span></td><td>USDT</td><td>TRON</td><td class="asset-num">1.00</td><td class="asset-num">1.00</td><td class="asset-num">0.01</td><td class="asset-num" style="color:#67C23A">+0.99</td><td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td><td style="font-family:Inter">2026-06-23 13:04:36</td><td style="font-family:Inter">2026-06-23 13:06:43</td><td><span class="badge badge-green">已完成</span></td><td><div class="action-cell"><span class="action-icon"><i data-lucide="eye" size="14"></i></span></div></td></tr>
@@ -1790,7 +1791,7 @@
         <div class="lo-summary-item"><span class="lo-summary-label">合计手续费</span><span id="loTotalFee" class="lo-summary-value green">—</span></div>
         <div class="lo-summary-item"><span class="lo-summary-label">合计净入账</span><span id="loTotalNet" class="lo-summary-value green">—</span></div>
       </div>
-      <div class="lo-tip" style="margin-bottom:12px">仅展示同代币、同链、未匹配的充币记录。点击「匹配入账」完成匹配，订单状态将根据合计金额自动更新。</div>
+      <div class="lo-tip" style="margin-bottom:12px">仅展示同代币的未匹配充币记录，若充值网络与订单网络不一致，请务必核实后再关联。点击「匹配入账」完成匹配，订单状态将根据合计金额自动更新。</div>
       <div id="loDepList" style="display:flex;flex-direction:column;gap:12px"></div>
     </div>
     <div class="modal-footer">
@@ -2764,13 +2765,13 @@ function toggleSidebar() {
 var LO_ORDERS = [
   { ord:'460466237-ORD-2626…1', token:'USDT', network:'TRON', due:'95.00',
     deposits:[
-      { no:'52521866123456', time:'2026-07-02 13:30', hash:'TN3xK...p7Wq2', amount:50.00, fee:0.50 },
-      { no:'52521866789012', time:'2026-07-02 13:45', hash:'TG9bN...Yz5Kx', amount:45.00, fee:0.45 },
+      { no:'52521866123456', time:'2026-07-02 13:30', hash:'TN3xK...p7Wq2', amount:50.00, fee:0.50, network:'BSC' },
+      { no:'52521866789012', time:'2026-07-02 13:45', hash:'TG9bN...Yz5Kx', amount:45.00, fee:0.45, network:'TRON' },
     ]
   },
   { ord:'635102950-ORD-2626…2', token:'USDT', network:'TRON', due:'50.00',
     deposits:[
-      { no:'52481425811712', time:'2026-06-30 17:59', hash:'TF8mR...Np3Yk', amount:50.00, fee:0.50 },
+      { no:'52481425811712', time:'2026-06-30 17:59', hash:'TF8mR...Np3Yk', amount:50.00, fee:0.50, network:'TRON' },
     ]
   },
   { ord:'291654802-ORD-2626…3', token:'USDC', network:'ETH', due:'200.00', deposits:[] },
@@ -2801,18 +2802,25 @@ function loRender() {
     el.innerHTML = d.map(function(dep, i) {
       var sel = loSelected.has(i);
       var net = (dep.amount - dep.fee).toFixed(2);
-      return '<div class="lo-dep-item' + (sel ? ' selected' : '') + '" onclick="loToggle(' + i + ')">'
+      var netMismatch = dep.network !== loCurrent.network;
+      return '<div class="lo-dep-item' + (sel ? ' selected' : '') + (netMismatch ? ' warn' : '') + '" style="flex-direction:column;align-items:stretch;gap:10px" onclick="loToggle(' + i + ')">'
+        + '<div style="display:flex;align-items:center;gap:12px">'
         + '<div class="lo-ck' + (sel ? ' checked' : '') + '">' + (sel ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '') + '</div>'
-        + '<div class="lo-dep-info"><div class="lo-dep-no">流水号：' + dep.no + '</div>'
+        + '<div class="lo-dep-no">流水号：' + dep.no + '</div>'
+        + '</div>'
+        + '<div style="display:flex;align-items:flex-start;gap:12px;padding-left:28px">'
+        + '<div class="lo-dep-info">'
+        + '<div class="lo-dep-meta">网络: ' + dep.network + (netMismatch ? '<span class="badge badge-red" style="margin-left:6px">与订单不一致</span>' : '') + '</div>'
         + '<div class="lo-dep-meta">Hash: ' + dep.hash
         + '  <span class="copy-icon" onclick="copyText(\'' + dep.hash + '\');event.stopPropagation()"><i data-lucide="copy" size="13"></i></span>'
         + '</div>'
         + '<div class="lo-dep-meta">' + dep.time + '</div>'
         + '</div>'
         + '<div class="lo-dep-right">'
-        + '<div class="lo-dep-amount">+' + dep.amount.toFixed(2) + ' ' + loCurrent.token + '</div>'
+        + '<div class="lo-dep-amount">到账金额：+' + dep.amount.toFixed(2) + ' ' + loCurrent.token + '</div>'
         + '<div class="lo-dep-fee">手续费：' + dep.fee.toFixed(2) + ' ' + loCurrent.token + '</div>'
         + '<div class="lo-dep-netamt">净入账：' + net + ' ' + loCurrent.token + '</div>'
+        + '</div>'
         + '</div>'
         + '</div>';
     }).join('');
@@ -2952,6 +2960,8 @@ function openOrdDetail(tr) {
   sb.textContent = status;
 
   var hasDeposit = paid !== '—' && paid !== '';
+  var depNetwork = tr.dataset.depNetwork || network;
+  var netMismatch = depNetwork !== network;
   var manualTag = document.getElementById('odManualTag');
   manualTag.style.display = (tr.dataset.manual === '1') ? 'inline' : 'none';
   document.getElementById('odCount').textContent    = hasDeposit ? '1 笔' : '0 笔';
@@ -2964,18 +2974,21 @@ function openOrdDetail(tr) {
   if (hasDeposit) {
     var netDisplay = netAmt.replace('+', '');
     listEl.innerHTML =
-      '<div class="lo-dep-item" style="cursor:default;pointer-events:none">'
-      + '<div class="lo-dep-info">'
+      '<div class="lo-dep-item' + (netMismatch ? ' warn' : '') + '" style="cursor:default;pointer-events:none;flex-direction:column;align-items:stretch;gap:10px">'
       + '<div class="lo-dep-no">流水号：52481430008320</div>'
+      + '<div style="display:flex;align-items:flex-start;gap:12px">'
+      + '<div class="lo-dep-info">'
+      + '<div class="lo-dep-meta">网络: ' + depNetwork + (netMismatch ? '<span class="badge badge-red" style="margin-left:6px">与订单不一致</span>' : '') + '</div>'
       + '<div class="lo-dep-meta">Hash: 3fab...de01'
       + '  <span class="copy-icon" onclick="copyText(\'3fab...de01\')"><i data-lucide="copy" size="13"></i></span>'
       + '</div>'
       + '<div class="lo-dep-meta">' + createT + '</div>'
       + '</div>'
       + '<div class="lo-dep-right">'
-      + '<div class="lo-dep-amount">+' + paid + ' ' + token + '</div>'
+      + '<div class="lo-dep-amount">到账金额：+' + paid + ' ' + token + '</div>'
       + '<div class="lo-dep-fee">手续费：' + fee + ' ' + token + '</div>'
       + '<div class="lo-dep-netamt">净入账：' + netDisplay + ' ' + token + '</div>'
+      + '</div>'
       + '</div>'
       + '</div>';
     lucide.createIcons();
