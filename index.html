@@ -1086,7 +1086,7 @@
         <div class="hist-tab-item active" onclick="switchHistTab('histDep',this)">充币</div>
         <div class="hist-tab-item" onclick="switchHistTab('histWdr',this)">提币</div>
         <div class="hist-tab-item" onclick="switchHistTab('histOrd',this)">订单</div>
-        <div class="hist-tab-item" onclick="switchHistTab('histRampIn',this)">入金</div>
+        <div class="hist-tab-item" onclick="switchHistTab('histRampIn',this)">On Ramp</div>
         <div class="hist-tab-item" onclick="switchHistTab('histRampOut',this)">出金</div>
       </div>
     </div>
@@ -1098,6 +1098,7 @@
           <div class="filter-item"><span class="filter-label-el">流水号</span><div class="filter-control"><input class="field-input" placeholder="请输入流水号"></div></div>
           <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">哈希</span><div class="filter-control"><input class="field-input" placeholder="请输入交易哈希"></div></div>
+          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>直充</option><option>On Ramp</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
           <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已到账</option><option>待匹配订单</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
@@ -1106,10 +1107,38 @@
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">10</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table style="min-width:1480px">
-          <thead><tr><th style="width:160px">流水号</th><th style="width:150px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:90px">手续费</th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">12</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1580px">
+          <thead><tr><th style="width:160px">流水号</th><th style="width:150px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:90px">手续费</th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
           <tbody>
+            <tr>
+              <td class="asset-num">52530912004096</td>
+              <td class="asset-num">460466237</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">1000.00</td><td class="asset-num">5.00</td>
+              <td class="asset-num" style="color:#67C23A">+995.00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td>On Ramp</td>
+              <td style="font-family:Inter">2026-08-09 15:22:00</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td class="asset-num">RAMP-20260809-0017</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',true)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td class="asset-num">52501987328000</td>
+              <td class="asset-num">291654802</td>
+              <td>USDT1</td><td>TRON</td>
+              <td class="asset-num">400.00</td><td class="asset-num">2.00</td>
+              <td class="asset-num" style="color:#67C23A">+398.00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td>On Ramp</td>
+              <td style="font-family:Inter">2026-08-01 09:32:10</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td class="asset-num">RAMP-20260801-0009</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',true)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
             <tr>
               <td class="asset-num">52521855237376</td>
               <td class="asset-num">460466237</td>
@@ -1118,6 +1147,7 @@
               <td class="asset-num" style="color:#67C23A">+0.99</td>
               <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TN3xK...p7Wq2</span><span class="copy-icon" onclick="copyText('TN3xKbmRvLp7Wq2')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-07-02 13:51:37</td>
               <td><span class="badge badge-orange">待匹配订单</span></td>
               <td style="color:#C0C4CC">—</td>
@@ -1131,6 +1161,7 @@
               <td class="asset-num" style="color:#67C23A">+79.20</td>
               <td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TF8mR...Np3Yk</span><span class="copy-icon" onclick="copyText('TF8mRvXdKNp3Yk')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-30 17:59:29</td>
               <td><span class="badge badge-green">已到账</span></td>
               <td class="asset-num">11063302</td>
@@ -1144,6 +1175,7 @@
               <td class="asset-num" style="color:#67C23A">+9.90</td>
               <td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TK2nP...Qw4Zm</span><span class="copy-icon" onclick="copyText('TK2nPbsXeQw4Zm')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-30 17:52:07</td>
               <td><span class="badge badge-green">已到账</span></td>
               <td class="asset-num">56676553</td>
@@ -1157,6 +1189,7 @@
               <td class="asset-num" style="color:#67C23A">+47.52</td>
               <td><div class="copy-cell"><span>TX1jL...cB7xQ</span><span class="copy-icon" onclick="copyText('TX1jLfveNpwscB7xQ')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TR5vW...Jd8Lp</span><span class="copy-icon" onclick="copyText('TR5vWxmNbJd8Lp')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-30 17:51:45</td>
               <td><span class="badge badge-green">已到账</span></td>
               <td class="asset-num">56676553</td>
@@ -1170,6 +1203,7 @@
               <td class="asset-num" style="color:#67C23A">+4.95</td>
               <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TG9bN...Yz5Kx</span><span class="copy-icon" onclick="copyText('TG9bNwpVmYz5Kx')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-30 16:56:13</td>
               <td><span class="badge badge-green">已到账</span></td>
               <td class="asset-num">53013777</td>
@@ -1183,6 +1217,7 @@
               <td class="asset-num" style="color:#67C23A">+0.08</td>
               <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TP4wQ...Rb6Jn</span><span class="copy-icon" onclick="copyText('TP4wQxkMsRb6Jn')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-30 16:50:28</td>
               <td><span class="badge badge-orange">待匹配订单</span></td>
               <td style="color:#C0C4CC">—</td>
@@ -1196,6 +1231,7 @@
               <td class="asset-num" style="color:#67C23A">+5.00</td>
               <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TM7cX...Hk2Nv</span><span class="copy-icon" onclick="copyText('TM7cXpqRbHk2Nv')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-30 16:42:10</td>
               <td><span class="badge badge-green">已到账</span></td>
               <td style="color:#C0C4CC">—</td>
@@ -1209,6 +1245,7 @@
               <td class="asset-num" style="color:#67C23A">+2.99</td>
               <td><div class="copy-cell"><span>TYrpi...cqF59</span><span class="copy-icon" onclick="copyText('TYrpiLaTjGzcqF59')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TJ6dY...Wn9Bq</span><span class="copy-icon" onclick="copyText('TJ6dYmvKpWn9Bq')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-30 16:30:51</td>
               <td><span class="badge badge-green">已到账</span></td>
               <td style="color:#C0C4CC">—</td>
@@ -1222,6 +1259,7 @@
               <td class="asset-num" style="color:#67C23A">+0.74</td>
               <td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TV9yX...mQW3b</span><span class="copy-icon" onclick="copyText('TV9yXLSY9mQW3b')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-29 15:52:22</td>
               <td><span class="badge badge-orange">待匹配订单</span></td>
               <td style="color:#C0C4CC">—</td>
@@ -1235,6 +1273,7 @@
               <td class="asset-num" style="color:#67C23A">+0.99</td>
               <td><div class="copy-cell"><span>TX3og...pXS4k</span><span class="copy-icon" onclick="copyText('TX3ogswuX8pXS4k')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td><div class="copy-cell"><span>TB8pX...Su2Gn</span><span class="copy-icon" onclick="copyText('TB8pXsowuSu2Gn')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>直充</td>
               <td style="font-family:Inter">2026-06-23 14:55:33</td>
               <td><span class="badge badge-green">已到账</span></td>
               <td style="color:#C0C4CC">—</td>
@@ -1483,27 +1522,29 @@
       </div>
     </div>
 
-    <!-- ── 入金 Pane ── -->
+    <!-- ── On Ramp Pane ── -->
     <div class="hist-pane" id="histRampIn">
       <div class="filter-card">
         <div class="filter-grid">
-          <div class="filter-item"><span class="filter-label-el">UserID：</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">订单号：</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>待处理</option><option>等待付款</option><option>处理中</option><option>已完成</option><option>追加验证中</option><option>失败</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">创建时间：</span><div class="filter-control"><div class="drp-wrap" id="drpRampInCreate"></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">完成时间：</span><div class="filter-control"><div class="drp-wrap" id="drpRampInDone"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">UserID</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">法币币种</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>JPY</option><option>USD</option><option>KRW</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>处理中</option><option>待补充验证</option><option>结算延迟</option><option>拒付待核查</option><option>已完成</option><option>失败</option><option>已过期</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">创建时间</span><div class="filter-control"><div class="drp-wrap" id="drpRampInCreate"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">完成时间</span><div class="filter-control"><div class="drp-wrap" id="drpRampInDone"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
       </div>
       <div class="table-card">
         <div class="summary-bar" style="border-bottom:1px solid #EBEEF5;"><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table>
+        <div class="table-wrap"><table style="min-width:1280px">
           <thead><tr>
-            <th style="width:195px">订单号</th>
-            <th style="width:105px">UserID</th>
-            <th style="width:140px">法币金额</th>
-            <th style="width:150px">加密资产</th>
-            <th style="width:120px">汇率</th>
+            <th style="width:170px">订单号</th>
+            <th style="width:110px">UserID</th>
+            <th style="width:150px">支付法币金额</th>
+            <th style="width:150px">入金代币数量</th>
+            <th style="width:140px">On Ramp 手续费</th>
+            <th style="width:100px">净入账</th>
             <th style="width:110px">状态</th>
             <th style="width:155px">创建时间</th>
             <th style="width:155px">完成时间</th>
@@ -1511,63 +1552,128 @@
           </tr></thead>
           <tbody>
             <tr>
-              <td><div class="copy-cell"><span>CFD-20260624-001</span><span class="copy-icon" onclick="copyText('CFD-20260624-001')"><i data-lucide="copy" size="13"></i></span></div></td>
-              <td class="asset-num">291654802</td>
-              <td class="asset-num">10,000.00 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">65.00 <span style="color:#909399;font-size:12px">USDT/Tron</span></td>
-              <td class="asset-num">153.85 <span style="color:#909399;font-size:12px">JPY/USDT</span></td>
-              <td><span class="badge badge-green">已完成</span></td>
-              <td style="font-family:Inter">2026-06-24 10:15:22</td>
-              <td style="font-family:Inter">2026-06-24 10:48:05</td>
-              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','pz-on-2026062401')"><i data-lucide="eye" size="14"></i></span></div></td>
-            </tr>
-            <tr>
-              <td><div class="copy-cell"><span>CFD-20260623-001</span><span class="copy-icon" onclick="copyText('CFD-20260623-001')"><i data-lucide="copy" size="13"></i></span></div></td>
-              <td class="asset-num">291654802</td>
-              <td class="asset-num">5,000.00 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">32.50 <span style="color:#909399;font-size:12px">USDT/Tron</span></td>
-              <td class="asset-num">153.85 <span style="color:#909399;font-size:12px">JPY/USDT</span></td>
-              <td><span class="badge badge-orange">处理中</span></td>
-              <td style="font-family:Inter">2026-06-23 14:30:00</td>
-              <td><span class="cell-empty">—</span></td>
-              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','pz-on-2026062301')"><i data-lucide="eye" size="14"></i></span></div></td>
-            </tr>
-            <tr>
-              <td><div class="copy-cell"><span>CFD-20260623-002</span><span class="copy-icon" onclick="copyText('CFD-20260623-002')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>CFD-20260810-001</span><span class="copy-icon" onclick="copyText('CFD-20260810-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
-              <td class="asset-num">100.00 <span style="color:#909399;font-size:12px">USD</span></td>
-              <td class="asset-num">99.50 <span style="color:#909399;font-size:12px">USDT/ETH</span></td>
-              <td class="asset-num">1.005 <span style="color:#909399;font-size:12px">USD/USDT</span></td>
-              <td><span class="badge badge-orange">追加验证中</span></td>
-              <td style="font-family:Inter">2026-06-23 11:20:15</td>
+              <td class="asset-num">54,100 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">350.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
-              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','pz-on-2026062302')"><i data-lucide="eye" size="14"></i></span></div></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="badge badge-orange">结算延迟</span></td>
+              <td style="font-family:Inter">2026-08-10 09:00:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260810-0018')"><i data-lucide="eye" size="14"></i></span></div></td>
             </tr>
             <tr>
-              <td><div class="copy-cell"><span>CFD-20260622-001</span><span class="copy-icon" onclick="copyText('CFD-20260622-001')"><i data-lucide="copy" size="13"></i></span></div></td>
-              <td class="asset-num">291654802</td>
-              <td class="asset-num">20,000.00 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">130.00 <span style="color:#909399;font-size:12px">USDT/Tron</span></td>
-              <td class="asset-num">153.85 <span style="color:#909399;font-size:12px">JPY/USDT</span></td>
-              <td><span class="badge badge-green">已完成</span></td>
-              <td style="font-family:Inter">2026-06-22 16:45:00</td>
-              <td style="font-family:Inter">2026-06-22 17:22:14</td>
-              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','pz-on-2026062201')"><i data-lucide="eye" size="14"></i></span></div></td>
+              <td><div class="copy-cell"><span>CFD-20260809-001</span><span class="copy-icon" onclick="copyText('CFD-20260809-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466237</td>
+              <td class="asset-num">1,031.50 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">1000.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td class="asset-num">5.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td class="asset-num" style="color:#67C23A">+995.00</td>
+              <td><span class="badge badge-red">拒付待核查</span></td>
+              <td style="font-family:Inter">2026-08-09 15:00:00</td>
+              <td style="font-family:Inter">2026-08-09 15:22:00</td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260809-0017')"><i data-lucide="eye" size="14"></i></span></div></td>
             </tr>
             <tr>
-              <td><div class="copy-cell"><span>CFD-20260621-001</span><span class="copy-icon" onclick="copyText('CFD-20260621-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>CFD-20260808-001</span><span class="copy-icon" onclick="copyText('CFD-20260808-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
-              <td class="asset-num">200.00 <span style="color:#909399;font-size:12px">USD</span></td>
-              <td class="asset-num">198.00 <span style="color:#909399;font-size:12px">USDT/ETH</span></td>
-              <td class="asset-num">1.010 <span style="color:#909399;font-size:12px">USD/USDT</span></td>
+              <td class="asset-num">77,285 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">500.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="badge badge-blue">处理中</span></td>
+              <td style="font-family:Inter">2026-08-08 10:50:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260808-0016')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>CFD-20260807-001</span><span class="copy-icon" onclick="copyText('CFD-20260807-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">291654802</td>
+              <td class="asset-num">515.75 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">500.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="badge badge-blue">处理中</span></td>
+              <td style="font-family:Inter">2026-08-07 13:05:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260807-0015')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>CFD-20260806-001</span><span class="copy-icon" onclick="copyText('CFD-20260806-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466237</td>
+              <td class="asset-num">46,371 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">300.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="badge badge-blue">处理中</span></td>
+              <td style="font-family:Inter">2026-08-06 11:20:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260806-0014')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>CFD-20260805-001</span><span class="copy-icon" onclick="copyText('CFD-20260805-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">635102950</td>
+              <td class="asset-num">206.30 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">200.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="badge badge-blue">处理中</span></td>
+              <td style="font-family:Inter">2026-08-05 08:00:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260805-0013')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>CFD-20260804-001</span><span class="copy-icon" onclick="copyText('CFD-20260804-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">291654802</td>
+              <td class="asset-num">30,914 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">200.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="badge badge-blue">待补充验证</span></td>
+              <td style="font-family:Inter">2026-08-04 16:44:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260804-0012')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>CFD-20260803-001</span><span class="copy-icon" onclick="copyText('CFD-20260803-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">460466237</td>
+              <td class="asset-num">15,457 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">100.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
               <td><span class="badge badge-red">失败</span></td>
-              <td style="font-family:Inter">2026-06-21 09:00:00</td>
-              <td style="font-family:Inter">2026-06-21 10:33:47</td>
-              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','pz-on-2026062101')"><i data-lucide="eye" size="14"></i></span></div></td>
+              <td style="font-family:Inter">2026-08-03 14:18:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260803-0011')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>CFD-20260802-001</span><span class="copy-icon" onclick="copyText('CFD-20260802-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">635102950</td>
+              <td class="asset-num">103.15 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">100.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="badge badge-gray">已过期</span></td>
+              <td style="font-family:Inter">2026-08-02 09:00:00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260802-0010')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr>
+              <td><div class="copy-cell"><span>CFD-20260801-001</span><span class="copy-icon" onclick="copyText('CFD-20260801-001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td class="asset-num">291654802</td>
+              <td class="asset-num">62,340 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">400.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td class="asset-num">2.00 <span style="color:#909399;font-size:12px">USDT</span></td>
+              <td class="asset-num" style="color:#67C23A">+398.00</td>
+              <td><span class="badge badge-green">已完成</span></td>
+              <td style="font-family:Inter">2026-08-01 09:10:00</td>
+              <td style="font-family:Inter">2026-08-01 09:32:10</td>
+              <td><div class="action-cell"><span class="action-icon" onclick="openRampDetail('in','RAMP-20260801-0009')"><i data-lucide="eye" size="14"></i></span></div></td>
             </tr>
           </tbody>
         </table></div>
-        <div class="pagination-bar"><span class="pagination-total">共 5 条</span><select class="page-size-select"><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button></div>
+        <div class="pagination-bar"><span class="pagination-total">共 10 条</span><select class="page-size-select"><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button></div>
       </div>
     </div>
 
@@ -2048,10 +2154,10 @@
       <div class="form-field">
         <label class="form-field-label"><span class="req">*</span> 权限</label>
         <div style="display:flex;flex-wrap:wrap;gap:14px 32px;padding:2px 0">
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermDeposit" value="deposit" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">充币（Deposit）</span></label>
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermWithdraw" value="withdraw" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">提币（Withdraw）</span></label>
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOnramp" value="onramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">入金（On Ramp）</span></label>
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOfframp" value="offramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">出金（Off Ramp）</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermDeposit" value="deposit" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Deposit</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermWithdraw" value="withdraw" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Withdraw</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOnramp" value="onramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">On Ramp</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOfframp" value="offramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Off Ramp</span></label>
         </div>
       </div>
       <div class="form-field" id="akStatusRow" style="display:none">
@@ -3305,11 +3411,20 @@ function downloadBatchFile(el) {
    出入金订单详情
 ───────────────────────────────────────────────────── */
 var RAMP_IN_DATA = {
-  'pz-on-2026062401': { dir:'入金', uid:'291654802', cfdRef:'CFD-20260624-001', fiat:'10,000.00 JPY', crypto:'65.00 USDT', network:'Tron', rate:'1 USDT ≈ 153.85 JPY', status:'已完成', createdAt:'2026-06-24 10:15:22', completedAt:'2026-06-24 10:48:03', wallet:'TRx9YmKp…1k2l3m4' },
-  'pz-on-2026062301': { dir:'入金', uid:'291654802', cfdRef:'CFD-20260623-001', fiat:'5,000.00 JPY',  crypto:'32.50 USDT', network:'Tron', rate:'1 USDT ≈ 153.85 JPY', status:'处理中',  createdAt:'2026-06-23 14:30:00', completedAt:'—',                  wallet:'TRx9YmKp…1k2l3m4' },
-  'pz-on-2026062302': { dir:'入金', uid:'635102950', cfdRef:'CFD-20260623-002', fiat:'100.00 USD',    crypto:'99.50 USDT', network:'Ethereum', rate:'1 USDT ≈ 1.005 USD', status:'追加验证中', createdAt:'2026-06-23 11:20:15', completedAt:'—',              wallet:'0xa4b3c2…e9f8' },
-  'pz-on-2026062201': { dir:'入金', uid:'291654802', cfdRef:'CFD-20260622-001', fiat:'20,000.00 JPY', crypto:'130.00 USDT', network:'Tron', rate:'1 USDT ≈ 153.85 JPY', status:'已完成', createdAt:'2026-06-22 16:45:00', completedAt:'2026-06-22 17:12:44', wallet:'TRx9YmKp…1k2l3m4' },
-  'pz-on-2026062101': { dir:'入金', uid:'635102950', cfdRef:'CFD-20260621-001', fiat:'200.00 USD',    crypto:'198.00 USDT', network:'Ethereum', rate:'1 USDT ≈ 1.010 USD', status:'失败', createdAt:'2026-06-21 09:00:00', completedAt:'—',                 wallet:'0xa4b3c2…e9f8' }
+  'RAMP-20260810-0018': { brokerOrderRef:'CFD-20260810-001', uid:'635102950', status:'结算延迟',     fiatAmount:'54,100',   fiatCurrency:'JPY', cryptoAmount:'350.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-10 09:00:00', completedAt:'—' },
+  'RAMP-20260809-0017': { brokerOrderRef:'CFD-20260809-001', uid:'460466237', status:'拒付待核查',   fiatAmount:'1,031.50', fiatCurrency:'USD', cryptoAmount:'1000.00', cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:'5.00', createdAt:'2026-08-09 15:00:00', completedAt:'2026-08-09 15:22:00' },
+  'RAMP-20260808-0016': { brokerOrderRef:'CFD-20260808-001', uid:'635102950', status:'处理中',       fiatAmount:'77,285',   fiatCurrency:'JPY', cryptoAmount:'500.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-08 10:50:00', completedAt:'—' },
+  'RAMP-20260807-0015': { brokerOrderRef:'CFD-20260807-001', uid:'291654802', status:'处理中',       fiatAmount:'515.75',   fiatCurrency:'USD', cryptoAmount:'500.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-07 13:05:00', completedAt:'—' },
+  'RAMP-20260806-0014': { brokerOrderRef:'CFD-20260806-001', uid:'460466237', status:'处理中',       fiatAmount:'46,371',   fiatCurrency:'JPY', cryptoAmount:'300.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-06 11:20:00', completedAt:'—' },
+  'RAMP-20260805-0013': { brokerOrderRef:'CFD-20260805-001', uid:'635102950', status:'处理中',       fiatAmount:'206.30',   fiatCurrency:'USD', cryptoAmount:'200.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-05 08:00:00', completedAt:'—' },
+  'RAMP-20260804-0012': { brokerOrderRef:'CFD-20260804-001', uid:'291654802', status:'待补充验证',   fiatAmount:'30,914',   fiatCurrency:'JPY', cryptoAmount:'200.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-04 16:44:00', completedAt:'—' },
+  'RAMP-20260803-0011': { brokerOrderRef:'CFD-20260803-001', uid:'460466237', status:'失败',         fiatAmount:'15,457',   fiatCurrency:'JPY', cryptoAmount:'100.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-03 14:18:00', completedAt:'—' },
+  'RAMP-20260802-0010': { brokerOrderRef:'CFD-20260802-001', uid:'635102950', status:'已过期',       fiatAmount:'103.15',   fiatCurrency:'USD', cryptoAmount:'100.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-02 09:00:00', completedAt:'—' },
+  'RAMP-20260801-0009': { brokerOrderRef:'CFD-20260801-001', uid:'291654802', status:'已完成',       fiatAmount:'62,340',   fiatCurrency:'JPY', cryptoAmount:'400.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:'2.00', createdAt:'2026-08-01 09:10:00', completedAt:'2026-08-01 09:32:10' }
+};
+var RAMP_IN_STATUS_CLASS = {
+  '处理中':'badge-blue', '待补充验证':'badge-blue', '结算延迟':'badge-orange',
+  '已完成':'badge-green', '失败':'badge-red', '已过期':'badge-gray', '拒付待核查':'badge-red'
 };
 var RAMP_OUT_DATA = {
   'pz-off-2026062401': { dir:'出金', uid:'291654802', cfdRef:'CFD-20260624-W001', crypto:'100.00 USDT', network:'Tron', fiat:'15,000.00 JPY', rate:'1 USDT ≈ 150.00 JPY', status:'已完成', createdAt:'2026-06-24 09:00:00', completedAt:'2026-06-24 09:35:18' },
@@ -3358,24 +3473,40 @@ function openWdrDetail(orderId) {
 }
 
 function openRampDetail(type, orderId) {
-  var d = type === 'in' ? RAMP_IN_DATA[orderId] : RAMP_OUT_DATA[orderId];
-  if (!d) return;
-  document.getElementById('rampDetailTitle').textContent = (type === 'in' ? '入金' : '出金') + '订单详情';
-  var statusCls = RAMP_STATUS_MAP[d.status] || 'badge-gray';
-  var rows = [
-    ['Paypaz 订单 ID', orderId],
-    ['CFD 订单引用号',  d.cfdRef],
-    ['UserID',         d.uid],
-    ['方向',           d.dir],
-    [type === 'in' ? '法币金额' : '卖出加密资产', type === 'in' ? d.fiat : d.crypto + ' / ' + d.network],
-    [type === 'in' ? '获得加密资产' : '到账法币',  type === 'in' ? d.crypto + ' / ' + d.network : d.fiat],
-    ['汇率',           d.rate],
-    ['状态',           '<span class="badge ' + statusCls + '">' + d.status + '</span>'],
-    ['创建时间',        d.createdAt],
-    ['完成时间',        d.completedAt]
-  ];
-  if (type === 'in' && d.wallet) {
-    rows.push(['收款钱包地址', '<span style="word-break:break-all">' + d.wallet + '</span>']);
+  document.getElementById('rampDetailTitle').textContent = (type === 'in' ? 'On Ramp' : '出金') + '订单详情';
+  var rows;
+  if (type === 'in') {
+    var d = RAMP_IN_DATA[orderId];
+    if (!d) return;
+    var statusCls = RAMP_IN_STATUS_CLASS[d.status] || 'badge-gray';
+    rows = [
+      ['Paypaz 订单',    orderId],
+      ['商户订单',        d.brokerOrderRef],
+      ['UserID',         d.uid],
+      ['支付法币金额',    d.fiatAmount + '&nbsp;' + d.fiatCurrency],
+      ['入金代币数量',    d.cryptoAmount + '&nbsp;' + d.cryptoCurrency],
+      ['On Ramp 手续费',  d.paypazFee ? d.paypazFee + '&nbsp;' + d.cryptoCurrency : '<span style="color:#C0C4CC">—</span>'],
+      ['净入账',          d.paypazFee ? '<span style="color:#67C23A">+' + (parseFloat(d.cryptoAmount) - parseFloat(d.paypazFee)).toFixed(2) + '&nbsp;' + d.cryptoCurrency + '</span>' : '<span style="color:#C0C4CC">—</span>'],
+      ['状态',           '<span class="badge ' + statusCls + '">' + d.status + '</span>'],
+      ['创建时间',        d.createdAt],
+      ['完成时间',        d.completedAt]
+    ];
+  } else {
+    var d = RAMP_OUT_DATA[orderId];
+    if (!d) return;
+    var statusCls = RAMP_STATUS_MAP[d.status] || 'badge-gray';
+    rows = [
+      ['Paypaz 订单 ID', orderId],
+      ['CFD 订单引用号',  d.cfdRef],
+      ['UserID',         d.uid],
+      ['方向',           d.dir],
+      ['卖出加密资产',    d.crypto + ' / ' + d.network],
+      ['到账法币',        d.fiat],
+      ['汇率',           d.rate],
+      ['状态',           '<span class="badge ' + statusCls + '">' + d.status + '</span>'],
+      ['创建时间',        d.createdAt],
+      ['完成时间',        d.completedAt]
+    ];
   }
   document.getElementById('rampDetailBody').innerHTML = rows.map(function(r) {
     return '<div><div class="info-item-label">' + r[0] + '</div><div class="info-item-value" style="margin-top:4px">' + r[1] + '</div></div>';
