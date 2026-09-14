@@ -728,9 +728,9 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号：</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>待确认</option><option>已完成</option><option>已失败</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRC20</option><option>ERC20</option><option>BEP20</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="ms-lite" id="topupStatus-lite" tabindex="0" onclick="msLiteToggle('topupStatus')" onblur="setTimeout(function(){msLiteClose('topupStatus')},150)"><span class="ms-lite-text placeholder" id="topupStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="topupStatus-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币：</span><div class="filter-control"><div class="ms-lite" id="topupToken-lite" tabindex="0" onclick="msLiteToggle('topupToken')" onblur="setTimeout(function(){msLiteClose('topupToken')},150)"><span class="ms-lite-text placeholder" id="topupToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="topupToken-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络：</span><div class="filter-control"><div class="ms-lite" id="topupNetwork-lite" tabindex="0" onclick="msLiteToggle('topupNetwork')" onblur="setTimeout(function(){msLiteClose('topupNetwork')},150)"><span class="ms-lite-text placeholder" id="topupNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="topupNetwork-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">到账时间：</span><div class="filter-control"><div class="drp-wrap" id="drpTopupArr"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
@@ -757,9 +757,9 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号：</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>风控待处理</option><option>提币中</option><option>已完成</option><option>提币失败</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRC20</option><option>ERC20</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="ms-lite" id="wdMgmtStatus-lite" tabindex="0" onclick="msLiteToggle('wdMgmtStatus')" onblur="setTimeout(function(){msLiteClose('wdMgmtStatus')},150)"><span class="ms-lite-text placeholder" id="wdMgmtStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="wdMgmtStatus-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币：</span><div class="filter-control"><div class="ms-lite" id="wdMgmtToken-lite" tabindex="0" onclick="msLiteToggle('wdMgmtToken')" onblur="setTimeout(function(){msLiteClose('wdMgmtToken')},150)"><span class="ms-lite-text placeholder" id="wdMgmtToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="wdMgmtToken-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络：</span><div class="filter-control"><div class="ms-lite" id="wdMgmtNetwork-lite" tabindex="0" onclick="msLiteToggle('wdMgmtNetwork')" onblur="setTimeout(function(){msLiteClose('wdMgmtNetwork')},150)"><span class="ms-lite-text placeholder" id="wdMgmtNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="wdMgmtNetwork-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">申请时间：</span><div class="filter-control"><div class="drp-wrap" id="drpWithdrawReq"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
@@ -945,9 +945,9 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option><option>BSC</option><option>Polygon</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>充值</option><option>提现</option><option>手续费</option><option>调账</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="acctLedgerToken-lite" tabindex="0" onclick="msLiteToggle('acctLedgerToken')" onblur="setTimeout(function(){msLiteClose('acctLedgerToken')},150)"><span class="ms-lite-text placeholder" id="acctLedgerToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerToken-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="acctLedgerNetwork-lite" tabindex="0" onclick="msLiteToggle('acctLedgerNetwork')" onblur="setTimeout(function(){msLiteClose('acctLedgerNetwork')},150)"><span class="ms-lite-text placeholder" id="acctLedgerNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerNetwork-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="acctLedgerType-lite" tabindex="0" onclick="msLiteToggle('acctLedgerType')" onblur="setTimeout(function(){msLiteClose('acctLedgerType')},150)"><span class="ms-lite-text placeholder" id="acctLedgerType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerType-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">时间</span><div class="filter-control"><div class="drp-wrap" id="drpAcctLedger"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
@@ -1814,7 +1814,7 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">UserID：</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
           <div class="filter-item"><span class="filter-label-el">订单号：</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>待处理</option><option>等待付款</option><option>处理中</option><option>已完成</option><option>失败</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="ms-lite" id="histRampOutStatus-lite" tabindex="0" onclick="msLiteToggle('histRampOutStatus')" onblur="setTimeout(function(){msLiteClose('histRampOutStatus')},150)"><span class="ms-lite-text placeholder" id="histRampOutStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histRampOutStatus-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">创建时间：</span><div class="filter-control"><div class="drp-wrap" id="drpRampOutCreate"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">完成时间：</span><div class="filter-control"><div class="drp-wrap" id="drpRampOutDone"></div></div></div>
         </div>
@@ -3184,6 +3184,27 @@ function openDepositDetail(status, hasOrder) {
   openModal('depositDetailModal');
 }
 
+function topupFiltersInit() {
+  msLiteInit('topupStatus', [{value:'待确认',label:'待确认'},{value:'已完成',label:'已完成'},{value:'已失败',label:'已失败'}], '全部');
+  msLiteInit('topupToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
+  msLiteInit('topupNetwork', [{value:'TRC20',label:'TRC20'},{value:'ERC20',label:'ERC20'},{value:'BEP20',label:'BEP20'}], '全部');
+}
+function wdMgmtFiltersInit() {
+  msLiteInit('wdMgmtStatus', [
+    {value:'风控待处理',label:'风控待处理'},{value:'提币中',label:'提币中'},{value:'已完成',label:'已完成'},{value:'提币失败',label:'提币失败'}
+  ], '全部');
+  msLiteInit('wdMgmtToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
+  msLiteInit('wdMgmtNetwork', [{value:'TRC20',label:'TRC20'},{value:'ERC20',label:'ERC20'}], '全部');
+}
+function acctLedgerFiltersInit() {
+  msLiteInit('acctLedgerToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
+  msLiteInit('acctLedgerNetwork', [
+    {value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'},{value:'BSC',label:'BSC'},{value:'Polygon',label:'Polygon'}
+  ], '全部');
+  msLiteInit('acctLedgerType', [
+    {value:'充值',label:'充值'},{value:'提现',label:'提现'},{value:'手续费',label:'手续费'},{value:'调账',label:'调账'}
+  ], '全部');
+}
 function histDepFiltersInit() {
   msLiteInit('histDepType', [{value:'直充',label:'直充'},{value:'On Ramp',label:'On Ramp'}], '全部');
   msLiteInit('histDepToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
@@ -3201,6 +3222,12 @@ function histRampInFiltersInit() {
   msLiteInit('histRampInStatus', [
     {value:'处理中',label:'处理中'},{value:'待补充验证',label:'待补充验证'},{value:'结算延迟',label:'结算延迟'},
     {value:'拒付待核查',label:'拒付待核查'},{value:'已完成',label:'已完成'},{value:'失败',label:'失败'},{value:'已过期',label:'已过期'}
+  ], '全部');
+}
+function histRampOutFiltersInit() {
+  msLiteInit('histRampOutStatus', [
+    {value:'待处理',label:'待处理'},{value:'等待付款',label:'等待付款'},{value:'处理中',label:'处理中'},
+    {value:'已完成',label:'已完成'},{value:'失败',label:'失败'}
   ], '全部');
 }
 function histOrdFiltersInit() {
@@ -4098,10 +4125,14 @@ function applyOverviewPerms() {
 lucide.createIcons();
 activeTopNavEl = document.querySelector('.nav-item.active');
 applyOverviewPerms();
+topupFiltersInit();
+wdMgmtFiltersInit();
+acctLedgerFiltersInit();
 histDepFiltersInit();
 histWdrFiltersInit();
 histOrdFiltersInit();
 histRampInFiltersInit();
+histRampOutFiltersInit();
 memberFiltersInit();
 filterHistOrd();
 renderMemberList(MEMBERS);
