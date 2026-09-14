@@ -129,7 +129,7 @@
     /* ── Filter Card ─────────────────────────────────── */
     .filter-card { background:#fff; border:1px solid #EBEEF5; border-radius:4px; padding:20px; display:flex; flex-direction:column; gap:16px; flex-shrink:0; }
     .filter-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px 20px; }
-    .filter-item { display:flex; align-items:center; height:32px; min-width:0; }
+    .filter-item { display:flex; align-items:center; height:32px; min-width:0; position:relative; }
     .filter-item.col-span-2 { grid-column:span 2; }
     .filter-label-el { flex-shrink:0; width:70px; text-align:right; padding-right:8px; font-size:13px; color:#606266; white-space:nowrap; }
     .filter-control { flex:1; min-width:0; display:flex; align-items:center; }
@@ -141,6 +141,21 @@
     .date-input-el:focus { border-color:#409EFF; }
     .range-sep-el { flex-shrink:0; color:#C0C4CC; font-size:13px; }
     .filter-actions { display:flex; justify-content:flex-end; align-items:center; gap:8px; padding-top:6px; border-top:1px solid #F2F6FC; }
+
+    /* ── 轻量勾选下拉（多选） ──────────────────────────── */
+    .ms-lite { width:100%; height:32px; border:1px solid #DCDFE6; border-radius:4px; background:#fff; display:flex; align-items:center; padding:0 28px 0 10px; position:relative; cursor:pointer; transition:border-color 0.2s; }
+    .ms-lite:hover { border-color:#C0C4CC; }
+    .ms-lite.active { border-color:#409EFF; }
+    .ms-lite-text { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px; color:#303133; }
+    .ms-lite-text.placeholder { color:#C0C4CC; }
+    .ms-caret { position:absolute; right:8px; top:50%; transform:translateY(-50%); pointer-events:none; color:#C0C4CC; }
+    .ms-dropdown { position:absolute; top:34px; left:70px; right:0; background:#fff; border:1px solid #DCDFE6; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.12); z-index:200; max-height:180px; overflow-y:auto; }
+    .ms-option { padding:0 12px; height:34px; display:flex; align-items:center; gap:8px; cursor:pointer; }
+    .ms-option:hover { background:#F5F7FA; }
+    .ms-option.selected .ms-option-text { color:#409EFF; }
+    .ms-option-text { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px; color:#303133; }
+    .ms-option-check { width:14px; height:14px; flex-shrink:0; color:#409EFF; display:inline-flex; align-items:center; justify-content:center; visibility:hidden; }
+    .ms-option.selected .ms-option-check { visibility:visible; }
 
     /* ── Inputs & Buttons ────────────────────────────── */
     .field-input,.field-select { height:32px; border:1px solid #DCDFE6; border-radius:4px; padding:0 10px; font-size:13px; color:#303133; background:#fff; outline:none; font-family:'Noto Sans SC',sans-serif; transition:border-color 0.2s; appearance:none; -webkit-appearance:none; }
@@ -781,16 +796,13 @@
           <div class="filter-item">
             <span class="filter-label-el">状态</span>
             <div class="filter-control">
-              <div class="select-wrap" style="flex:1">
-                <select class="field-select" id="memberStatusFilter">
-                  <option value="">全部</option>
-                  <option value="active">已启用</option>
-                  <option value="disabled">已禁用</option>
-                  <option value="inactive">未激活</option>
-                </select>
-                <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+              <div class="ms-lite" id="memberStatusFilter-lite" tabindex="0"
+                   onclick="msLiteToggle('memberStatusFilter')" onblur="setTimeout(function(){msLiteClose('memberStatusFilter')},150)">
+                <span class="ms-lite-text placeholder" id="memberStatusFilter-text">全部</span>
+                <i data-lucide="chevron-down" class="ms-caret" size="12"></i>
               </div>
             </div>
+            <div class="ms-dropdown" id="memberStatusFilter-dropdown" style="display:none"></div>
           </div>
           <div class="filter-item">
             <span class="filter-label-el">创建时间</span>
@@ -935,13 +947,13 @@
           <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option><option>BSC</option><option>Polygon</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>充值</option><option>退款</option><option>提现</option><option>手续费</option><option>调账</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>充值</option><option>提现</option><option>手续费</option><option>调账</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
           <div class="filter-item"><span class="filter-label-el">时间</span><div class="filter-control"><div class="drp-wrap" id="drpAcctLedger"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">8</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">7</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
         <div class="table-wrap"><table style="min-width:1000px">
           <thead><tr><th style="width:150px">用户ID</th><th style="width:100px">类型</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:110px">金额</th><th style="width:120px">变动后余额</th><th style="width:160px">时间</th></tr></thead>
           <tbody>
@@ -1000,14 +1012,6 @@
               <td class="asset-num" style="color:#F56C6C">-0.53</td>
               <td class="asset-num">529.47</td>
               <td style="font-family:Inter">2026-06-30 17:59:29</td>
-            </tr>
-            <tr>
-              <td><span class="cell-empty">—</span></td>
-              <td><span class="badge badge-red">退款</span></td>
-              <td>USDT</td><td>Polygon</td>
-              <td class="asset-num" style="color:#F56C6C">-3.20</td>
-              <td class="asset-num">-3.20</td>
-              <td style="font-family:Inter">2026-06-25 16:08:22</td>
             </tr>
           </tbody>
         </table></div>
@@ -1189,19 +1193,33 @@
           <div class="filter-item"><span class="filter-label-el">流水号</span><div class="filter-control"><input class="field-input" placeholder="请输入流水号"></div></div>
           <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">哈希</span><div class="filter-control"><input class="field-input" placeholder="请输入交易哈希"></div></div>
-          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>直充</option><option>On Ramp</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已到账</option><option>待匹配订单</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="histDepType-lite" tabindex="0" onclick="msLiteToggle('histDepType')" onblur="setTimeout(function(){msLiteClose('histDepType')},150)"><span class="ms-lite-text placeholder" id="histDepType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepType-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="histDepToken-lite" tabindex="0" onclick="msLiteToggle('histDepToken')" onblur="setTimeout(function(){msLiteClose('histDepToken')},150)"><span class="ms-lite-text placeholder" id="histDepToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepToken-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="histDepNetwork-lite" tabindex="0" onclick="msLiteToggle('histDepNetwork')" onblur="setTimeout(function(){msLiteClose('histDepNetwork')},150)"><span class="ms-lite-text placeholder" id="histDepNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepNetwork-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histDepStatus-lite" tabindex="0" onclick="msLiteToggle('histDepStatus')" onblur="setTimeout(function(){msLiteClose('histDepStatus')},150)"><span class="ms-lite-text placeholder" id="histDepStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepStatus-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">到账时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistDepArr"></div></div></div>
         </div>
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">12</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">13</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
         <div class="table-wrap"><table style="min-width:1580px">
           <thead><tr><th style="width:160px">流水号</th><th style="width:150px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:90px">手续费</th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
           <tbody>
+            <tr>
+              <td class="asset-num">52560103262640</td>
+              <td class="asset-num">U60022002</td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num">7.31</td><td class="asset-num">0.05</td>
+              <td class="asset-num" style="color:#67C23A">+7.26</td>
+              <td><span class="cell-empty">—</span></td>
+              <td><span class="cell-empty">—</span></td>
+              <td>直充</td>
+              <td style="font-family:Inter">2026-08-26 10:40:00</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openDepositDetail('已到账',true)"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
             <tr>
               <td class="asset-num">52530912004096</td>
               <td class="asset-num">460466237</td>
@@ -1382,11 +1400,11 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
           <div class="filter-item"><span class="filter-label-el">用户 ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户 ID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>已到账</option><option>提币失败</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="histWdrToken-lite" tabindex="0" onclick="msLiteToggle('histWdrToken')" onblur="setTimeout(function(){msLiteClose('histWdrToken')},150)"><span class="ms-lite-text placeholder" id="histWdrToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrToken-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="histWdrNetwork-lite" tabindex="0" onclick="msLiteToggle('histWdrNetwork')" onblur="setTimeout(function(){msLiteClose('histWdrNetwork')},150)"><span class="ms-lite-text placeholder" id="histWdrNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrNetwork-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histWdrStatus-lite" tabindex="0" onclick="msLiteToggle('histWdrStatus')" onblur="setTimeout(function(){msLiteClose('histWdrStatus')},150)"><span class="ms-lite-text placeholder" id="histWdrStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrStatus-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">批次号</span><div class="filter-control"><input class="field-input" placeholder="请输入批次号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">提币方式</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>API</option><option>Excel</option><option>单笔</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">提币方式</span><div class="filter-control"><div class="ms-lite" id="histWdrMethod-lite" tabindex="0" onclick="msLiteToggle('histWdrMethod')" onblur="setTimeout(function(){msLiteClose('histWdrMethod')},150)"><span class="ms-lite-text placeholder" id="histWdrMethod-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrMethod-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">提币时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistWdrTime"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">到账时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistWdrArr"></div></div></div>
         </div>
@@ -1570,9 +1588,9 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
           <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input id="histOrdUidInput" class="field-input" placeholder="请输入用户ID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select id="histOrdTokenSelect" class="field-select"><option value="">全部</option><option>USDT</option><option>USDC</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select id="histOrdNetworkSelect" class="field-select"><option value="">全部</option><option>TRON</option><option>Ethereum</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select id="histOrdStatusSelect" class="field-select"><option value="">全部</option><option selected>处理中</option><option>未足额支付</option><option>已完成</option><option>已过期</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="histOrdToken-lite" tabindex="0" onclick="msLiteToggle('histOrdToken')" onblur="setTimeout(function(){msLiteClose('histOrdToken')},150)"><span class="ms-lite-text placeholder" id="histOrdToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histOrdToken-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="histOrdNetwork-lite" tabindex="0" onclick="msLiteToggle('histOrdNetwork')" onblur="setTimeout(function(){msLiteClose('histOrdNetwork')},150)"><span class="ms-lite-text placeholder" id="histOrdNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histOrdNetwork-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histOrdStatus-lite" tabindex="0" onclick="msLiteToggle('histOrdStatus')" onblur="setTimeout(function(){msLiteClose('histOrdStatus')},150)"><span class="ms-lite-text" id="histOrdStatus-text">处理中</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histOrdStatus-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">创建时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistOrdCreate"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">完成时间</span><div class="filter-control"><div class="drp-wrap" id="drpHistOrdDone"></div></div></div>
         </div>
@@ -1630,8 +1648,8 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
           <div class="filter-item"><span class="filter-label-el">UserID</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
-          <div class="filter-item"><span class="filter-label-el">法币币种</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>JPY</option><option>USD</option><option>KRW</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
-          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="select-wrap" style="flex:1"><select class="field-select"><option value="">全部</option><option>处理中</option><option>待补充验证</option><option>结算延迟</option><option>拒付待核查</option><option>已完成</option><option>失败</option><option>已过期</option></select><i data-lucide="chevron-down" class="select-caret" size="14"></i></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">法币币种</span><div class="filter-control"><div class="ms-lite" id="histRampInFiat-lite" tabindex="0" onclick="msLiteToggle('histRampInFiat')" onblur="setTimeout(function(){msLiteClose('histRampInFiat')},150)"><span class="ms-lite-text placeholder" id="histRampInFiat-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histRampInFiat-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histRampInStatus-lite" tabindex="0" onclick="msLiteToggle('histRampInStatus')" onblur="setTimeout(function(){msLiteClose('histRampInStatus')},150)"><span class="ms-lite-text placeholder" id="histRampInStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histRampInStatus-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">创建时间</span><div class="filter-control"><div class="drp-wrap" id="drpRampInCreate"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">完成时间</span><div class="filter-control"><div class="drp-wrap" id="drpRampInDone"></div></div></div>
         </div>
@@ -1639,11 +1657,12 @@
       </div>
       <div class="table-card">
         <div class="summary-bar" style="border-bottom:1px solid #EBEEF5;"><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table style="min-width:1280px">
+        <div class="table-wrap"><table style="min-width:1400px">
           <thead><tr>
             <th style="width:170px">订单号</th>
             <th style="width:110px">UserID</th>
             <th style="width:150px">支付法币金额</th>
+            <th style="width:120px">网络费</th>
             <th style="width:150px">入金代币数量</th>
             <th style="width:140px">On Ramp 手续费</th>
             <th style="width:100px">净入账</th>
@@ -1657,6 +1676,7 @@
               <td><div class="copy-cell"><span>CFD-20260810-001</span><span class="copy-icon" onclick="copyText('CFD-20260810-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">54,100 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">160 <span style="color:#909399;font-size:12px">JPY</span></td>
               <td class="asset-num">350.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1669,6 +1689,7 @@
               <td><div class="copy-cell"><span>CFD-20260809-001</span><span class="copy-icon" onclick="copyText('CFD-20260809-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
               <td class="asset-num">1,031.50 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USD</span></td>
               <td class="asset-num">1000.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">5.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num" style="color:#67C23A">+995.00</td>
@@ -1681,6 +1702,7 @@
               <td><div class="copy-cell"><span>CFD-20260808-001</span><span class="copy-icon" onclick="copyText('CFD-20260808-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">77,285 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">225 <span style="color:#909399;font-size:12px">JPY</span></td>
               <td class="asset-num">500.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1693,6 +1715,7 @@
               <td><div class="copy-cell"><span>CFD-20260807-001</span><span class="copy-icon" onclick="copyText('CFD-20260807-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802</td>
               <td class="asset-num">515.75 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">1.50 <span style="color:#909399;font-size:12px">USD</span></td>
               <td class="asset-num">500.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1705,6 +1728,7 @@
               <td><div class="copy-cell"><span>CFD-20260806-001</span><span class="copy-icon" onclick="copyText('CFD-20260806-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
               <td class="asset-num">46,371 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">135 <span style="color:#909399;font-size:12px">JPY</span></td>
               <td class="asset-num">300.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1717,6 +1741,7 @@
               <td><div class="copy-cell"><span>CFD-20260805-001</span><span class="copy-icon" onclick="copyText('CFD-20260805-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">206.30 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">0.60 <span style="color:#909399;font-size:12px">USD</span></td>
               <td class="asset-num">200.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1729,6 +1754,7 @@
               <td><div class="copy-cell"><span>CFD-20260804-001</span><span class="copy-icon" onclick="copyText('CFD-20260804-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802</td>
               <td class="asset-num">30,914 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">90 <span style="color:#909399;font-size:12px">JPY</span></td>
               <td class="asset-num">200.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1741,6 +1767,7 @@
               <td><div class="copy-cell"><span>CFD-20260803-001</span><span class="copy-icon" onclick="copyText('CFD-20260803-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
               <td class="asset-num">15,457 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">45 <span style="color:#909399;font-size:12px">JPY</span></td>
               <td class="asset-num">100.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1753,6 +1780,7 @@
               <td><div class="copy-cell"><span>CFD-20260802-001</span><span class="copy-icon" onclick="copyText('CFD-20260802-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">103.15 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">0.30 <span style="color:#909399;font-size:12px">USD</span></td>
               <td class="asset-num">100.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1765,6 +1793,7 @@
               <td><div class="copy-cell"><span>CFD-20260801-001</span><span class="copy-icon" onclick="copyText('CFD-20260801-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802</td>
               <td class="asset-num">62,340 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">180 <span style="color:#909399;font-size:12px">JPY</span></td>
               <td class="asset-num">400.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">2.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num" style="color:#67C23A">+398.00</td>
@@ -1934,11 +1963,8 @@
             <span class="info-item-label">状态</span>
             <div class="info-item-value"><span id="depStatusBadge" class="badge badge-green">已到账</span></div>
           </div>
+          <div id="depOrderContent"></div>
         </div>
-      </div>
-      <div class="dep-section">
-        <div class="dep-section-title">订单信息</div>
-        <div id="depOrderContent"></div>
       </div>
     </div>
     <div class="modal-footer"><button class="btn btn-default btn-sm" onclick="closeModal('depositDetailModal')">关闭</button></div>
@@ -2326,6 +2352,71 @@
 
 <script>
 /* ─────────────────────────────────────────────────────
+   轻量勾选下拉（Lightweight Multi-Select）—— 通用组件
+   用于「代币/网络/状态」等选项固定、无需模糊搜索的筛选下拉，多选。
+   触发器复用 tabindex + onblur + setTimeout 的交互约定，
+   下拉列表用 .ms-dropdown 定位（相对 filter-item 绝对定位）。
+───────────────────────────────────────────────────── */
+var MS_CHECK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+var MS_LITE = {};
+
+function msLiteInit(id, options, placeholder) {
+  MS_LITE[id] = { options: options, selected: new Set(), placeholder: placeholder || '全部' };
+  msLiteRenderTrigger(id);
+}
+function msLiteToggle(id) {
+  var dd = document.getElementById(id + '-dropdown');
+  if (dd.style.display === 'none') msLiteOpen(id); else msLiteClose(id);
+}
+function msLiteOpen(id) {
+  msLiteRenderOptions(id);
+  document.getElementById(id + '-dropdown').style.display = '';
+  var trigger = document.getElementById(id + '-lite');
+  if (trigger) trigger.classList.add('active');
+}
+function msLiteClose(id) {
+  var dd = document.getElementById(id + '-dropdown');
+  if (dd) dd.style.display = 'none';
+  var trigger = document.getElementById(id + '-lite');
+  if (trigger) trigger.classList.remove('active');
+}
+function msLiteRenderOptions(id) {
+  var cfg = MS_LITE[id];
+  var dd = document.getElementById(id + '-dropdown');
+  dd.innerHTML = cfg.options.map(function(o) {
+    var sel = cfg.selected.has(o.value);
+    return '<div class="ms-option' + (sel ? ' selected' : '') + '" onmousedown="event.preventDefault();msLiteToggleOption(\'' + id + '\',\'' + o.value + '\')">' +
+      '<span class="ms-option-text">' + o.label + '</span><span class="ms-option-check">' + MS_CHECK_SVG + '</span></div>';
+  }).join('');
+}
+function msLiteToggleOption(id, value) {
+  var cfg = MS_LITE[id];
+  if (cfg.selected.has(value)) cfg.selected.delete(value); else cfg.selected.add(value);
+  msLiteRenderOptions(id);
+  msLiteRenderTrigger(id);
+}
+function msLiteRenderTrigger(id) {
+  var cfg = MS_LITE[id];
+  var text = document.getElementById(id + '-text');
+  if (!cfg.selected.size) {
+    text.textContent = cfg.placeholder;
+    text.classList.add('placeholder');
+  } else {
+    var labels = cfg.options.filter(function(o) { return cfg.selected.has(o.value); }).map(function(o) { return o.label; });
+    text.textContent = labels.join('、');
+    text.classList.remove('placeholder');
+  }
+}
+function msLiteGet(id) { return MS_LITE[id] ? Array.from(MS_LITE[id].selected) : []; }
+function msLiteReset(id) { if (MS_LITE[id]) { MS_LITE[id].selected.clear(); msLiteRenderTrigger(id); } }
+function msLiteSetSingle(id, value) {
+  if (!MS_LITE[id]) return;
+  MS_LITE[id].selected.clear();
+  if (value) MS_LITE[id].selected.add(value);
+  msLiteRenderTrigger(id);
+}
+
+/* ─────────────────────────────────────────────────────
    数据
 ───────────────────────────────────────────────────── */
 const PERM_GROUPS = [
@@ -2488,12 +2579,17 @@ function renderMemberList(list) {
 /* ─────────────────────────────────────────────────────
    筛选
 ───────────────────────────────────────────────────── */
+function memberFiltersInit() {
+  msLiteInit('memberStatusFilter', [
+    {value:'active',label:'已启用'},{value:'disabled',label:'已禁用'},{value:'inactive',label:'未激活'}
+  ], '全部');
+}
 function filterMembers() {
   const kw = document.getElementById('memberSearch').value.trim().toLowerCase();
-  const st = document.getElementById('memberStatusFilter').value;
+  const sts = msLiteGet('memberStatusFilter');
   const list = MEMBERS.filter(function(m) {
     if (kw && m.name.toLowerCase().indexOf(kw) === -1 && m.email.toLowerCase().indexOf(kw) === -1) return false;
-    if (st && m.status !== st) return false;
+    if (sts.length && sts.indexOf(m.status) === -1) return false;
     return true;
   });
   document.getElementById('memberPagTotal').textContent = '共 ' + list.length + ' 条';
@@ -2501,7 +2597,7 @@ function filterMembers() {
 }
 function resetMemberFilter() {
   document.getElementById('memberSearch').value = '';
-  document.getElementById('memberStatusFilter').value = '';
+  msLiteReset('memberStatusFilter');
   document.getElementById('memberCount').textContent = MEMBERS.length;
   document.getElementById('memberPagTotal').textContent = '共 ' + MEMBERS.length + ' 条';
   renderMemberList(MEMBERS);
@@ -3079,31 +3175,42 @@ function openDepositDetail(status, hasOrder) {
   var el = document.getElementById('depOrderContent');
   if (el) {
     if (hasOrder) {
-      el.innerHTML = '<div class="dep-grid">'
-        + '<div class="dep-field"><span class="info-item-label">订单号</span><div class="info-item-value inter"><div class="copy-cell"><span>53013777</span><span class="copy-icon" onclick="copyText(\'53013777\')"><i data-lucide="copy" size="13"></i></span></div></div></div>'
-        + '<div class="dep-field"><span class="info-item-label">应付金额</span><span class="info-item-value inter">5.00 USDT1</span></div>'
-        + '<div class="dep-field"><span class="info-item-label">实付金额</span><span class="info-item-value inter">5.00 USDT1</span></div>'
-        + '<div class="dep-field"><span class="info-item-label">创建时间</span><span class="info-item-value inter">2026-06-29 17:27:45</span></div>'
-        + '</div>';
+      el.innerHTML = '<div class="dep-field"><span class="info-item-label">订单号</span><div class="info-item-value inter"><div class="copy-cell"><span>53013777</span><span class="copy-icon" onclick="copyText(\'53013777\')"><i data-lucide="copy" size="13"></i></span></div></div></div>';
       lucide.createIcons();
     } else {
-      el.innerHTML = '<div class="dep-empty">'
-        + '<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">'
-        + '<rect x="14" y="38" width="52" height="28" rx="3" fill="#ECF5FF" stroke="#DCDFE6" stroke-width="1.5"/>'
-        + '<rect x="26" y="38" width="28" height="2" fill="#DCDFE6"/>'
-        + '<path d="M14 38 L40 29 L66 38" fill="none" stroke="#DCDFE6" stroke-width="1.5"/>'
-        + '<path d="M14 38 L40 29 L40 38 Z" fill="#B3D8FF" stroke="#DCDFE6" stroke-width="1.5" stroke-linejoin="round"/>'
-        + '<path d="M40 29 L66 38 L40 38 Z" fill="#ECF5FF" stroke="#DCDFE6" stroke-width="1.5" stroke-linejoin="round"/>'
-        + '<path d="M57 13 L58.2 16.8 L62 18 L58.2 19.2 L57 23 L55.8 19.2 L52 18 L55.8 16.8 Z" fill="#F7BA2A" opacity="0.85"/>'
-        + '<path d="M17 9 L17.9 11.6 L20.5 12.5 L17.9 13.4 L17 16 L16.1 13.4 L13.5 12.5 L16.1 11.6 Z" fill="#F7BA2A" opacity="0.7"/>'
-        + '<line x1="63" y1="28" x2="63" y2="34" stroke="#B3D8FF" stroke-width="1.5" stroke-linecap="round"/>'
-        + '<line x1="60" y1="31" x2="66" y2="31" stroke="#B3D8FF" stroke-width="1.5" stroke-linecap="round"/>'
-        + '</svg>'
-        + '<span class="dep-empty-text">暂无数据</span>'
-        + '</div>';
+      el.innerHTML = '<div class="dep-field"><span class="info-item-label">订单号</span><span class="info-item-value" style="color:#C0C4CC">—</span></div>';
     }
   }
   openModal('depositDetailModal');
+}
+
+function histDepFiltersInit() {
+  msLiteInit('histDepType', [{value:'直充',label:'直充'},{value:'On Ramp',label:'On Ramp'}], '全部');
+  msLiteInit('histDepToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
+  msLiteInit('histDepNetwork', [{value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'}], '全部');
+  msLiteInit('histDepStatus', [{value:'已到账',label:'已到账'},{value:'待匹配订单',label:'待匹配订单'}], '全部');
+}
+function histWdrFiltersInit() {
+  msLiteInit('histWdrToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
+  msLiteInit('histWdrNetwork', [{value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'}], '全部');
+  msLiteInit('histWdrStatus', [{value:'已到账',label:'已到账'},{value:'提币失败',label:'提币失败'}], '全部');
+  msLiteInit('histWdrMethod', [{value:'API',label:'API'},{value:'Excel',label:'Excel'},{value:'单笔',label:'单笔'}], '全部');
+}
+function histRampInFiltersInit() {
+  msLiteInit('histRampInFiat', [{value:'JPY',label:'JPY'},{value:'USD',label:'USD'},{value:'KRW',label:'KRW'}], '全部');
+  msLiteInit('histRampInStatus', [
+    {value:'处理中',label:'处理中'},{value:'待补充验证',label:'待补充验证'},{value:'结算延迟',label:'结算延迟'},
+    {value:'拒付待核查',label:'拒付待核查'},{value:'已完成',label:'已完成'},{value:'失败',label:'失败'},{value:'已过期',label:'已过期'}
+  ], '全部');
+}
+function histOrdFiltersInit() {
+  msLiteInit('histOrdToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
+  msLiteInit('histOrdNetwork', [{value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'}], '全部');
+  msLiteInit('histOrdStatus', [
+    {value:'处理中',label:'处理中'},{value:'未足额支付',label:'未足额支付'},
+    {value:'已完成',label:'已完成'},{value:'已过期',label:'已过期'}
+  ], '全部');
+  msLiteSetSingle('histOrdStatus', '处理中');
 }
 
 function histDepLinkOrder(userId) {
@@ -3112,16 +3219,15 @@ function histDepLinkOrder(userId) {
   if (ordTabEl) switchHistTab('histOrd', ordTabEl);
   var uidInput = document.getElementById('histOrdUidInput');
   if (uidInput) { uidInput.value = userId; }
-  var statusSel = document.getElementById('histOrdStatusSelect');
-  if (statusSel) { statusSel.value = '处理中'; }
+  msLiteSetSingle('histOrdStatus', '处理中');
   filterHistOrd();
 }
 
 function filterHistOrd() {
-  var uid     = (document.getElementById('histOrdUidInput')?.value || '').trim();
-  var token   = (document.getElementById('histOrdTokenSelect')?.value || '');
-  var network = (document.getElementById('histOrdNetworkSelect')?.value || '');
-  var status  = (document.getElementById('histOrdStatusSelect')?.value || '');
+  var uid      = (document.getElementById('histOrdUidInput')?.value || '').trim();
+  var tokens   = msLiteGet('histOrdToken');
+  var networks = msLiteGet('histOrdNetwork');
+  var statuses = msLiteGet('histOrdStatus');
   var rows    = document.querySelectorAll('#histOrd tbody tr');
   var count   = 0;
   rows.forEach(function(tr) {
@@ -3129,8 +3235,8 @@ function filterHistOrd() {
     var rowToken   = (tr.cells[2]?.textContent || '').trim();
     var rowNetwork = (tr.cells[3]?.textContent || '').trim();
     var rowStatus  = (tr.cells[11]?.textContent || '').trim();
-    var match = (!uid || rowUid.includes(uid)) && (!token || rowToken === token)
-      && (!network || rowNetwork === network) && (!status || rowStatus === status);
+    var match = (!uid || rowUid.includes(uid)) && (!tokens.length || tokens.includes(rowToken))
+      && (!networks.length || networks.includes(rowNetwork)) && (!statuses.length || statuses.includes(rowStatus));
     tr.style.display = match ? '' : 'none';
     if (match) count++;
   });
@@ -3141,12 +3247,9 @@ function filterHistOrd() {
 function resetHistOrd() {
   var uidInput = document.getElementById('histOrdUidInput');
   if (uidInput) uidInput.value = '';
-  var tokenSel = document.getElementById('histOrdTokenSelect');
-  if (tokenSel) tokenSel.value = '';
-  var networkSel = document.getElementById('histOrdNetworkSelect');
-  if (networkSel) networkSel.value = '';
-  var statusSel = document.getElementById('histOrdStatusSelect');
-  if (statusSel) statusSel.value = '';
+  msLiteReset('histOrdToken');
+  msLiteReset('histOrdNetwork');
+  msLiteReset('histOrdStatus');
   filterHistOrd();
 }
 
@@ -3517,16 +3620,16 @@ function downloadBatchFile(el) {
    出入金订单详情
 ───────────────────────────────────────────────────── */
 var RAMP_IN_DATA = {
-  'RAMP-20260810-0018': { brokerOrderRef:'CFD-20260810-001', uid:'635102950', status:'结算延迟',     fiatAmount:'54,100',   fiatCurrency:'JPY', cryptoAmount:'350.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-10 09:00:00', completedAt:'—' },
-  'RAMP-20260809-0017': { brokerOrderRef:'CFD-20260809-001', uid:'460466237', status:'拒付待核查',   fiatAmount:'1,031.50', fiatCurrency:'USD', cryptoAmount:'1000.00', cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:'5.00', createdAt:'2026-08-09 15:00:00', completedAt:'2026-08-09 15:22:00' },
-  'RAMP-20260808-0016': { brokerOrderRef:'CFD-20260808-001', uid:'635102950', status:'处理中',       fiatAmount:'77,285',   fiatCurrency:'JPY', cryptoAmount:'500.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-08 10:50:00', completedAt:'—' },
-  'RAMP-20260807-0015': { brokerOrderRef:'CFD-20260807-001', uid:'291654802', status:'处理中',       fiatAmount:'515.75',   fiatCurrency:'USD', cryptoAmount:'500.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-07 13:05:00', completedAt:'—' },
-  'RAMP-20260806-0014': { brokerOrderRef:'CFD-20260806-001', uid:'460466237', status:'处理中',       fiatAmount:'46,371',   fiatCurrency:'JPY', cryptoAmount:'300.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-06 11:20:00', completedAt:'—' },
-  'RAMP-20260805-0013': { brokerOrderRef:'CFD-20260805-001', uid:'635102950', status:'处理中',       fiatAmount:'206.30',   fiatCurrency:'USD', cryptoAmount:'200.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-05 08:00:00', completedAt:'—' },
-  'RAMP-20260804-0012': { brokerOrderRef:'CFD-20260804-001', uid:'291654802', status:'待补充验证',   fiatAmount:'30,914',   fiatCurrency:'JPY', cryptoAmount:'200.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-04 16:44:00', completedAt:'—' },
-  'RAMP-20260803-0011': { brokerOrderRef:'CFD-20260803-001', uid:'460466237', status:'失败',         fiatAmount:'15,457',   fiatCurrency:'JPY', cryptoAmount:'100.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-03 14:18:00', completedAt:'—' },
-  'RAMP-20260802-0010': { brokerOrderRef:'CFD-20260802-001', uid:'635102950', status:'已过期',       fiatAmount:'103.15',   fiatCurrency:'USD', cryptoAmount:'100.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-02 09:00:00', completedAt:'—' },
-  'RAMP-20260801-0009': { brokerOrderRef:'CFD-20260801-001', uid:'291654802', status:'已完成',       fiatAmount:'62,340',   fiatCurrency:'JPY', cryptoAmount:'400.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:'2.00', createdAt:'2026-08-01 09:10:00', completedAt:'2026-08-01 09:32:10' }
+  'RAMP-20260810-0018': { brokerOrderRef:'CFD-20260810-001', uid:'635102950', status:'结算延迟',     fiatAmount:'54,100',   fiatCurrency:'JPY', networkFee:'160',   cryptoAmount:'350.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-10 09:00:00', completedAt:'—' },
+  'RAMP-20260809-0017': { brokerOrderRef:'CFD-20260809-001', uid:'460466237', status:'拒付待核查',   fiatAmount:'1,031.50', fiatCurrency:'USD', networkFee:'3.00',  cryptoAmount:'1000.00', cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:'5.00', createdAt:'2026-08-09 15:00:00', completedAt:'2026-08-09 15:22:00' },
+  'RAMP-20260808-0016': { brokerOrderRef:'CFD-20260808-001', uid:'635102950', status:'处理中',       fiatAmount:'77,285',   fiatCurrency:'JPY', networkFee:'225',   cryptoAmount:'500.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-08 10:50:00', completedAt:'—' },
+  'RAMP-20260807-0015': { brokerOrderRef:'CFD-20260807-001', uid:'291654802', status:'处理中',       fiatAmount:'515.75',   fiatCurrency:'USD', networkFee:'1.50',  cryptoAmount:'500.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-07 13:05:00', completedAt:'—' },
+  'RAMP-20260806-0014': { brokerOrderRef:'CFD-20260806-001', uid:'460466237', status:'处理中',       fiatAmount:'46,371',   fiatCurrency:'JPY', networkFee:'135',   cryptoAmount:'300.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-06 11:20:00', completedAt:'—' },
+  'RAMP-20260805-0013': { brokerOrderRef:'CFD-20260805-001', uid:'635102950', status:'处理中',       fiatAmount:'206.30',   fiatCurrency:'USD', networkFee:'0.60',  cryptoAmount:'200.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-05 08:00:00', completedAt:'—' },
+  'RAMP-20260804-0012': { brokerOrderRef:'CFD-20260804-001', uid:'291654802', status:'待补充验证',   fiatAmount:'30,914',   fiatCurrency:'JPY', networkFee:'90',    cryptoAmount:'200.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-04 16:44:00', completedAt:'—' },
+  'RAMP-20260803-0011': { brokerOrderRef:'CFD-20260803-001', uid:'460466237', status:'失败',         fiatAmount:'15,457',   fiatCurrency:'JPY', networkFee:'45',    cryptoAmount:'100.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:null,   createdAt:'2026-08-03 14:18:00', completedAt:'—' },
+  'RAMP-20260802-0010': { brokerOrderRef:'CFD-20260802-001', uid:'635102950', status:'已过期',       fiatAmount:'103.15',   fiatCurrency:'USD', networkFee:'0.30',  cryptoAmount:'100.00',  cryptoCurrency:'USDT', customerRate:'1.0315', paypazFee:null,   createdAt:'2026-08-02 09:00:00', completedAt:'—' },
+  'RAMP-20260801-0009': { brokerOrderRef:'CFD-20260801-001', uid:'291654802', status:'已完成',       fiatAmount:'62,340',   fiatCurrency:'JPY', networkFee:'180',   cryptoAmount:'400.00',  cryptoCurrency:'USDT', customerRate:'154.57', paypazFee:'2.00', createdAt:'2026-08-01 09:10:00', completedAt:'2026-08-01 09:32:10' }
 };
 var RAMP_IN_STATUS_CLASS = {
   '处理中':'badge-blue', '待补充验证':'badge-blue', '结算延迟':'badge-orange',
@@ -3591,6 +3694,7 @@ function openRampDetail(type, orderId) {
       ['商户订单',        d.brokerOrderRef],
       ['UserID',         d.uid],
       ['支付法币金额',    d.fiatAmount + '&nbsp;' + d.fiatCurrency],
+      ['网络费',          d.networkFee + '&nbsp;' + d.fiatCurrency],
       ['入金代币数量',    d.cryptoAmount + '&nbsp;' + d.cryptoCurrency],
       ['On Ramp 手续费',  d.paypazFee ? d.paypazFee + '&nbsp;' + d.cryptoCurrency : '<span style="color:#C0C4CC">—</span>'],
       ['净入账',          d.paypazFee ? '<span style="color:#67C23A">+' + (parseFloat(d.cryptoAmount) - parseFloat(d.paypazFee)).toFixed(2) + '&nbsp;' + d.cryptoCurrency + '</span>' : '<span style="color:#C0C4CC">—</span>'],
@@ -3994,6 +4098,11 @@ function applyOverviewPerms() {
 lucide.createIcons();
 activeTopNavEl = document.querySelector('.nav-item.active');
 applyOverviewPerms();
+histDepFiltersInit();
+histWdrFiltersInit();
+histOrdFiltersInit();
+histRampInFiltersInit();
+memberFiltersInit();
 filterHistOrd();
 renderMemberList(MEMBERS);
 renderApiKeyList();
