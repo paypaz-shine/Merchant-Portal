@@ -1192,6 +1192,7 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">流水号</span><div class="filter-control"><input class="field-input" placeholder="请输入流水号"></div></div>
           <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">账户类型</span><div class="filter-control"><div class="ms-lite" id="histDepAccttype-lite" tabindex="0" onclick="msLiteToggle('histDepAccttype')" onblur="setTimeout(function(){msLiteClose('histDepAccttype')},150)"><span class="ms-lite-text placeholder" id="histDepAccttype-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepAccttype-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">哈希</span><div class="filter-control"><input class="field-input" placeholder="请输入交易哈希"></div></div>
           <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="histDepType-lite" tabindex="0" onclick="msLiteToggle('histDepType')" onblur="setTimeout(function(){msLiteClose('histDepType')},150)"><span class="ms-lite-text placeholder" id="histDepType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepType-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="histDepToken-lite" tabindex="0" onclick="msLiteToggle('histDepToken')" onblur="setTimeout(function(){msLiteClose('histDepToken')},150)"><span class="ms-lite-text placeholder" id="histDepToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepToken-dropdown" style="display:none"></div></div></div>
@@ -1203,8 +1204,8 @@
       </div>
       <div class="table-card">
         <div class="summary-bar"><span class="count-label">共</span><span class="count-value">13</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table style="min-width:1580px">
-          <thead><tr><th style="width:160px">流水号</th><th style="width:150px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:90px">手续费</th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
+        <div class="table-wrap"><table style="min-width:1640px">
+          <thead><tr><th style="width:160px">流水号</th><th style="width:210px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:90px">手续费</th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
           <tbody>
             <tr>
               <td class="asset-num">52560103262640</td>
@@ -1236,7 +1237,7 @@
             </tr>
             <tr>
               <td class="asset-num">52501987328000</td>
-              <td class="asset-num">291654802</td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">400.00</td><td class="asset-num">2.00</td>
               <td class="asset-num" style="color:#67C23A">+398.00</td>
@@ -3206,6 +3207,7 @@ function acctLedgerFiltersInit() {
   ], '全部');
 }
 function histDepFiltersInit() {
+  msLiteInit('histDepAccttype', [{value:'main',label:'主账号'},{value:'sub',label:'子账号'}], '全部');
   msLiteInit('histDepType', [{value:'直充',label:'直充'},{value:'On Ramp',label:'On Ramp'}], '全部');
   msLiteInit('histDepToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
   msLiteInit('histDepNetwork', [{value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'}], '全部');
