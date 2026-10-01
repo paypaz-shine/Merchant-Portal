@@ -191,6 +191,13 @@
     table { width:100%; border-collapse:collapse; table-layout:fixed; }
     thead tr { background:#F5F7FA; border-bottom:1px solid #EBEEF5; }
     th { height:44px; padding:0 12px; text-align:left; font-size:13px; font-weight:600; color:#606266; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .th-hint { position:relative; display:inline-block; vertical-align:-2px; cursor:help; }
+    .th-hint-pop {
+      display:none; position:absolute; top:calc(100% + 6px); left:50%; transform:translateX(-50%);
+      background:#303133; color:#FFFFFF; font-size:12px; font-weight:400; line-height:1.2;
+      white-space:nowrap; padding:10px; border-radius:4px; z-index:2000;
+    }
+    .th-hint:hover .th-hint-pop { display:block; }
     tbody tr { border-bottom:1px solid #EBEEF5; transition:background 0.1s; }
     tbody tr:hover { background:#F5F7FA !important; }
     tbody tr:nth-child(odd)  { background:#fff; }
@@ -490,6 +497,17 @@
     .wd-wizard-step.active .wd-wizard-label { color:#303133; font-weight:600; }
     .wd-wizard-panel { display:none; }
     .wd-wizard-panel.active { display:block; }
+
+    /* ── 测试开关（模拟余额不足）── */
+    .el-switch { display:inline-flex; cursor:pointer; }
+    .el-switch-track { width:40px; height:20px; border-radius:10px; background:#DCDFE6; position:relative; transition:background-color .3s; }
+    .el-switch-thumb { width:16px; height:16px; border-radius:50%; background:#FFFFFF; position:absolute; top:2px; left:2px; transition:left .3s; box-shadow:0 1px 2px rgba(0,0,0,.2); }
+    .el-switch.on .el-switch-track { background:#409EFF; }
+    .el-switch.on .el-switch-thumb { left:22px; }
+
+    /* ── 批量提币 · 余额不足弹窗 ── */
+    #wdInsufficientModal .btn { transition:transform 140ms ease-out, opacity .15s; }
+    #wdInsufficientModal .btn:active { transform:scale(0.97); }
     .wd-confirm-cards { display:flex; gap:14px; margin-bottom:14px; }
     .wd-confirm-card { flex:1; border-radius:6px; padding:14px 16px; background:#F5F7FA; }
     .wd-confirm-card-label { font-size:13px; color:#606266; margin-bottom:8px; }
@@ -953,7 +971,7 @@
         <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">7</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">11</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
         <div class="table-wrap"><table style="min-width:1000px">
           <thead><tr><th style="width:150px">用户ID</th><th style="width:100px">类型</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:110px">金额</th><th style="width:120px">变动后余额</th><th style="width:160px">时间</th></tr></thead>
           <tbody>
@@ -991,10 +1009,18 @@
             </tr>
             <tr>
               <td class="asset-num">460466237</td>
+              <td><span class="badge badge-gray">网络费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-2.91</td>
+              <td class="asset-num">997.09</td>
+              <td style="font-family:Inter">2026-08-09 15:22:00</td>
+            </tr>
+            <tr>
+              <td class="asset-num">460466237</td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-5.00</td>
-              <td class="asset-num">995.00</td>
+              <td class="asset-num">992.09</td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
             </tr>
             <tr>
@@ -1012,6 +1038,30 @@
               <td class="asset-num" style="color:#F56C6C">-0.53</td>
               <td class="asset-num">529.47</td>
               <td style="font-family:Inter">2026-06-30 17:59:29</td>
+            </tr>
+            <tr>
+              <td class="asset-num">291654802</td>
+              <td><span class="badge badge-green">充值</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#67C23A">+400.00</td>
+              <td class="asset-num">400.00</td>
+              <td style="font-family:Inter">2026-08-01 09:32:10</td>
+            </tr>
+            <tr>
+              <td class="asset-num">291654802</td>
+              <td><span class="badge badge-gray">网络费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-3.00</td>
+              <td class="asset-num">397.00</td>
+              <td style="font-family:Inter">2026-08-01 09:32:10</td>
+            </tr>
+            <tr>
+              <td class="asset-num">291654802</td>
+              <td><span class="badge badge-gray">手续费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-2.00</td>
+              <td class="asset-num">395.00</td>
+              <td style="font-family:Inter">2026-08-01 09:32:10</td>
             </tr>
           </tbody>
         </table></div>
@@ -1098,7 +1148,13 @@
 
     <!-- ── 批量提币 Pane ── -->
     <div class="hist-pane" id="wdBatch">
-      <div style="display:flex;justify-content:flex-end">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;color:#909399">模拟余额不足（测试用）</span>
+          <div class="el-switch" id="wdInsufficientSwitch" onclick="wdToggleInsufficientSwitch()">
+            <div class="el-switch-track"><div class="el-switch-thumb"></div></div>
+          </div>
+        </div>
         <button class="btn btn-primary" onclick="wdBatchModalOpen()">
           <i data-lucide="upload" size="14"></i>批量提币
         </button>
@@ -1204,8 +1260,8 @@
       </div>
       <div class="table-card">
         <div class="summary-bar"><span class="count-label">共</span><span class="count-value">13</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table style="min-width:1640px">
-          <thead><tr><th style="width:160px">流水号</th><th style="width:210px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:90px">手续费</th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
+        <div class="table-wrap"><table style="min-width:1712px">
+          <thead><tr><th style="width:160px">流水号</th><th style="width:210px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:190px;overflow:visible">手续费&nbsp;<span class="th-hint"><i data-lucide="info" style="width:12px;height:12px;color:#909399;"></i><span class="th-hint-pop">On Ramp 充值：手续费 = 网络费 + 手续费</span></span></th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
           <tbody>
             <tr>
               <td class="asset-num">52560103262640</td>
@@ -1225,8 +1281,8 @@
               <td class="asset-num">52530912004096</td>
               <td class="asset-num">460466237</td>
               <td>USDT1</td><td>TRON</td>
-              <td class="asset-num">1000.00</td><td class="asset-num">5.00</td>
-              <td class="asset-num" style="color:#67C23A">+995.00</td>
+              <td class="asset-num">1000.00</td><td class="asset-num">7.91（2.91 + 5.00）</td>
+              <td class="asset-num" style="color:#67C23A">+992.09</td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
               <td>On Ramp</td>
@@ -1239,8 +1295,8 @@
               <td class="asset-num">52501987328000</td>
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td>USDT1</td><td>TRON</td>
-              <td class="asset-num">400.00</td><td class="asset-num">2.00</td>
-              <td class="asset-num" style="color:#67C23A">+398.00</td>
+              <td class="asset-num">400.00</td><td class="asset-num">5.00（3.00 + 2.00）</td>
+              <td class="asset-num" style="color:#67C23A">+395.00</td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
               <td>On Ramp</td>
@@ -1658,15 +1714,15 @@
       </div>
       <div class="table-card">
         <div class="summary-bar" style="border-bottom:1px solid #EBEEF5;"><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table style="min-width:1400px">
+        <div class="table-wrap"><table style="min-width:1430px">
           <thead><tr>
             <th style="width:170px">订单号</th>
             <th style="width:110px">UserID</th>
             <th style="width:150px">支付法币金额</th>
-            <th style="width:120px">网络费</th>
+            <th style="width:110px">网络费</th>
             <th style="width:150px">入金代币数量</th>
-            <th style="width:140px">On Ramp 手续费</th>
-            <th style="width:100px">净入账</th>
+            <th style="width:140px">手续费</th>
+            <th style="width:130px;overflow:visible">净入账&nbsp;<span class="th-hint"><i data-lucide="info" style="width:12px;height:12px;color:#909399;"></i><span class="th-hint-pop">净入账 = 入金代币数量 − 网络费 − 手续费</span></span></th>
             <th style="width:110px">状态</th>
             <th style="width:155px">创建时间</th>
             <th style="width:155px">完成时间</th>
@@ -1677,7 +1733,7 @@
               <td><div class="copy-cell"><span>CFD-20260810-001</span><span class="copy-icon" onclick="copyText('CFD-20260810-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">54,100 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">160 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">350.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1690,10 +1746,10 @@
               <td><div class="copy-cell"><span>CFD-20260809-001</span><span class="copy-icon" onclick="copyText('CFD-20260809-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
               <td class="asset-num">1,031.50 <span style="color:#909399;font-size:12px">USD</span></td>
-              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">2.91 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">1000.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">5.00 <span style="color:#909399;font-size:12px">USDT</span></td>
-              <td class="asset-num" style="color:#67C23A">+995.00</td>
+              <td class="asset-num" style="color:#67C23A">+992.09</td>
               <td><span class="badge badge-red">拒付待核查</span></td>
               <td style="font-family:Inter">2026-08-09 15:00:00</td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
@@ -1703,7 +1759,7 @@
               <td><div class="copy-cell"><span>CFD-20260808-001</span><span class="copy-icon" onclick="copyText('CFD-20260808-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">77,285 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">225 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">500.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1716,7 +1772,7 @@
               <td><div class="copy-cell"><span>CFD-20260807-001</span><span class="copy-icon" onclick="copyText('CFD-20260807-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802</td>
               <td class="asset-num">515.75 <span style="color:#909399;font-size:12px">USD</span></td>
-              <td class="asset-num">1.50 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">1.45 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">500.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1729,7 +1785,7 @@
               <td><div class="copy-cell"><span>CFD-20260806-001</span><span class="copy-icon" onclick="copyText('CFD-20260806-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
               <td class="asset-num">46,371 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">135 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">300.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1742,7 +1798,7 @@
               <td><div class="copy-cell"><span>CFD-20260805-001</span><span class="copy-icon" onclick="copyText('CFD-20260805-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">206.30 <span style="color:#909399;font-size:12px">USD</span></td>
-              <td class="asset-num">0.60 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">0.58 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">200.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1755,7 +1811,7 @@
               <td><div class="copy-cell"><span>CFD-20260804-001</span><span class="copy-icon" onclick="copyText('CFD-20260804-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802</td>
               <td class="asset-num">30,914 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">90 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">200.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1768,7 +1824,7 @@
               <td><div class="copy-cell"><span>CFD-20260803-001</span><span class="copy-icon" onclick="copyText('CFD-20260803-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
               <td class="asset-num">15,457 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">45 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">100.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1781,7 +1837,7 @@
               <td><div class="copy-cell"><span>CFD-20260802-001</span><span class="copy-icon" onclick="copyText('CFD-20260802-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
               <td class="asset-num">103.15 <span style="color:#909399;font-size:12px">USD</span></td>
-              <td class="asset-num">0.30 <span style="color:#909399;font-size:12px">USD</span></td>
+              <td class="asset-num">0.29 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">100.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td><span class="cell-empty">—</span></td>
               <td><span class="cell-empty">—</span></td>
@@ -1794,10 +1850,10 @@
               <td><div class="copy-cell"><span>CFD-20260801-001</span><span class="copy-icon" onclick="copyText('CFD-20260801-001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802</td>
               <td class="asset-num">62,340 <span style="color:#909399;font-size:12px">JPY</span></td>
-              <td class="asset-num">180 <span style="color:#909399;font-size:12px">JPY</span></td>
+              <td class="asset-num">3.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">400.00 <span style="color:#909399;font-size:12px">USDT</span></td>
               <td class="asset-num">2.00 <span style="color:#909399;font-size:12px">USDT</span></td>
-              <td class="asset-num" style="color:#67C23A">+398.00</td>
+              <td class="asset-num" style="color:#67C23A">+395.00</td>
               <td><span class="badge badge-green">已完成</span></td>
               <td style="font-family:Inter">2026-08-01 09:10:00</td>
               <td style="font-family:Inter">2026-08-01 09:32:10</td>
@@ -2178,6 +2234,27 @@
       <button class="btn btn-default btn-sm" onclick="wdBatchModalClose()">取消</button>
       <button class="btn btn-default btn-sm" id="wdBatchPrevBtn" style="display:none" onclick="wdBatchPrev()">上一步</button>
       <button class="btn btn-primary btn-sm" id="wdBatchNextBtn" disabled onclick="wdBatchNext()">下一步</button>
+    </div>
+  </div>
+</div>
+
+<!-- 批量提币 · 余额不足提示 -->
+<div class="modal-overlay" id="wdInsufficientModal">
+  <div class="modal" style="width:440px">
+    <div class="modal-header">
+      <span class="modal-title">账户余额不足</span>
+      <span class="modal-close" onclick="closeModal('wdInsufficientModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box alert-warning" style="margin-bottom:14px">
+        <i data-lucide="triangle-alert" class="alert-icon" size="16"></i>
+        <span>账户余额不足，请先充值。</span>
+      </div>
+      <div id="wdInsufficientDetail"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('wdInsufficientModal')">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="wdGoDepositFromInsufficient()">立即充值</button>
     </div>
   </div>
 </div>
@@ -3432,6 +3509,16 @@ var WD_BATCH_BALANCE = {
   'USDC|TRON': 2110.32,
   'USDC|Ethereum': 4780.00
 };
+var wdBatchInsufficient = false;
+var wdBatchForceInsufficient = false;
+var wdBatchLastGroups = [];
+var wdBatchLastTotalRequested = 0;
+var wdBatchLastTotalBalance = 0;
+
+function wdToggleInsufficientSwitch() {
+  wdBatchForceInsufficient = !wdBatchForceInsufficient;
+  document.getElementById('wdInsufficientSwitch').classList.toggle('on', wdBatchForceInsufficient);
+}
 
 function wdBatchModalOpen() {
   wdBatchGoStep(1);
@@ -3486,6 +3573,7 @@ function wdBatchUpdateNextDisabled() {
 function wdBatchNext() {
   if (wdBatchStep === 1) {
     wdBatchBuildConfirmPreview();
+    if (wdBatchInsufficient) { wdRenderInsufficientDetail(); openModal('wdInsufficientModal'); return; }
     wdBatchGoStep(2);
   } else if (wdBatchStep === 2) {
     wdBatchGoStep(3);
@@ -3547,12 +3635,35 @@ function wdGroupRowsByTokenChain(rows) {
 
 function wdBatchBuildBalanceSummary(validRows) {
   var groups = wdGroupRowsByTokenChain(validRows);
+  wdBatchLastGroups = groups;
+  wdBatchLastTotalRequested = groups.reduce(function(sum, g) { return sum + g.total; }, 0);
+  wdBatchLastTotalBalance = groups.reduce(function(sum, g) {
+    var balance = WD_BATCH_BALANCE[g.token + '|' + g.chain];
+    return sum + (balance != null ? balance : 0);
+  }, 0);
+  wdBatchInsufficient = wdBatchForceInsufficient || wdBatchLastTotalRequested > wdBatchLastTotalBalance;
   document.getElementById('wdConfirmBalanceTbody').innerHTML = groups.map(function(g) {
     var balance = WD_BATCH_BALANCE[g.token + '|' + g.chain];
     var balanceText = balance != null ? balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
     return '<tr><td>' + g.token + '</td><td>' + g.chain + '</td><td class="asset-num">' + balanceText + '</td>'
       + '<td class="asset-num" style="color:#F56C6C">-' + g.total.toFixed(2) + '</td></tr>';
   }).join('');
+}
+
+function wdRenderInsufficientDetail() {
+  var requestedText = wdBatchLastTotalRequested.toFixed(2);
+  var balanceText = wdBatchLastTotalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('wdInsufficientDetail').innerHTML =
+    '<div class="lo-summary-bar">'
+    + '<div class="lo-summary-item"><span class="lo-summary-label">提现金额（合计）</span><span class="lo-summary-value" style="color:#F56C6C">' + requestedText + '</span></div>'
+    + '<div class="lo-summary-item"><span class="lo-summary-label">账户余额</span><span class="lo-summary-value">' + balanceText + '</span></div>'
+    + '</div>';
+}
+
+function wdGoDepositFromInsufficient() {
+  closeModal('wdInsufficientModal');
+  wdBatchModalClose();
+  switchSubPage('pageDepositAsset', '充币');
 }
 
 function wdBatchValidateStep3() {
@@ -3711,6 +3822,25 @@ function openWdrDetail(orderId) {
   lucide.createIcons();
 }
 
+// 网络费按 On Ramp 配置取值：与管理后台「商户管理/详情 → On Ramp」的币对配置口径一致
+// （USDT/JPY 走固定金额，其余走渠道实际值按客户汇率折算，不做渠道级精度，仅供商户侧参考）
+// 净入账 = 入金代币数量 − 网络费（按配置） − 手续费，两者都从商户账户余额扣除
+var RAMP_NETWORK_FEE_CONFIG = {
+  'USDT/JPY': { mode: 'fixed', fixed: 3.00 },
+};
+function rampInNetworkFeeCrypto(d) {
+  var cfg = RAMP_NETWORK_FEE_CONFIG[d.cryptoCurrency + '/' + d.fiatCurrency];
+  if (cfg && cfg.mode === 'fixed') return cfg.fixed;
+  var fee = parseFloat(String(d.networkFee).replace(/,/g, '')) || 0;
+  var rate = parseFloat(d.customerRate) || 0;
+  if (!rate) return 0;
+  return fee / rate;
+}
+function rampInNetAmount(d) {
+  if (!d.paypazFee) return null;
+  return parseFloat(d.cryptoAmount) - rampInNetworkFeeCrypto(d) - parseFloat(d.paypazFee);
+}
+
 function openRampDetail(type, orderId) {
   document.getElementById('rampDetailTitle').textContent = (type === 'in' ? 'On Ramp' : '出金') + '订单详情';
   var rows;
@@ -3723,10 +3853,10 @@ function openRampDetail(type, orderId) {
       ['商户订单',        d.brokerOrderRef],
       ['UserID',         d.uid],
       ['支付法币金额',    d.fiatAmount + '&nbsp;' + d.fiatCurrency],
-      ['网络费',          d.networkFee + '&nbsp;' + d.fiatCurrency],
+      ['网络费',          rampInNetworkFeeCrypto(d).toFixed(2) + '&nbsp;' + d.cryptoCurrency],
       ['入金代币数量',    d.cryptoAmount + '&nbsp;' + d.cryptoCurrency],
-      ['On Ramp 手续费',  d.paypazFee ? d.paypazFee + '&nbsp;' + d.cryptoCurrency : '<span style="color:#C0C4CC">—</span>'],
-      ['净入账',          d.paypazFee ? '<span style="color:#67C23A">+' + (parseFloat(d.cryptoAmount) - parseFloat(d.paypazFee)).toFixed(2) + '&nbsp;' + d.cryptoCurrency + '</span>' : '<span style="color:#C0C4CC">—</span>'],
+      ['手续费',          d.paypazFee ? d.paypazFee + '&nbsp;' + d.cryptoCurrency : '<span style="color:#C0C4CC">—</span>'],
+      ['净入账',          d.paypazFee ? '<span style="color:#67C23A">+' + rampInNetAmount(d).toFixed(2) + '&nbsp;' + d.cryptoCurrency + '</span>' : '<span style="color:#C0C4CC">—</span>'],
       ['状态',           '<span class="badge ' + statusCls + '">' + d.status + '</span>'],
       ['创建时间',        d.createdAt],
       ['完成时间',        d.completedAt]
