@@ -221,6 +221,9 @@
     .badge-gray   { background:#f4f4f5; color:#909399; }
     .badge-blue   { background:#ECF5FF; color:#409EFF; border:1px solid #D9ECFF; }
     .badge-orange { background:#fdf6ec; color:#E6A23C; border:1px solid #faecd8; }
+    .badge-purple { background:#F4F0FF; color:#8B5CF6; border:1px solid #E4DAFD; }
+    .btn-spin { animation:btnSpin 1s linear infinite; }
+    @keyframes btnSpin { to { transform:rotate(360deg); } }
 
     /* ── Pagination ──────────────────────────────────── */
     .pagination-bar { height:52px; border-top:1px solid #EBEEF5; display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:0 20px; flex-shrink:0; }
@@ -248,6 +251,32 @@
     .form-row:last-child { margin-bottom:0; }
     .form-label { font-size:13px; color:#606266; text-align:right; white-space:nowrap; }
     .req { color:#F56C6C; margin-right:2px; }
+    /* 法币收款订单详情 */
+    .fp-sec { grid-column:1/-1; font-size:13px; font-weight:600; color:#303133; padding-top:12px; border-top:1px solid #EBEEF5; }
+    .fp-sec:first-child { border-top:none; padding-top:0; }
+    .fp-tl { grid-column:1/-1; display:flex; flex-direction:column; }
+    .fp-tl-item { display:flex; gap:10px; position:relative; padding-bottom:12px; }
+    .fp-tl-item:not(:last-child)::before { content:''; position:absolute; left:5px; top:16px; bottom:0; width:1px; background:#EBEEF5; }
+    .fp-tl-dot { width:11px; height:11px; border-radius:50%; background:#67C23A; flex-shrink:0; margin-top:4px; }
+    .fp-tl-label { font-size:13px; color:#303133; }
+    .fp-tl-sub { font-size:12px; color:#909399; margin-top:2px; font-family:'Inter',sans-serif; }
+    .fp-file { display:flex; align-items:center; gap:8px; font-size:13px; }
+    .fp-file a { color:#409EFF; cursor:pointer; }
+    .fp-drawer-mask { position:fixed; inset:0; background:rgba(0,0,0,.42); z-index:900; display:none; }
+    .fp-drawer-mask.show { display:block; }
+    .fp-drawer { position:fixed; top:0; right:0; bottom:0; width:620px; max-width:92vw; background:#fff; box-shadow:-8px 0 30px rgba(0,0,0,.15); z-index:901; display:flex; flex-direction:column; transform:translateX(100%); transition:transform .25s ease; }
+    .fp-drawer.show { transform:translateX(0); }
+    .fp-drawer-hd { padding:16px 20px; border-bottom:1px solid #EBEEF5; flex-shrink:0; display:flex; align-items:flex-start; justify-content:space-between; }
+    .fp-drawer-title { font-size:15px; font-weight:600; color:#303133; }
+    .fp-drawer-sub { font-size:12px; color:#909399; margin-top:4px; font-family:'Inter',sans-serif; }
+    .fp-drawer-close { cursor:pointer; color:#909399; display:flex; }
+    .fp-drawer-close:hover { color:#606266; }
+    .fp-drawer-body { flex:1; overflow-y:auto; padding:18px 20px; }
+    .fp-drawer-ft { padding:12px 20px; border-top:1px solid #EBEEF5; flex-shrink:0; display:flex; justify-content:flex-end; gap:8px; }
+    .fp-textarea-wrap { position:relative; }
+    .fp-textarea-wrap textarea { padding-bottom:22px !important; }
+    .fp-textarea-count { position:absolute; right:18px; bottom:6px; font-size:12px; color:#909399; font-family:'Inter',sans-serif; background:#fff; line-height:1; pointer-events:none; }
+    .fp-dr-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px 24px; }
     .field-err { font-size:12px; color:#F56C6C; margin-top:6px; display:none; }
     .form-field { margin-bottom:24px; }
     .form-field:last-child { margin-bottom:0; }
@@ -638,8 +667,8 @@
         <div class="stat-row">
           <div class="stat-item">
             <div class="stat-label">余额</div>
-            <div class="stat-value">801.25<span class="stat-unit">USDT</span></div>
-            <div class="stat-sub">可用 800.24 USDT &nbsp;|&nbsp; 冻结 1.01 USDT</div>
+            <div class="stat-value">224,610.73<span class="stat-unit">USDT</span></div>
+            <div class="stat-sub">可用 224,609.72 USDT &nbsp;|&nbsp; 冻结 1.01 USDT</div>
           </div>
           <div class="stat-sep"></div>
           <div class="stat-item">
@@ -962,25 +991,116 @@
       <h2 class="page-title">账户明细</h2>
       <div class="filter-card">
         <div class="filter-grid">
-          <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" id="acctLedgerUid" placeholder="请输入客户 ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="acctLedgerToken-lite" tabindex="0" onclick="msLiteToggle('acctLedgerToken')" onblur="setTimeout(function(){msLiteClose('acctLedgerToken')},150)"><span class="ms-lite-text placeholder" id="acctLedgerToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerToken-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="acctLedgerNetwork-lite" tabindex="0" onclick="msLiteToggle('acctLedgerNetwork')" onblur="setTimeout(function(){msLiteClose('acctLedgerNetwork')},150)"><span class="ms-lite-text placeholder" id="acctLedgerNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerNetwork-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="acctLedgerType-lite" tabindex="0" onclick="msLiteToggle('acctLedgerType')" onblur="setTimeout(function(){msLiteClose('acctLedgerType')},150)"><span class="ms-lite-text placeholder" id="acctLedgerType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerType-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">时间</span><div class="filter-control"><div class="drp-wrap" id="drpAcctLedger"></div></div></div>
         </div>
-        <div class="filter-actions"><button class="btn btn-default">重置</button><button class="btn btn-primary">查询</button></div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="acctLedgerReset()">重置</button><button class="btn btn-primary" onclick="acctLedgerSearch()">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value">11</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="acctLedgerCount">21</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
         <div class="table-wrap"><table style="min-width:1000px">
-          <thead><tr><th style="width:150px">用户ID</th><th style="width:100px">类型</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:110px">金额</th><th style="width:120px">变动后余额</th><th style="width:160px">时间</th></tr></thead>
-          <tbody>
+          <thead><tr><th style="width:150px">客户 ID</th><th style="width:100px">类型</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:110px">金额</th><th style="width:120px">变动后余额</th><th style="width:180px">关联订单号</th><th style="width:160px">时间</th></tr></thead>
+          <tbody id="acctLedgerTbody">
+            <tr>
+              <td class="asset-num">291654802</td>
+              <td><span class="badge badge-gray">手续费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-158.59</td>
+              <td class="asset-num">224,610.73</td>
+              <td class="asset-num">PZPI20261006-00124</td>
+              <td style="font-family:Inter">2026-10-06 11:40:30</td>
+            </tr>
+            <tr>
+              <td class="asset-num">291654802</td>
+              <td><span class="badge badge-green">法币收款</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#67C23A">+31,716.26</td>
+              <td class="asset-num">224,769.32</td>
+              <td class="asset-num">PZPI20261006-00124</td>
+              <td style="font-family:Inter">2026-10-06 11:40:30</td>
+            </tr>
+            <tr>
+              <td class="asset-num">460466237</td>
+              <td><span class="badge badge-gray">手续费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-275.80</td>
+              <td class="asset-num">193,053.06</td>
+              <td class="asset-num">PZPI20261006-00120</td>
+              <td style="font-family:Inter">2026-10-06 10:16:40</td>
+            </tr>
+            <tr>
+              <td class="asset-num">460466237</td>
+              <td><span class="badge badge-green">法币收款</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#67C23A">+55,158.71</td>
+              <td class="asset-num">193,328.86</td>
+              <td class="asset-num">PZPI20261006-00120</td>
+              <td style="font-family:Inter">2026-10-06 10:16:40</td>
+            </tr>
+            <tr>
+              <td class="asset-num">635102950</td>
+              <td><span class="badge badge-gray">手续费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-308.55</td>
+              <td class="asset-num">138,170.15</td>
+              <td class="asset-num">PZPI20261005-00098</td>
+              <td style="font-family:Inter">2026-10-05 16:44:52</td>
+            </tr>
+            <tr>
+              <td class="asset-num">635102950</td>
+              <td><span class="badge badge-green">法币收款</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#67C23A">+61,709.77</td>
+              <td class="asset-num">138,478.70</td>
+              <td class="asset-num">PZPI20261005-00098</td>
+              <td style="font-family:Inter">2026-10-05 16:44:52</td>
+            </tr>
+            <tr>
+              <td class="asset-num">635102950</td>
+              <td><span class="badge badge-gray">手续费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-137.90</td>
+              <td class="asset-num">76,768.93</td>
+              <td class="asset-num">PZPI20261004-00058</td>
+              <td style="font-family:Inter">2026-10-04 12:10:37</td>
+            </tr>
+            <tr>
+              <td class="asset-num">635102950</td>
+              <td><span class="badge badge-green">法币收款</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#67C23A">+27,579.35</td>
+              <td class="asset-num">76,906.83</td>
+              <td class="asset-num">PZPI20261004-00058</td>
+              <td style="font-family:Inter">2026-10-04 12:10:37</td>
+            </tr>
+            <tr>
+              <td class="asset-num">460466237</td>
+              <td><span class="badge badge-gray">手续费</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-241.13</td>
+              <td class="asset-num">49,327.48</td>
+              <td class="asset-num">PZPI20261004-00051</td>
+              <td style="font-family:Inter">2026-10-04 10:25:19</td>
+            </tr>
+            <tr>
+              <td class="asset-num">460466237</td>
+              <td><span class="badge badge-green">法币收款</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#67C23A">+48,225.30</td>
+              <td class="asset-num">49,568.61</td>
+              <td class="asset-num">PZPI20261004-00051</td>
+              <td style="font-family:Inter">2026-10-04 10:25:19</td>
+            </tr>
             <tr>
               <td class="asset-num">635102950</td>
               <td><span class="badge badge-blue">提现</span></td>
               <td>USDC</td><td>BSC</td>
               <td class="asset-num" style="color:#F56C6C">-20.00</td>
               <td class="asset-num">509.47</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-20 09:00:00</td>
             </tr>
             <tr>
@@ -988,7 +1108,8 @@
               <td><span class="badge badge-orange">调账</span></td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+6.22</td>
-              <td class="asset-num">951.22</td>
+              <td class="asset-num">1,343.31</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-18 10:00:00</td>
             </tr>
             <tr>
@@ -996,15 +1117,17 @@
               <td><span class="badge badge-blue">提现</span></td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-50.00</td>
-              <td class="asset-num">945.00</td>
+              <td class="asset-num">1,337.09</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-10 10:00:00</td>
             </tr>
             <tr>
               <td class="asset-num">460466237</td>
-              <td><span class="badge badge-green">充值</span></td>
+              <td><span class="badge badge-gray">手续费</span></td>
               <td>USDT</td><td>TRON</td>
-              <td class="asset-num" style="color:#67C23A">+1000.00</td>
-              <td class="asset-num">1000.00</td>
+              <td class="asset-num" style="color:#F56C6C">-5.00</td>
+              <td class="asset-num">1,387.09</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
             </tr>
             <tr>
@@ -1012,39 +1135,26 @@
               <td><span class="badge badge-gray">网络费</span></td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-2.91</td>
-              <td class="asset-num">997.09</td>
+              <td class="asset-num">1,392.09</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
             </tr>
             <tr>
               <td class="asset-num">460466237</td>
-              <td><span class="badge badge-gray">手续费</span></td>
+              <td><span class="badge badge-green">充值</span></td>
               <td>USDT</td><td>TRON</td>
-              <td class="asset-num" style="color:#F56C6C">-5.00</td>
-              <td class="asset-num">992.09</td>
+              <td class="asset-num" style="color:#67C23A">+1000.00</td>
+              <td class="asset-num">1,395.00</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
             </tr>
             <tr>
               <td class="asset-num">291654802</td>
-              <td><span class="badge badge-green">充值</span></td>
-              <td>USDC</td><td>BSC</td>
-              <td class="asset-num" style="color:#67C23A">+530.00</td>
-              <td class="asset-num">530.00</td>
-              <td style="font-family:Inter">2026-06-30 17:59:29</td>
-            </tr>
-            <tr>
-              <td class="asset-num">291654802</td>
               <td><span class="badge badge-gray">手续费</span></td>
-              <td>USDC</td><td>BSC</td>
-              <td class="asset-num" style="color:#F56C6C">-0.53</td>
-              <td class="asset-num">529.47</td>
-              <td style="font-family:Inter">2026-06-30 17:59:29</td>
-            </tr>
-            <tr>
-              <td class="asset-num">291654802</td>
-              <td><span class="badge badge-green">充值</span></td>
               <td>USDT</td><td>TRON</td>
-              <td class="asset-num" style="color:#67C23A">+400.00</td>
-              <td class="asset-num">400.00</td>
+              <td class="asset-num" style="color:#F56C6C">-2.00</td>
+              <td class="asset-num">395.00</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-01 09:32:10</td>
             </tr>
             <tr>
@@ -1053,15 +1163,35 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-3.00</td>
               <td class="asset-num">397.00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td style="font-family:Inter">2026-08-01 09:32:10</td>
+            </tr>
+            <tr>
+              <td class="asset-num">291654802</td>
+              <td><span class="badge badge-green">充值</span></td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#67C23A">+400.00</td>
+              <td class="asset-num">400.00</td>
+              <td><span class="cell-empty">—</span></td>
               <td style="font-family:Inter">2026-08-01 09:32:10</td>
             </tr>
             <tr>
               <td class="asset-num">291654802</td>
               <td><span class="badge badge-gray">手续费</span></td>
-              <td>USDT</td><td>TRON</td>
-              <td class="asset-num" style="color:#F56C6C">-2.00</td>
-              <td class="asset-num">395.00</td>
-              <td style="font-family:Inter">2026-08-01 09:32:10</td>
+              <td>USDC</td><td>BSC</td>
+              <td class="asset-num" style="color:#F56C6C">-0.53</td>
+              <td class="asset-num">529.47</td>
+              <td><span class="cell-empty">—</span></td>
+              <td style="font-family:Inter">2026-06-30 17:59:29</td>
+            </tr>
+            <tr>
+              <td class="asset-num">291654802</td>
+              <td><span class="badge badge-green">充值</span></td>
+              <td>USDC</td><td>BSC</td>
+              <td class="asset-num" style="color:#67C23A">+530.00</td>
+              <td class="asset-num">530.00</td>
+              <td><span class="cell-empty">—</span></td>
+              <td style="font-family:Inter">2026-06-30 17:59:29</td>
             </tr>
           </tbody>
         </table></div>
@@ -1132,7 +1262,7 @@
                 <span class="wd-field-label">提现金额</span>
                 <input class="field-input" style="width:100%" id="wdAmount" type="number" placeholder="请输入提现金额" oninput="wdCalcNet()">
                 <div class="wd-balance-row">
-                  <span>可用余额：<span style="font-family:Inter;color:#606266" id="wdBalance">1,284.30</span>&nbsp;<span id="wdBalanceToken">USDT1</span></span>
+                  <span>可用余额：<span style="font-family:Inter;color:#606266" id="wdBalance">224,609.72</span>&nbsp;<span id="wdBalanceToken">USDT1</span></span>
                   <span class="wd-max-link" onclick="wdFillMax()">全部</span>
                 </div>
               </div>
@@ -1236,8 +1366,9 @@
       <div class="hist-tab-nav">
         <div class="hist-tab-item active" onclick="switchHistTab('histDep',this)">充币</div>
         <div class="hist-tab-item" onclick="switchHistTab('histWdr',this)">提币</div>
-        <div class="hist-tab-item" onclick="switchHistTab('histOrd',this)">订单</div>
+        <div class="hist-tab-item" onclick="switchHistTab('histOrd',this)">充币订单</div>
         <div class="hist-tab-item" onclick="switchHistTab('histRampIn',this)">On Ramp</div>
+        <div class="hist-tab-item" onclick="switchHistTab('histFiat',this)">法币收款</div>
         <div class="hist-tab-item" onclick="switchHistTab('histRampOut',this)">出金</div>
       </div>
     </div>
@@ -1247,7 +1378,7 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">流水号</span><div class="filter-control"><input class="field-input" placeholder="请输入流水号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" placeholder="请输入客户 ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">账户类型</span><div class="filter-control"><div class="ms-lite" id="histDepAccttype-lite" tabindex="0" onclick="msLiteToggle('histDepAccttype')" onblur="setTimeout(function(){msLiteClose('histDepAccttype')},150)"><span class="ms-lite-text placeholder" id="histDepAccttype-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepAccttype-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">哈希</span><div class="filter-control"><input class="field-input" placeholder="请输入交易哈希"></div></div>
           <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="histDepType-lite" tabindex="0" onclick="msLiteToggle('histDepType')" onblur="setTimeout(function(){msLiteClose('histDepType')},150)"><span class="ms-lite-text placeholder" id="histDepType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histDepType-dropdown" style="display:none"></div></div></div>
@@ -1261,7 +1392,7 @@
       <div class="table-card">
         <div class="summary-bar"><span class="count-label">共</span><span class="count-value">13</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
         <div class="table-wrap"><table style="min-width:1712px">
-          <thead><tr><th style="width:160px">流水号</th><th style="width:210px">用户ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:190px;overflow:visible">手续费&nbsp;<span class="th-hint"><i data-lucide="info" style="width:12px;height:12px;color:#909399;"></i><span class="th-hint-pop">On Ramp 充值：手续费 = 网络费 + 手续费</span></span></th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
+          <thead><tr><th style="width:160px">流水号</th><th style="width:210px">客户 ID</th><th style="width:70px">代币</th><th style="width:70px">网络</th><th style="width:100px">到账金额</th><th style="width:190px;overflow:visible">手续费&nbsp;<span class="th-hint"><i data-lucide="info" style="width:12px;height:12px;color:#909399;"></i><span class="th-hint-pop">On Ramp 充值：手续费 = 网络费 + 手续费</span></span></th><th style="width:100px">净入账</th><th style="width:150px">钱包地址</th><th style="width:150px">哈希</th><th style="width:100px">类型</th><th style="width:160px">到账时间</th><th style="width:120px">状态</th><th style="width:110px">订单号</th><th style="width:80px">操作</th></tr></thead>
           <tbody>
             <tr>
               <td class="asset-num">52560103262640</td>
@@ -1456,7 +1587,7 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">用户 ID</span><div class="filter-control"><input class="field-input" placeholder="请输入用户 ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" placeholder="请输入客户 ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="histWdrToken-lite" tabindex="0" onclick="msLiteToggle('histWdrToken')" onblur="setTimeout(function(){msLiteClose('histWdrToken')},150)"><span class="ms-lite-text placeholder" id="histWdrToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrToken-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="histWdrNetwork-lite" tabindex="0" onclick="msLiteToggle('histWdrNetwork')" onblur="setTimeout(function(){msLiteClose('histWdrNetwork')},150)"><span class="ms-lite-text placeholder" id="histWdrNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrNetwork-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histWdrStatus-lite" tabindex="0" onclick="msLiteToggle('histWdrStatus')" onblur="setTimeout(function(){msLiteClose('histWdrStatus')},150)"><span class="ms-lite-text placeholder" id="histWdrStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrStatus-dropdown" style="display:none"></div></div></div>
@@ -1644,7 +1775,7 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">用户ID</span><div class="filter-control"><input id="histOrdUidInput" class="field-input" placeholder="请输入用户ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input id="histOrdUidInput" class="field-input" placeholder="请输入客户 ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="histOrdToken-lite" tabindex="0" onclick="msLiteToggle('histOrdToken')" onblur="setTimeout(function(){msLiteClose('histOrdToken')},150)"><span class="ms-lite-text placeholder" id="histOrdToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histOrdToken-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="histOrdNetwork-lite" tabindex="0" onclick="msLiteToggle('histOrdNetwork')" onblur="setTimeout(function(){msLiteClose('histOrdNetwork')},150)"><span class="ms-lite-text placeholder" id="histOrdNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histOrdNetwork-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histOrdStatus-lite" tabindex="0" onclick="msLiteToggle('histOrdStatus')" onblur="setTimeout(function(){msLiteClose('histOrdStatus')},150)"><span class="ms-lite-text" id="histOrdStatus-text">处理中</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histOrdStatus-dropdown" style="display:none"></div></div></div>
@@ -1658,7 +1789,7 @@
         <div class="table-wrap"><table style="min-width:1520px">
           <thead><tr>
             <th style="width:200px">订单号</th>
-            <th style="width:160px">用户ID</th>
+            <th style="width:160px">客户 ID</th>
             <th style="width:70px">代币</th>
             <th style="width:80px">网络</th>
             <th style="width:100px">应付金额</th>
@@ -1704,7 +1835,7 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
-          <div class="filter-item"><span class="filter-label-el">UserID</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" placeholder="请输入客户 ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">法币币种</span><div class="filter-control"><div class="ms-lite" id="histRampInFiat-lite" tabindex="0" onclick="msLiteToggle('histRampInFiat')" onblur="setTimeout(function(){msLiteClose('histRampInFiat')},150)"><span class="ms-lite-text placeholder" id="histRampInFiat-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histRampInFiat-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histRampInStatus-lite" tabindex="0" onclick="msLiteToggle('histRampInStatus')" onblur="setTimeout(function(){msLiteClose('histRampInStatus')},150)"><span class="ms-lite-text placeholder" id="histRampInStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histRampInStatus-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">创建时间</span><div class="filter-control"><div class="drp-wrap" id="drpRampInCreate"></div></div></div>
@@ -1717,7 +1848,7 @@
         <div class="table-wrap"><table style="min-width:1430px">
           <thead><tr>
             <th style="width:170px">订单号</th>
-            <th style="width:110px">UserID</th>
+            <th style="width:110px">客户 ID</th>
             <th style="width:150px">支付法币金额</th>
             <th style="width:110px">网络费</th>
             <th style="width:150px">入金代币数量</th>
@@ -1865,11 +1996,37 @@
       </div>
     </div>
 
+    <!-- ── 法币收款 Pane ── -->
+    <div class="hist-pane" id="histFiat">
+      <div class="filter-card">
+        <div class="filter-grid">
+          <div class="filter-item"><span class="filter-label-el">收款订单号</span><div class="filter-control"><input class="field-input" id="fpfId" placeholder="请输入收款订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">商户订单号</span><div class="filter-control"><input class="field-input" id="fpfRef" placeholder="请输入商户订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" id="fpfUid" placeholder="请输入客户 ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histFiatStatus-lite" tabindex="0" onclick="msLiteToggle('histFiatStatus')" onblur="setTimeout(function(){msLiteClose('histFiatStatus')},150)"><span class="ms-lite-text placeholder" id="histFiatStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histFiatStatus-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">创建时间</span><div class="filter-control"><div class="drp-wrap" id="drpFiatCreate"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">完成时间</span><div class="filter-control"><div class="drp-wrap" id="drpFiatDone"></div></div></div>
+        </div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="fiatReset()">重置</button><button class="btn btn-primary" onclick="fiatSearch()">查询</button></div>
+      </div>
+      <div class="table-card">
+        <div class="summary-bar" style="border-bottom:1px solid #EBEEF5;"><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1600px;table-layout:auto">
+          <thead><tr>
+            <th>收款订单号</th><th>商户订单号</th><th>客户 ID</th><th>订单金额</th><th>汇率</th><th>到账金额</th><th>手续费</th><th>净入账</th>
+            <th>状态</th><th>创建时间</th><th>完成时间</th><th>操作</th>
+          </tr></thead>
+          <tbody id="fiatTbody"></tbody>
+        </table></div>
+        <div class="pagination-bar" id="fiatPager"></div>
+      </div>
+    </div>
+
     <!-- ── 出金 Pane ── -->
     <div class="hist-pane" id="histRampOut">
       <div class="filter-card">
         <div class="filter-grid">
-          <div class="filter-item"><span class="filter-label-el">UserID：</span><div class="filter-control"><input class="field-input" placeholder="请输入 UserID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID：</span><div class="filter-control"><input class="field-input" placeholder="请输入客户 ID"></div></div>
           <div class="filter-item"><span class="filter-label-el">订单号：</span><div class="filter-control"><input class="field-input" placeholder="请输入订单号"></div></div>
           <div class="filter-item"><span class="filter-label-el">状态：</span><div class="filter-control"><div class="ms-lite" id="histRampOutStatus-lite" tabindex="0" onclick="msLiteToggle('histRampOutStatus')" onblur="setTimeout(function(){msLiteClose('histRampOutStatus')},150)"><span class="ms-lite-text placeholder" id="histRampOutStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histRampOutStatus-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">创建时间：</span><div class="filter-control"><div class="drp-wrap" id="drpRampOutCreate"></div></div></div>
@@ -1882,7 +2039,7 @@
         <div class="table-wrap"><table>
           <thead><tr>
             <th style="width:195px">订单号</th>
-            <th style="width:105px">UserID</th>
+            <th style="width:105px">客户 ID</th>
             <th style="width:150px">加密资产</th>
             <th style="width:120px">汇率</th>
             <th style="width:140px">到账法币</th>
@@ -2093,6 +2250,45 @@
 </div>
 
 <!-- 出入金订单详情 -->
+<!-- 法币收款订单详情（右侧抽屉） -->
+<div class="fp-drawer-mask" id="fiatDetailMask" onclick="closeFiatDrawer('fiatDetail')"></div>
+<div class="fp-drawer" id="fiatDetailDrawer">
+  <div class="fp-drawer-hd">
+    <div><div class="fp-drawer-title">法币收款订单详情</div><div class="fp-drawer-sub" id="fiatDetailSub"></div></div>
+    <span class="fp-drawer-close" onclick="closeFiatDrawer('fiatDetail')"><i data-lucide="x" size="18"></i></span>
+  </div>
+  <div class="fp-drawer-body"><div class="fp-dr-grid" id="fiatDetailBody"></div></div>
+  <div class="fp-drawer-ft" id="fiatDetailFooter"></div>
+</div>
+
+<!-- 法币收款订单申诉（右侧抽屉） -->
+<div class="fp-drawer-mask" id="fiatAppealMask" onclick="closeFiatDrawer('fiatAppeal')"></div>
+<div class="fp-drawer" id="fiatAppealDrawer" style="width:520px">
+  <div class="fp-drawer-hd">
+    <div><div class="fp-drawer-title">申诉</div><div class="fp-drawer-sub" id="fiatAppealSub"></div></div>
+    <span class="fp-drawer-close" onclick="closeFiatDrawer('fiatAppeal')"><i data-lucide="x" size="18"></i></span>
+  </div>
+  <div class="fp-drawer-body" style="display:flex;flex-direction:column;gap:16px">
+    <div class="fp-dr-grid" id="fiatAppealMeta"></div>
+    <div>
+      <label class="form-field-label"><span class="req">*</span>申诉说明</label>
+      <div class="fp-textarea-wrap">
+        <textarea class="field-input" id="fiatAppealNote" rows="4" maxlength="500" placeholder="请输入申诉说明" style="width:100%;height:auto;padding:8px 10px;resize:vertical" oninput="fiatAppealCount()"></textarea>
+        <span class="fp-textarea-count" id="fiatAppealCount">0/500</span>
+      </div>
+      <div class="field-err" id="fiatAppealNoteErr">请输入申诉说明</div>
+    </div>
+    <div>
+      <label class="form-field-label">附件</label>
+      <button class="btn btn-default btn-sm" onclick="document.getElementById('fiatAppealFile').click()"><i data-lucide="upload" size="13"></i>上传文件</button>
+      <input type="file" id="fiatAppealFile" multiple accept=".pdf,.jpg,.jpeg,.png,.heic,.webp" style="display:none" onchange="fiatAppealAddFiles(this)">
+      <div style="font-size:12px;color:#909399;margin-top:6px">支持 PDF / JPG / JPEG / PNG / HEIC / WEBP，单个 10MB 以内，最多 5 个</div>
+      <div id="fiatAppealFiles" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="fp-drawer-ft"><button class="btn btn-default btn-sm" onclick="closeFiatDrawer('fiatAppeal')">取消</button><button class="btn btn-primary btn-sm" id="fiatAppealBtn" onclick="fiatAppealSubmit()">提交申诉</button></div>
+</div>
+
 <div class="modal-overlay" id="rampDetailModal">
   <div class="modal" style="width:560px">
     <div class="modal-header">
@@ -2364,6 +2560,7 @@
           <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermWithdraw" value="withdraw" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Withdraw</span></label>
           <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOnramp" value="onramp"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">On Ramp</span></label>
           <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOfframp" value="offramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Off Ramp</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermFiatpayin" value="fiatpayin"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Fiat Pay-in</span></label>
         </div>
       </div>
       <div class="form-field" id="akStatusRow" style="display:none">
@@ -2531,7 +2728,7 @@ const PERM_GROUPS = [
       { id:'hist_wdr_detail', label:'详情' },
       { id:'hist_wdr_export', label:'导出' }
     ]},
-    { id:'asset_hist_ord', label:'历史记录 / 订单', items:[
+    { id:'asset_hist_ord', label:'历史记录 / 充币订单', items:[
       { id:'hist_ord_view',   label:'查看' },
       { id:'hist_ord_detail', label:'详情' },
       { id:'hist_ord_edit',   label:'编辑' },
@@ -2540,6 +2737,11 @@ const PERM_GROUPS = [
     { id:'asset_hist_ramp_in',  label:'历史记录 / 入金', items:[
       { id:'hist_ramp_in_view',   label:'查看' },
       { id:'hist_ramp_in_export', label:'导出' }
+    ]},
+    { id:'asset_hist_fiat', label:'历史记录 / 法币收款', items:[
+      { id:'hist_fiat_view',   label:'查看' },
+      { id:'hist_fiat_appeal', label:'申诉' },
+      { id:'hist_fiat_export', label:'导出' }
     ]},
     { id:'asset_hist_ramp_out', label:'历史记录 / 出金', items:[
       { id:'hist_ramp_out_view',   label:'查看' },
@@ -3280,8 +3482,36 @@ function acctLedgerFiltersInit() {
     {value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'},{value:'BSC',label:'BSC'},{value:'Polygon',label:'Polygon'}
   ], '全部');
   msLiteInit('acctLedgerType', [
-    {value:'充值',label:'充值'},{value:'提现',label:'提现'},{value:'手续费',label:'手续费'},{value:'调账',label:'调账'}
+    {value:'充值',label:'充值'},{value:'提现',label:'提现'},{value:'手续费',label:'手续费'},{value:'调账',label:'调账'},
+    {value:'法币收款',label:'法币收款'}
   ], '全部');
+}
+// 账户明细筛选：客户 ID 模糊匹配；代币 / 网络 / 类型多选；时间按日期范围（含起止两天）
+function acctLedgerSearch() {
+  var uid = document.getElementById('acctLedgerUid').value.trim();
+  var tokens = msLiteGet('acctLedgerToken'), nets = msLiteGet('acctLedgerNetwork'), types = msLiteGet('acctLedgerType');
+  var range = drpGet(document.getElementById('drpAcctLedger'));
+  var tbody = document.getElementById('acctLedgerTbody'), n = 0;
+  var empty = document.getElementById('acctLedgerEmpty');
+  if (empty) empty.remove();
+  Array.prototype.forEach.call(tbody.rows, function(tr) {
+    var c = tr.cells, day = c[7].textContent.trim().slice(0, 10);
+    var ok = (!uid || c[0].textContent.indexOf(uid) !== -1) &&
+      (!tokens.length || tokens.indexOf(c[2].textContent.trim()) !== -1) &&
+      (!nets.length || nets.indexOf(c[3].textContent.trim()) !== -1) &&
+      (!types.length || types.indexOf(c[1].textContent.trim()) !== -1) &&
+      (!range || (day >= range.s && day <= range.e));
+    tr.style.display = ok ? '' : 'none';
+    if (ok) n++;
+  });
+  if (!n) tbody.insertAdjacentHTML('beforeend', '<tr id="acctLedgerEmpty"><td colspan="8" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>');
+  document.getElementById('acctLedgerCount').textContent = n;
+}
+function acctLedgerReset() {
+  document.getElementById('acctLedgerUid').value = '';
+  ['acctLedgerToken', 'acctLedgerNetwork', 'acctLedgerType'].forEach(msLiteReset);
+  drpReset(document.getElementById('drpAcctLedger'));
+  acctLedgerSearch();
 }
 function histDepFiltersInit() {
   msLiteInit('histDepAccttype', [{value:'main',label:'主账号'},{value:'sub',label:'子账号'}], '全部');
@@ -3302,6 +3532,9 @@ function histRampInFiltersInit() {
     {value:'处理中',label:'处理中'},{value:'待补充验证',label:'待补充验证'},{value:'结算延迟',label:'结算延迟'},
     {value:'拒付待核查',label:'拒付待核查'},{value:'已完成',label:'已完成'},{value:'失败',label:'失败'},{value:'已过期',label:'已过期'}
   ], '全部');
+}
+function histFiatFiltersInit() {
+  msLiteInit('histFiatStatus', ['待付款','待核验','申诉中','成功','已退款','失败','已取消'].map(function(v){ return { value:v, label:v }; }), '全部');
 }
 function histRampOutFiltersInit() {
   msLiteInit('histRampOutStatus', [
@@ -3504,7 +3737,7 @@ var WD_BATCH_MOCK_ROWS = [
   { no:'shine00000000000006', uid:'460466237', addr:'TXpqZ3mNc4o6P8r0T2v4X6z8B0d2F4h6J8Kx1nWb', chain:'TRON', token:'USDC', amount:'5.00', valid:true, remark:'' }
 ];
 var WD_BATCH_BALANCE = {
-  'USDT|TRON': 5138.48,
+  'USDT|TRON': 224609.72,
   'USDT|Ethereum': 3450.60,
   'USDC|TRON': 2110.32,
   'USDC|Ethereum': 4780.00
@@ -3803,7 +4036,7 @@ function openWdrDetail(orderId) {
   var netVal = d.net === '—' ? d.net : '<span style="color:#F56C6C">' + d.net + '</span>';
   var rows = [
     ['订单号', orderId],
-    ['用户 ID', uidVal],
+    ['客户 ID', uidVal],
     ['代币 / 网络', d.token + ' / ' + d.network],
     ['提币金额', d.amount + ' ' + d.token],
     ['手续费', d.fee === '—' ? d.fee : d.fee + ' ' + d.token],
@@ -3841,6 +4074,227 @@ function rampInNetAmount(d) {
   return parseFloat(d.cryptoAmount) - rampInNetworkFeeCrypto(d) - parseFloat(d.paypazFee);
 }
 
+/* ─────────────────────────────────────────────────────
+   历史记录 · 法币收款
+   商户只看到入金金额、商户结算汇率 Rm、到账代币 X、充值手续费；不展示收款服务商汇率 Rc、价差、收款服务商与收款卡
+   申诉入口：订单「待核验」且用户提交凭证超过响应时限 T（30 分钟）
+───────────────────────────────────────────────────── */
+var FIAT_T_MIN = 30;
+var FIAT_STATUS_CLS = { '待付款':'badge-blue', '待核验':'badge-orange', '申诉中':'badge-purple', '成功':'badge-green', '已退款':'badge-gray', '失败':'badge-red', '已取消':'badge-gray' };
+function fiatAgo(min) {
+  var d = new Date(Date.now() - min * 60000), p = function(n){ return n < 10 ? '0' + n : '' + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
+function fiatFmt(v) { return Number(v).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+// x：到账代币；fee：充值手续费；仅成功订单有值
+var FIAT_ORDERS_MP = [
+  { id:'PZPI20261006-00131', ref:'CFD-20261006-0131', uid:'635102950', cny:280000, rm:7.2720, status:'待付款', created:fiatAgo(12), done:null },
+  { id:'PZPI20261006-00129', ref:'CFD-20261006-0129', uid:'460466237', cny:300000, rm:7.2720, status:'待核验', created:fiatAgo(58), proofAt:fiatAgo(45), done:null },
+  { id:'PZPI20261006-00125', ref:'CFD-20261006-0125', uid:'291654802', cny:250000, rm:7.2518, status:'待核验', created:fiatAgo(20), proofAt:fiatAgo(8), done:null },
+  { id:'PZPI20261006-00128', ref:'CFD-20261006-0128', uid:'635102950', cny:320000, rm:7.2215, status:'申诉中', created:'2026-10-06 10:38:44', proofAt:'2026-10-06 10:45:02', done:null,
+    appeal:{ type:'到账异常', by:'收款服务商', time:'2026-10-06 10:58:20', ruling:null } },
+  { id:'PZPI20261006-00124', ref:'CFD-20261006-0124', uid:'291654802', cny:230000, rm:7.2518, status:'成功', created:'2026-10-06 10:12:05', proofAt:'2026-10-06 10:19:47', done:'2026-10-06 11:40:30', x:31716.26, fee:158.59,
+    appeal:{ type:'商户申诉', by:'商户', time:'2026-10-06 10:55:12', note:'用户已于 10:18 完成转账，提供银行回单，收款服务商超时未确认。', files:[{ name:'银行回单_0124.pdf', size:'236 KB' }], ruling:'资金已到账', rulingTime:'2026-10-06 11:40:30' } },
+  { id:'PZPI20261006-00120', ref:'CFD-20261006-0120', uid:'460466237', cny:400000, rm:7.2518, status:'成功', created:'2026-10-06 09:50:02', proofAt:'2026-10-06 09:55:30', done:'2026-10-06 10:16:40', x:55158.71, fee:275.80 },
+  { id:'PZPI20261006-00100', ref:'CFD-20261006-0100', uid:'291654802', cny:210000, rm:7.2720, status:'已取消', created:'2026-10-06 09:05:40', done:'2026-10-06 09:35:40' },
+  { id:'PZPI20261005-00098', ref:'CFD-20261005-0098', uid:'635102950', cny:450000, rm:7.2922, status:'成功', created:'2026-10-05 16:20:13', proofAt:'2026-10-05 16:28:40', done:'2026-10-05 16:44:52', x:61709.77, fee:308.55 },
+  { id:'PZPI20261005-00090', ref:'CFD-20261005-0090', uid:'460466237', cny:220000, rm:7.2662, status:'已退款', created:'2026-10-05 14:12:09', proofAt:'2026-10-05 14:20:15', done:'2026-10-05 18:30:00',
+    appeal:{ type:'到账异常', by:'收款服务商', time:'2026-10-05 14:40:26', ruling:'需退款', rulingTime:'2026-10-05 15:20:00' },
+    refund:{ amount:220000, time:'2026-10-05 18:30:00', file:'退款凭证_00090.pdf', size:'318 KB' } },
+  { id:'PZPI20261005-00085', ref:'CFD-20261005-0085', uid:'291654802', cny:260000, rm:7.2215, status:'失败', created:'2026-10-05 11:08:51', proofAt:'2026-10-05 11:20:02', done:'2026-10-05 15:40:22',
+    appeal:{ type:'商户申诉', by:'商户', time:'2026-10-05 12:05:40', note:'用户称已转账，收款服务商超过 30 分钟未确认，请平台核实。', files:[{ name:'付款截图_0085.png', size:'1.2 MB' }], ruling:'资金未到账', reason:'用户未付款', rulingTime:'2026-10-05 15:40:22' } },
+  { id:'PZPI20261004-00058', ref:'CFD-20261004-0058', uid:'635102950', cny:200000, rm:7.2518, status:'成功', created:'2026-10-04 11:45:20', proofAt:'2026-10-04 11:52:08', done:'2026-10-04 12:10:37', x:27579.35, fee:137.90 },
+  { id:'PZPI20261004-00051', ref:'CFD-20261004-0051', uid:'460466237', cny:350000, rm:7.2576, status:'成功', created:'2026-10-04 10:02:36', proofAt:'2026-10-04 10:09:51', done:'2026-10-04 10:25:19', x:48225.30, fee:241.13 },
+];
+var fiatFilter = {}, fiatPage = 1, fiatSize = 10, fiatCurId = null, fiatFiles = [];
+function fiatCanAppeal(o) {
+  return o.status === '待核验' && !o.appeal && o.proofAt && (Date.now() - new Date(o.proofAt.replace(/-/g, '/')).getTime()) >= FIAT_T_MIN * 60000;
+}
+// 待核验但凭证提交未满 T：返回剩余分钟（向上取整），列表展示置灰图标；其他情况返回 0
+function fiatAppealWait(o) {
+  if (o.status !== '待核验' || o.appeal || !o.proofAt) return 0;
+  var left = FIAT_T_MIN * 60000 - (Date.now() - new Date(o.proofAt.replace(/-/g, '/')).getTime());
+  return left > 0 ? Math.ceil(left / 60000) : 0;
+}
+function fiatSearch() {
+  fiatFilter = { id:document.getElementById('fpfId').value.trim(), ref:document.getElementById('fpfRef').value.trim(),
+    uid:document.getElementById('fpfUid').value.trim(), status:msLiteGet('histFiatStatus') };
+  fiatPage = 1;
+  renderFiatOrders();
+}
+function fiatReset() {
+  ['fpfId', 'fpfRef', 'fpfUid'].forEach(function(id){ document.getElementById(id).value = ''; });
+  msLiteReset('histFiatStatus');
+  fiatSearch();
+}
+function fiatGo(p) { fiatPage = p; renderFiatOrders(); }
+function fiatSetSize(v) { fiatSize = parseInt(v, 10); fiatPage = 1; renderFiatOrders(); }
+function renderFiatOrders() {
+  var f = fiatFilter, E = '<span class="cell-empty">—</span>';
+  var unit = function(u){ return ' <span style="color:#909399;font-size:12px">' + u + '</span>'; };
+  var rows = FIAT_ORDERS_MP.filter(function(o){
+    return (!f.id || o.id.indexOf(f.id) !== -1) && (!f.ref || o.ref.indexOf(f.ref) !== -1) && (!f.uid || o.uid.indexOf(f.uid) !== -1) &&
+      (!f.status || !f.status.length || f.status.indexOf(o.status) !== -1);
+  });
+  var pages = Math.max(1, Math.ceil(rows.length / fiatSize));
+  fiatPage = Math.min(fiatPage, pages);
+  document.getElementById('fiatTbody').innerHTML = rows.slice((fiatPage - 1) * fiatSize, fiatPage * fiatSize).map(function(o){
+    var ok = o.status === '成功';
+    var ops = '<span class="action-icon" title="详情" onclick="openFiatDetail(\'' + o.id + '\')"><i data-lucide="eye" size="14"></i></span>' +
+      (fiatCanAppeal(o) ? '<span class="action-icon" title="申诉" onclick="openFiatAppeal(\'' + o.id + '\')"><i data-lucide="flag" size="14"></i></span>' :
+        fiatAppealWait(o) ? '<span class="action-icon disabled" title="用户提交凭证满 30 分钟后可申诉，剩余 ' + fiatAppealWait(o) + ' 分钟"><i data-lucide="flag" size="14"></i></span>' : '');
+    return '<tr>' +
+      '<td><div class="copy-cell"><span>' + o.id + '</span><span class="copy-icon" onclick="copyText(\'' + o.id + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
+      '<td><div class="copy-cell"><span>' + o.ref + '</span><span class="copy-icon" onclick="copyText(\'' + o.ref + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
+      '<td class="asset-num">' + o.uid + '</td>' +
+      '<td class="asset-num">' + fiatFmt(o.cny) + unit('CNY') + '</td>' +
+      '<td class="asset-num">1 USDT = ' + o.rm.toFixed(4) + ' CNY</td>' +
+      '<td class="asset-num">' + (ok ? fiatFmt(o.x) + unit('USDT') : E) + '</td>' +
+      '<td class="asset-num">' + (ok ? fiatFmt(o.fee) + unit('USDT') : E) + '</td>' +
+      '<td class="asset-num">' + (ok ? fiatFmt(Math.round((o.x - o.fee) * 100) / 100) + unit('USDT') : E) + '</td>' +
+      '<td><span class="badge ' + FIAT_STATUS_CLS[o.status] + '">' + o.status + '</span></td>' +
+      '<td style="font-family:Inter">' + o.created + '</td><td style="font-family:Inter">' + (o.done || E) + '</td>' +
+      '<td><div class="action-cell">' + ops + '</div></td></tr>';
+  }).join('') || '<tr><td colspan="12" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>';
+  var btns = '';
+  for (var i = 1; i <= pages; i++) btns += '<button class="page-btn' + (i === fiatPage ? ' active' : '') + '" onclick="fiatGo(' + i + ')">' + i + '</button>';
+  document.getElementById('fiatPager').innerHTML = '<span class="pagination-total">共 ' + rows.length + ' 条</span>' +
+    '<select class="page-size-select" onchange="fiatSetSize(this.value)">' + [10, 20, 50].map(function(n){ return '<option value="' + n + '"' + (n === fiatSize ? ' selected' : '') + '>' + n + ' 条/页</option>'; }).join('') + '</select>' +
+    '<button class="page-btn" ' + (fiatPage <= 1 ? 'disabled' : '') + ' onclick="fiatGo(' + (fiatPage - 1) + ')"><i data-lucide="chevron-left" size="14"></i></button>' + btns +
+    '<button class="page-btn" ' + (fiatPage >= pages ? 'disabled' : '') + ' onclick="fiatGo(' + (fiatPage + 1) + ')"><i data-lucide="chevron-right" size="14"></i></button>';
+  lucide.createIcons();
+}
+// 申诉中进度：未裁定 → 平台处理中；已裁定需退款 → 待收款服务商退款（裁定即生效：资金已到账 / 无异常直接成功，资金未到账直接失败）
+function fiatAppealProgress(o) {
+  var r = o.appeal && o.appeal.ruling;
+  return r === '需退款' ? '已裁定，待收款服务商退款' : '平台处理中';
+}
+function openFiatDrawer(k) {
+  document.querySelector('#' + k + 'Drawer .fp-drawer-body').scrollTop = 0;
+  document.getElementById(k + 'Mask').classList.add('show');
+  document.getElementById(k + 'Drawer').classList.add('show');
+  lucide.createIcons();
+}
+function closeFiatDrawer(k) {
+  document.getElementById(k + 'Mask').classList.remove('show');
+  document.getElementById(k + 'Drawer').classList.remove('show');
+}
+function fiatItem(label, value, full) {
+  return '<div' + (full ? ' style="grid-column:1/-1"' : '') + '><div class="info-item-label">' + label + '</div><div class="info-item-value" style="margin-top:4px">' + value + '</div></div>';
+}
+function fiatFileRow(name, size) {
+  return '<div class="fp-file"><i data-lucide="paperclip" size="13" style="color:#909399"></i><span>' + name + '</span><span style="color:#909399;font-size:12px;font-family:Inter">' + size + '</span>' +
+    '<a onclick="showToast(\'（原型）预览 ' + name + '\')">预览</a><a onclick="showToast(\'（原型）已开始下载 ' + name + '\')">下载</a></div>';
+}
+function openFiatDetail(id) {
+  renderFiatOrders();   // 打开详情即按最新数据重新判断，同步刷新列表该行的状态与申诉入口
+  var o = FIAT_ORDERS_MP.filter(function(x){ return x.id === id; })[0], ok = o.status === '成功', E = '—', a = o.appeal;
+  var html = '<div class="fp-sec">订单信息</div>' +
+    fiatItem('收款订单号', o.id) + fiatItem('商户订单号', o.ref) + fiatItem('客户 ID', o.uid) +
+    fiatItem('状态', '<span class="badge ' + FIAT_STATUS_CLS[o.status] + '">' + o.status + '</span>') +
+    fiatItem('创建时间', o.created) + fiatItem('完成时间', o.done || E) +
+    '<div class="fp-sec">金额与结算</div>' +
+    fiatItem('订单金额', fiatFmt(o.cny) + '&nbsp;CNY') + fiatItem('汇率', '1 USDT = ' + o.rm.toFixed(4) + ' CNY') +
+    fiatItem('到账金额', ok ? fiatFmt(o.x) + '&nbsp;USDT' : E) + fiatItem('手续费', ok ? fiatFmt(o.fee) + '&nbsp;USDT' : E) +
+    fiatItem('净入账', ok ? fiatFmt(Math.round((o.x - o.fee) * 100) / 100) + '&nbsp;USDT' : E);
+  if (o.proofAt) html += '<div class="fp-sec">用户付款凭证</div>' + fiatItem('提交时间', o.proofAt) + fiatItem('凭证', fiatFileRow('付款凭证_' + o.id.slice(-5) + '.jpg', '512 KB'), true);
+  if (a) {
+    html += '<div class="fp-sec">申诉信息</div>' + fiatItem('申诉类型', a.type) + fiatItem('申诉时间', a.time) +
+      fiatItem('裁定结果', o.status === '申诉中' ? (a.ruling ? a.ruling + '<span style="color:#909399">（' + fiatAppealProgress(o).replace('已裁定，', '') + '）</span>' : '<span style="color:#909399">平台处理中</span>') : (a.ruling || E)) + fiatItem('裁定时间', a.rulingTime || E) +
+      (o.status === '失败' && a.reason ? fiatItem('失败原因', a.reason) : '') +
+      (a.note ? fiatItem('申诉说明', a.note, true) : '') +
+      (a.files && a.files.length ? fiatItem('附件', a.files.map(function(f){ return fiatFileRow(f.name, f.size); }).join(''), true) : '');
+  }
+  if (o.refund) {
+    html += '<div class="fp-sec">退款信息</div>' + fiatItem('退款金额', fiatFmt(o.refund.amount) + '&nbsp;CNY') + fiatItem('退款时间', o.refund.time) +
+      fiatItem('退款凭证', fiatFileRow(o.refund.file, o.refund.size), true);
+  }
+  var tl = [['订单创建', o.created]];
+  if (o.proofAt) tl.push(['用户提交付款凭证', o.proofAt]);
+  if (a) tl.push([a.by + '发起申诉', a.time]);
+  // 裁定成功 / 失败：裁定即生效，裁定与终态合并为一个节点；需退款：裁定节点后再接退款节点
+  var END = { '成功':'结算完成', '失败':'订单失败' }[o.status];
+  if (a && a.ruling) {
+    if (o.status === '成功' || o.status === '失败') tl.push(['平台裁定：' + a.ruling + '，' + END, a.rulingTime]);
+    else tl.push(['平台裁定：' + a.ruling, a.rulingTime]);
+  }
+  if (o.status === '成功' && !a) tl.push(['收款服务商确认收款，结算完成', o.done]);
+  if (o.status === '已退款') tl.push([o.refund && o.refund.manual ? '平台人工标记已退款' : '收款服务商原路退款，订单已退款', o.done]);
+  if (o.status === '已取消') tl.push(['用户超时未付款，订单取消', o.done]);
+  html += '<div class="fp-sec">处理记录</div><div class="fp-tl">' + tl.map(function(t){
+    return '<div class="fp-tl-item"><span class="fp-tl-dot"></span><div><div class="fp-tl-label">' + t[0] + '</div><div class="fp-tl-sub">' + t[1] + '</div></div></div>';
+  }).join('') + '</div>';
+  document.getElementById('fiatDetailSub').textContent = o.id;
+  document.getElementById('fiatDetailBody').innerHTML = html;
+  document.getElementById('fiatDetailFooter').innerHTML = '<button class="btn btn-default btn-sm" onclick="closeFiatDrawer(\'fiatDetail\')">关闭</button>' +
+    (fiatCanAppeal(o) ? '<button class="btn btn-primary btn-sm" onclick="closeFiatDrawer(\'fiatDetail\');openFiatAppeal(\'' + o.id + '\')">申诉</button>' : '');
+  openFiatDrawer('fiatDetail');
+}
+function openFiatAppeal(id) {
+  var o = FIAT_ORDERS_MP.filter(function(x){ return x.id === id; })[0];
+  fiatCurId = id; fiatFiles = [];
+  document.getElementById('fiatAppealSub').textContent = o.id;
+  document.getElementById('fiatAppealMeta').innerHTML = fiatItem('收款订单号', o.id) + fiatItem('客户 ID', o.uid) +
+    fiatItem('订单金额', fiatFmt(o.cny) + '&nbsp;CNY') + fiatItem('凭证提交时间', o.proofAt);
+  document.getElementById('fiatAppealNote').value = '';
+  fiatAppealCount();
+  document.getElementById('fiatAppealNoteErr').style.display = 'none';
+  document.getElementById('fiatAppealFile').value = '';
+  renderFiatAppealFiles();
+  openFiatDrawer('fiatAppeal');
+}
+function fiatAppealCount() {
+  document.getElementById('fiatAppealCount').textContent = document.getElementById('fiatAppealNote').value.length + '/500';
+}
+function fiatAppealAddFiles(input) {
+  Array.prototype.forEach.call(input.files, function(f){
+    var ext = (f.name.split('.').pop() || '').toLowerCase();
+    if (['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'].indexOf(ext) === -1) { showToast(f.name + ' 格式不支持', 'error'); return; }
+    if (f.size > 10 * 1024 * 1024) { showToast(f.name + ' 超过 10MB', 'error'); return; }
+    if (fiatFiles.length >= 5) { showToast('最多上传 5 个文件', 'error'); return; }
+    fiatFiles.push({ name:f.name, size:f.size < 1024 * 1024 ? Math.ceil(f.size / 1024) + ' KB' : (f.size / 1024 / 1024).toFixed(1) + ' MB' });
+  });
+  input.value = '';
+  renderFiatAppealFiles();
+}
+function fiatAppealRemove(i) { fiatFiles.splice(i, 1); renderFiatAppealFiles(); }
+function renderFiatAppealFiles() {
+  document.getElementById('fiatAppealFiles').innerHTML = fiatFiles.map(function(f, i){
+    return '<div class="fp-file"><i data-lucide="paperclip" size="13" style="color:#909399"></i><span>' + f.name + '</span><span style="color:#909399;font-size:12px;font-family:Inter">' + f.size + '</span><a onclick="fiatAppealRemove(' + i + ')">删除</a></div>';
+  }).join('');
+  lucide.createIcons();
+}
+function fiatAppealSubmit() {
+  var note = document.getElementById('fiatAppealNote').value.trim();
+  if (!note) { document.getElementById('fiatAppealNoteErr').style.display = 'block'; return; }
+  // 防重复提交：接口返回前按钮 loading 且不可点
+  var btn = document.getElementById('fiatAppealBtn');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" size="13" class="btn-spin"></i>提交中';
+  lucide.createIcons();
+  setTimeout(function(){
+    btn.disabled = false;
+    btn.innerHTML = '提交申诉';
+    fiatAppealDone(note);
+  }, 800);
+}
+function fiatAppealDone(note) {
+  var o = FIAT_ORDERS_MP.filter(function(x){ return x.id === fiatCurId; })[0];
+  // 服务端校验：订单状态已变化（如收款服务商先确认收款 / 先申诉）则拒绝受理
+  if (!fiatCanAppeal(o)) {
+    closeFiatDrawer('fiatAppeal');
+    renderFiatOrders();
+    showToast('订单状态已变更，请刷新后重试', 'error');
+    return;
+  }
+  o.status = '申诉中';
+  o.appeal = { type:'商户申诉', by:'商户', time:fiatAgo(0), ruling:null, note:note, files:fiatFiles.slice() };
+  closeFiatDrawer('fiatAppeal');
+  renderFiatOrders();
+  showToast('申诉已提交，等待平台裁定');
+}
+
 function openRampDetail(type, orderId) {
   document.getElementById('rampDetailTitle').textContent = (type === 'in' ? 'On Ramp' : '出金') + '订单详情';
   var rows;
@@ -3851,7 +4305,7 @@ function openRampDetail(type, orderId) {
     rows = [
       ['Paypaz 订单',    orderId],
       ['商户订单',        d.brokerOrderRef],
-      ['UserID',         d.uid],
+      ['客户 ID',         d.uid],
       ['支付法币金额',    d.fiatAmount + '&nbsp;' + d.fiatCurrency],
       ['网络费',          rampInNetworkFeeCrypto(d).toFixed(2) + '&nbsp;' + d.cryptoCurrency],
       ['入金代币数量',    d.cryptoAmount + '&nbsp;' + d.cryptoCurrency],
@@ -3868,7 +4322,7 @@ function openRampDetail(type, orderId) {
     rows = [
       ['Paypaz 订单 ID', orderId],
       ['CFD 订单引用号',  d.cfdRef],
-      ['UserID',         d.uid],
+      ['客户 ID',         d.uid],
       ['方向',           d.dir],
       ['卖出加密资产',    d.crypto + ' / ' + d.network],
       ['到账法币',        d.fiat],
@@ -4050,6 +4504,19 @@ function openRampDetail(type, orderId) {
     _s.trig=null;
   }
 
+  // 读取 / 清空某个日期范围选择器的值（供列表筛选使用）
+  window.drpGet = function(wrap) {
+    var t = wrap && wrap.querySelector('.drp-trigger');
+    return t ? (_s.vals[t.dataset.drpid] || null) : null;
+  };
+  window.drpReset = function(wrap) {
+    var t = wrap && wrap.querySelector('.drp-trigger');
+    if (!t) return;
+    delete _s.vals[t.dataset.drpid];
+    var txt = t.querySelector('.drp-trigger-text');
+    txt.textContent = '开始日期  →  结束日期';
+    txt.classList.remove('has-val');
+  };
   window.initDrp = function(wrap, ph) {
     if (!wrap) return;
     ph = ph || '开始日期  →  结束日期';
@@ -4070,7 +4537,7 @@ function openRampDetail(type, orderId) {
 var API_KEYS = [
   { id:1, name:'test', key:'MCowBQYDK2VwAyEAPyYEO7Hc1FcJas9eSRDpJjUh3fDbRuHQ5pJe9N2h3kM=', ips:['104.30.178.73'], perms:['deposit','withdraw','onramp','offramp'], status:'active', createdAt:'2026-06-01 09:44:34' }
 ];
-var AK_PERM_LABELS = { deposit:'充币', withdraw:'提币', onramp:'On Ramp', offramp:'Off Ramp' };
+var AK_PERM_LABELS = { deposit:'充币', withdraw:'提币', onramp:'On Ramp', offramp:'Off Ramp', fiatpayin:'法币收款' };
 var currentAkId = null;
 var akMode = 'create';
 
@@ -4132,6 +4599,7 @@ function openApiKeyModal(mode, id) {
     document.getElementById(pid).checked = true;
   });
   document.getElementById('akPermOnramp').checked = false;
+  document.getElementById('akPermFiatpayin').checked = false;
   document.getElementById('akStatusActive').checked = true;
   document.getElementById('akStatusDisabled').checked = false;
   if (isEdit && id) {
@@ -4141,7 +4609,7 @@ function openApiKeyModal(mode, id) {
     document.getElementById('akKeyVal').value = ak.key;
     document.getElementById('akStatusActive').checked   = ak.status === 'active';
     document.getElementById('akStatusDisabled').checked = ak.status !== 'active';
-    ['deposit','withdraw','onramp','offramp'].forEach(function(p) {
+    ['deposit','withdraw','onramp','offramp','fiatpayin'].forEach(function(p) {
       var el = document.getElementById('akPerm' + p.charAt(0).toUpperCase() + p.slice(1));
       if (el) el.checked = ak.perms.indexOf(p) !== -1;
     });
@@ -4264,6 +4732,7 @@ histDepFiltersInit();
 histWdrFiltersInit();
 histOrdFiltersInit();
 histRampInFiltersInit();
+histFiatFiltersInit();
 histRampOutFiltersInit();
 memberFiltersInit();
 filterHistOrd();
@@ -4280,6 +4749,9 @@ initDrp(document.getElementById('drpHistOrdCreate'));
 initDrp(document.getElementById('drpHistOrdDone'));
 initDrp(document.getElementById('drpRampInCreate'));
 initDrp(document.getElementById('drpRampInDone'));
+initDrp(document.getElementById('drpFiatCreate'));
+initDrp(document.getElementById('drpFiatDone'));
+renderFiatOrders();
 initDrp(document.getElementById('drpRampOutCreate'));
 initDrp(document.getElementById('drpRampOutDone'));
 
