@@ -221,6 +221,8 @@
     .badge-gray   { background:#f4f4f5; color:#909399; }
     .badge-blue   { background:#ECF5FF; color:#409EFF; border:1px solid #D9ECFF; }
     .badge-orange { background:#fdf6ec; color:#E6A23C; border:1px solid #faecd8; }
+    /* 本次改动核对标注（2026-10-14）：黄色底色高亮新增或修改处，核对完删除此规则即可去掉 */
+    .chg { background:#FFF59D !important; box-shadow:0 0 0 3px #FFF59D; border-radius:2px; }
     .badge-purple { background:#F4F0FF; color:#8B5CF6; border:1px solid #E4DAFD; }
     .btn-spin { animation:btnSpin 1s linear infinite; }
     @keyframes btnSpin { to { transform:rotate(360deg); } }
@@ -1100,7 +1102,7 @@
               <td>USDC</td><td>BSC</td>
               <td class="asset-num" style="color:#F56C6C">-20.00</td>
               <td class="asset-num">509.47</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">WDR-20260820-00631</td>
               <td style="font-family:Inter">2026-08-20 09:00:00</td>
             </tr>
             <tr>
@@ -1109,7 +1111,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+6.22</td>
               <td class="asset-num">1,343.31</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">ADJ20260818001</td>
               <td style="font-family:Inter">2026-08-18 10:00:00</td>
             </tr>
             <tr>
@@ -1118,7 +1120,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-50.00</td>
               <td class="asset-num">1,337.09</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">WDR-20260810-00586</td>
               <td style="font-family:Inter">2026-08-10 10:00:00</td>
             </tr>
             <tr>
@@ -1127,7 +1129,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-5.00</td>
               <td class="asset-num">1,387.09</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">RAMP-20260809-0017</td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
             </tr>
             <tr>
@@ -1136,7 +1138,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-2.91</td>
               <td class="asset-num">1,392.09</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">RAMP-20260809-0017</td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
             </tr>
             <tr>
@@ -1145,7 +1147,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+1000.00</td>
               <td class="asset-num">1,395.00</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">RAMP-20260809-0017</td>
               <td style="font-family:Inter">2026-08-09 15:22:00</td>
             </tr>
             <tr>
@@ -1154,7 +1156,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-2.00</td>
               <td class="asset-num">395.00</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">RAMP-20260801-0009</td>
               <td style="font-family:Inter">2026-08-01 09:32:10</td>
             </tr>
             <tr>
@@ -1163,7 +1165,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-3.00</td>
               <td class="asset-num">397.00</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">RAMP-20260801-0009</td>
               <td style="font-family:Inter">2026-08-01 09:32:10</td>
             </tr>
             <tr>
@@ -1172,7 +1174,7 @@
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+400.00</td>
               <td class="asset-num">400.00</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">RAMP-20260801-0009</td>
               <td style="font-family:Inter">2026-08-01 09:32:10</td>
             </tr>
             <tr>
@@ -1181,7 +1183,7 @@
               <td>USDC</td><td>BSC</td>
               <td class="asset-num" style="color:#F56C6C">-0.53</td>
               <td class="asset-num">529.47</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">52481426862080</td>
               <td style="font-family:Inter">2026-06-30 17:59:29</td>
             </tr>
             <tr>
@@ -1190,7 +1192,7 @@
               <td>USDC</td><td>BSC</td>
               <td class="asset-num" style="color:#67C23A">+530.00</td>
               <td class="asset-num">530.00</td>
-              <td><span class="cell-empty">—</span></td>
+              <td class="asset-num">52481426862080</td>
               <td style="font-family:Inter">2026-06-30 17:59:29</td>
             </tr>
           </tbody>
@@ -2126,7 +2128,40 @@
       </div>
     </div>
   </div>
-  <div class="page" id="pageWebhook"><div class="content-area"><h2 class="page-title">Webhook</h2><div style="margin-top:60px;text-align:center;color:#C0C4CC;font-size:13px">页面开发中…</div></div></div>
+  <!-- ══ Webhook ══════════════════════════════════════════ -->
+  <div class="page" id="pageWebhook">
+    <div class="content-area">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <h2 class="page-title">Webhook</h2>
+        <button class="btn btn-primary"><i data-lucide="plus" size="14"></i>注册 Webhook</button>
+      </div>
+      <div class="filter-card">
+        <div class="filter-grid">
+          <div class="filter-item"><span class="filter-label-el">pubKey：</span><div class="filter-control"><div class="copy-cell"><input class="field-input" value="302a300506032b6570032100f3c1…" disabled><span class="copy-icon" onclick="copyText('302a300506032b6570032100f3c1')"><i data-lucide="copy" size="13"></i></span></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">URL：</span><div class="filter-control"><input class="field-input" id="whUrlInput" placeholder="请输入URL"></div></div>
+        </div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="resetWebhookFilter()">重置</button><button class="btn btn-primary" onclick="renderWebhookList()">查询</button></div>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th style="width:360px">信息</th>
+            <th style="width:300px">事件描述</th>
+            <th style="width:80px">状态</th>
+            <th style="width:110px">操作</th>
+          </tr></thead>
+          <tbody id="webhookTbody"></tbody>
+        </table></div>
+        <div class="pagination-bar">
+          <span class="pagination-total" id="webhookPagTotal">共 0 条</span>
+          <select class="page-size-select"><option>10 条/页</option></select>
+          <button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div><!-- /main-area -->
 
@@ -2556,11 +2591,11 @@
       <div class="form-field">
         <label class="form-field-label"><span class="req">*</span> 权限</label>
         <div style="display:flex;flex-wrap:wrap;gap:14px 32px;padding:2px 0">
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermDeposit" value="deposit" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Deposit</span></label>
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermWithdraw" value="withdraw" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Withdraw</span></label>
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOnramp" value="onramp"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">On Ramp</span></label>
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOfframp" value="offramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Off Ramp</span></label>
-          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermFiatpayin" value="fiatpayin"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label">Fiat Pay-in</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermDeposit" value="deposit" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="获取充币地址、查询充币记录、创建及查询充值订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">Deposit</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermWithdraw" value="withdraw" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="发起提币、查询提币订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">Withdraw</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOnramp" value="onramp"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="法币入金：发起 KYC、创建及查询入金订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">On Ramp</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOfframp" value="offramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="法币出金：将数字货币兑换为法币，创建及查询出金订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">Off Ramp</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermFiatpayin" value="fiatpayin"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="法币收款：创建及查询法币收款订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">Fiat Pay-in</span></label>
         </div>
       </div>
       <div class="form-field" id="akStatusRow" style="display:none">
@@ -2605,6 +2640,32 @@
     <div class="modal-footer">
       <button class="btn btn-default btn-sm" onclick="closeModal('apiKeyToggleModal')">取消</button>
       <button class="btn btn-primary btn-sm" id="apiKeyToggleConfirmBtn" onclick="confirmApiKeyToggle()">确认禁用</button>
+    </div>
+  </div>
+</div>
+
+<!-- Webhook 删除确认 -->
+<div class="modal-overlay" id="webhookDeleteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">确定删除该 Webhook？</span>
+      <span class="modal-close" onclick="closeModal('webhookDeleteModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box alert-warning">
+        <i data-lucide="alert-circle" class="alert-icon" size="16"></i>
+        <span>删除后将不再向此 URL 推送任何事件，待重试的事件也将停止推送，该操作不可恢复。</span>
+      </div>
+      <div class="modal-detail-row" style="grid-template-columns:auto 1fr">
+        <span class="modal-detail-label">URL</span>
+        <span class="modal-detail-value" id="webhookDeleteUrl" style="font-family:Inter;word-break:break-all">—</span>
+        <span class="modal-detail-label" style="align-self:start">事件通知订阅</span>
+        <span class="modal-detail-value" id="webhookDeleteEvents" style="display:flex;flex-wrap:wrap;gap:4px">—</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('webhookDeleteModal')">取消</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmWebhookDelete()">确定</button>
     </div>
   </div>
 </div>
@@ -2788,7 +2849,8 @@ const PERM_GROUPS = [
       { id:'dev_webhooks_register',   label:'注册' },
       { id:'dev_webhooks_edit',       label:'编辑' },
       { id:'dev_webhooks_invalidate', label:'失效' },
-      { id:'dev_webhooks_detail',     label:'详情' }
+      { id:'dev_webhooks_detail',     label:'详情' },
+      { id:'dev_webhooks_delete',     label:'删除' }
     ]},
     { id:'dev_docs', label:'文档', items:[
       { id:'dev_docs_view', label:'查看' }
@@ -3534,7 +3596,7 @@ function histRampInFiltersInit() {
   ], '全部');
 }
 function histFiatFiltersInit() {
-  msLiteInit('histFiatStatus', ['待付款','待核验','申诉中','成功','已退款','失败','已取消'].map(function(v){ return { value:v, label:v }; }), '全部');
+  msLiteInit('histFiatStatus', ['待付款','待核验','申诉中','退款中','成功','已退款','失败','已取消'].map(function(v){ return { value:v, label:v }; }), '全部');
 }
 function histRampOutFiltersInit() {
   msLiteInit('histRampOutStatus', [
@@ -4080,7 +4142,7 @@ function rampInNetAmount(d) {
    申诉入口：订单「待核验」且用户提交凭证超过响应时限 T（30 分钟）
 ───────────────────────────────────────────────────── */
 var FIAT_T_MIN = 30;
-var FIAT_STATUS_CLS = { '待付款':'badge-blue', '待核验':'badge-orange', '申诉中':'badge-purple', '成功':'badge-green', '已退款':'badge-gray', '失败':'badge-red', '已取消':'badge-gray' };
+var FIAT_STATUS_CLS = { '待付款':'badge-blue', '待核验':'badge-orange', '申诉中':'badge-purple', '退款中':'badge-orange', '成功':'badge-green', '已退款':'badge-gray', '失败':'badge-red', '已取消':'badge-gray' };
 function fiatAgo(min) {
   var d = new Date(Date.now() - min * 60000), p = function(n){ return n < 10 ? '0' + n : '' + n; };
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
@@ -4095,12 +4157,20 @@ var FIAT_ORDERS_MP = [
     appeal:{ type:'到账异常', by:'收款服务商', time:'2026-10-06 10:58:20', ruling:null } },
   { id:'PZPI20261006-00124', ref:'CFD-20261006-0124', uid:'291654802', cny:230000, rm:7.2518, status:'成功', created:'2026-10-06 10:12:05', proofAt:'2026-10-06 10:19:47', done:'2026-10-06 11:40:30', x:31716.26, fee:158.59,
     appeal:{ type:'商户申诉', by:'商户', time:'2026-10-06 10:55:12', note:'用户已于 10:18 完成转账，提供银行回单，收款服务商超时未确认。', files:[{ name:'银行回单_0124.pdf', size:'236 KB' }], ruling:'资金已到账', rulingTime:'2026-10-06 11:40:30' } },
+  { id:'PZPI20261006-00122', ref:'CFD-20261006-0122', uid:'460466237', cny:180000, rm:7.2518, status:'申诉中', created:'2026-10-06 10:05:18', proofAt:'2026-10-06 10:11:40', done:null,
+    appeal:{ type:'商户申诉', by:'商户', time:'2026-10-06 10:48:05', note:'用户转账金额与订单金额不符，用户要求取消订单并退回款项。', files:[{ name:'转账截图_0122.png', size:'864 KB' }], ruling:'需退款', rulingTime:'2026-10-06 11:30:12' } },
+  { id:'PZPI20261006-00109', ref:'CFD-20261006-0109', uid:'291654802', cny:260000, rm:7.2720, status:'退款中', created:'2026-10-06 09:32:40', proofAt:'2026-10-06 09:44:18', done:null,
+    appeal:{ type:'到账异常', by:'收款服务商', time:'2026-10-06 09:55:02', ruling:'需退款', rulingTime:'2026-10-06 10:12:44' },
+    refund:{ amount:260000, submitTime:'2026-10-06 10:36:15', file:'退款凭证_00109.jpg', size:'486 KB' } },   // 收款服务商已回传退款凭证，待平台确认
   { id:'PZPI20261006-00120', ref:'CFD-20261006-0120', uid:'460466237', cny:400000, rm:7.2518, status:'成功', created:'2026-10-06 09:50:02', proofAt:'2026-10-06 09:55:30', done:'2026-10-06 10:16:40', x:55158.71, fee:275.80 },
   { id:'PZPI20261006-00100', ref:'CFD-20261006-0100', uid:'291654802', cny:210000, rm:7.2720, status:'已取消', created:'2026-10-06 09:05:40', done:'2026-10-06 09:35:40' },
   { id:'PZPI20261005-00098', ref:'CFD-20261005-0098', uid:'635102950', cny:450000, rm:7.2922, status:'成功', created:'2026-10-05 16:20:13', proofAt:'2026-10-05 16:28:40', done:'2026-10-05 16:44:52', x:61709.77, fee:308.55 },
+  { id:'PZPI20261005-00094', ref:'CFD-20261005-0094', uid:'635102950', cny:240000, rm:7.2662, status:'已退款', created:'2026-10-05 15:02:31', proofAt:'2026-10-05 15:09:48', done:'2026-10-05 19:12:06',
+    appeal:{ type:'商户申诉', by:'商户', time:'2026-10-05 15:45:10', note:'用户付款后要求撤单，申请平台协调收款服务商原路退款。', files:[{ name:'用户撤单申请_0094.pdf', size:'198 KB' }], ruling:'需退款', rulingTime:'2026-10-05 16:30:45' },
+    refund:{ amount:240000, submitTime:'2026-10-05 18:47:30', time:'2026-10-05 19:12:06', file:'退款凭证_00094.pdf', size:'296 KB' } },
   { id:'PZPI20261005-00090', ref:'CFD-20261005-0090', uid:'460466237', cny:220000, rm:7.2662, status:'已退款', created:'2026-10-05 14:12:09', proofAt:'2026-10-05 14:20:15', done:'2026-10-05 18:30:00',
     appeal:{ type:'到账异常', by:'收款服务商', time:'2026-10-05 14:40:26', ruling:'需退款', rulingTime:'2026-10-05 15:20:00' },
-    refund:{ amount:220000, time:'2026-10-05 18:30:00', file:'退款凭证_00090.pdf', size:'318 KB' } },
+    refund:{ amount:220000, submitTime:'2026-10-05 18:05:00', time:'2026-10-05 18:30:00', file:'退款凭证_00090.pdf', size:'318 KB' } },
   { id:'PZPI20261005-00085', ref:'CFD-20261005-0085', uid:'291654802', cny:260000, rm:7.2215, status:'失败', created:'2026-10-05 11:08:51', proofAt:'2026-10-05 11:20:02', done:'2026-10-05 15:40:22',
     appeal:{ type:'商户申诉', by:'商户', time:'2026-10-05 12:05:40', note:'用户称已转账，收款服务商超过 30 分钟未确认，请平台核实。', files:[{ name:'付款截图_0085.png', size:'1.2 MB' }], ruling:'资金未到账', reason:'用户未付款', rulingTime:'2026-10-05 15:40:22' } },
   { id:'PZPI20261004-00058', ref:'CFD-20261004-0058', uid:'635102950', cny:200000, rm:7.2518, status:'成功', created:'2026-10-04 11:45:20', proofAt:'2026-10-04 11:52:08', done:'2026-10-04 12:10:37', x:27579.35, fee:137.90 },
@@ -4152,7 +4222,7 @@ function renderFiatOrders() {
       '<td class="asset-num">' + (ok ? fiatFmt(o.x) + unit('USDT') : E) + '</td>' +
       '<td class="asset-num">' + (ok ? fiatFmt(o.fee) + unit('USDT') : E) + '</td>' +
       '<td class="asset-num">' + (ok ? fiatFmt(Math.round((o.x - o.fee) * 100) / 100) + unit('USDT') : E) + '</td>' +
-      '<td><span class="badge ' + FIAT_STATUS_CLS[o.status] + '">' + o.status + '</span></td>' +
+      '<td><span class="badge ' + FIAT_STATUS_CLS[o.status] + (o.status === '退款中' ? ' chg' : '') + '">' + o.status + '</span></td>' +
       '<td style="font-family:Inter">' + o.created + '</td><td style="font-family:Inter">' + (o.done || E) + '</td>' +
       '<td><div class="action-cell">' + ops + '</div></td></tr>';
   }).join('') || '<tr><td colspan="12" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>';
@@ -4191,7 +4261,7 @@ function openFiatDetail(id) {
   var o = FIAT_ORDERS_MP.filter(function(x){ return x.id === id; })[0], ok = o.status === '成功', E = '—', a = o.appeal;
   var html = '<div class="fp-sec">订单信息</div>' +
     fiatItem('收款订单号', o.id) + fiatItem('商户订单号', o.ref) + fiatItem('客户 ID', o.uid) +
-    fiatItem('状态', '<span class="badge ' + FIAT_STATUS_CLS[o.status] + '">' + o.status + '</span>') +
+    fiatItem('状态', '<span class="badge ' + FIAT_STATUS_CLS[o.status] + (o.status === '退款中' ? ' chg' : '') + '">' + o.status + '</span>') +
     fiatItem('创建时间', o.created) + fiatItem('完成时间', o.done || E) +
     '<div class="fp-sec">金额与结算</div>' +
     fiatItem('订单金额', fiatFmt(o.cny) + '&nbsp;CNY') + fiatItem('汇率', '1 USDT = ' + o.rm.toFixed(4) + ' CNY') +
@@ -4206,7 +4276,9 @@ function openFiatDetail(id) {
       (a.files && a.files.length ? fiatItem('附件', a.files.map(function(f){ return fiatFileRow(f.name, f.size); }).join(''), true) : '');
   }
   if (o.refund) {
-    html += '<div class="fp-sec">退款信息</div>' + fiatItem('退款金额', fiatFmt(o.refund.amount) + '&nbsp;CNY') + fiatItem('退款时间', o.refund.time) +
+    // 退款中：平台确认中；已退款：平台已确认（或平台人工标记）
+    html += '<div class="fp-sec">退款信息</div>' + fiatItem('退款金额', fiatFmt(o.refund.amount) + '&nbsp;CNY') +
+      (o.status === '退款中' ? fiatItem('<span class="chg">确认状态</span>', '<span class="chg" style="color:#E6A23C">平台确认中</span>') : fiatItem('退款时间', o.refund.time)) +
       fiatItem('退款凭证', fiatFileRow(o.refund.file, o.refund.size), true);
   }
   var tl = [['订单创建', o.created]];
@@ -4219,7 +4291,8 @@ function openFiatDetail(id) {
     else tl.push(['平台裁定：' + a.ruling, a.rulingTime]);
   }
   if (o.status === '成功' && !a) tl.push(['收款服务商确认收款，结算完成', o.done]);
-  if (o.status === '已退款') tl.push([o.refund && o.refund.manual ? '平台人工标记已退款' : '收款服务商原路退款，订单已退款', o.done]);
+  if (o.refund && o.refund.submitTime) tl.push(['<span class="chg">收款服务商回传退款凭证</span>', o.refund.submitTime]);
+  if (o.status === '已退款') tl.push([o.refund && o.refund.manual ? '平台人工标记已退款' : '<span class="chg">平台确认退款，订单已退款</span>', o.done]);
   if (o.status === '已取消') tl.push(['用户超时未付款，订单取消', o.done]);
   html += '<div class="fp-sec">处理记录</div><div class="fp-tl">' + tl.map(function(t){
     return '<div class="fp-tl-item"><span class="fp-tl-dot"></span><div><div class="fp-tl-label">' + t[0] + '</div><div class="fp-tl-sub">' + t[1] + '</div></div></div>';
@@ -4537,7 +4610,7 @@ function openRampDetail(type, orderId) {
 var API_KEYS = [
   { id:1, name:'test', key:'MCowBQYDK2VwAyEAPyYEO7Hc1FcJas9eSRDpJjUh3fDbRuHQ5pJe9N2h3kM=', ips:['104.30.178.73'], perms:['deposit','withdraw','onramp','offramp'], status:'active', createdAt:'2026-06-01 09:44:34' }
 ];
-var AK_PERM_LABELS = { deposit:'充币', withdraw:'提币', onramp:'On Ramp', offramp:'Off Ramp', fiatpayin:'法币收款' };
+var AK_PERM_LABELS = { deposit:'充币', withdraw:'提币', onramp:'On Ramp', offramp:'Off Ramp', fiatpayin:'Fiat Pay-in' };
 var currentAkId = null;
 var akMode = 'create';
 
@@ -4677,6 +4750,75 @@ function confirmApiKeyToggle() {
 }
 
 /* ─────────────────────────────────────────────────────
+   Webhook
+───────────────────────────────────────────────────── */
+var WEBHOOKS = [
+  { id:1, url:'https://api.merchant-demo.com/paypaz/webhook', status:'active',
+    events:['transaction.deposit.succeeded','transaction.withdrawal.succeeded','transaction.withdrawal.failed'] },
+  { id:2, url:'http://10.207.15.146:8089/subscribe', status:'active',
+    events:['transaction.withdrawal.failed','transaction.deposit.succeeded','transaction.payinorder.expired','transaction.withdrawal.succeeded','transaction.payinorder.succeeded','transaction.payinorder.failed'] },
+  { id:3, url:'https://old.merchant-demo.com/callback', status:'revoked',
+    events:['transaction.deposit.succeeded'] }
+];
+var currentWebhookId = null;
+
+function renderWebhookList() {
+  var tbody = document.getElementById('webhookTbody');
+  if (!tbody) return;
+  var kw = (document.getElementById('whUrlInput').value || '').trim();
+  var list = WEBHOOKS.filter(function(w) { return !kw || w.url.indexOf(kw) > -1; });
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#C0C4CC;padding:40px 0">暂无数据</td></tr>';
+  } else {
+    tbody.innerHTML = list.map(function(w) {
+      var eventTags = '<span class="badge badge-gray" style="font-size:11px;padding:2px 6px;margin-right:4px;font-family:Inter">' + w.events[0] + '</span>'
+        + (w.events.length > 1 ? '<span class="badge badge-gray" style="font-size:11px;padding:2px 6px">+' + (w.events.length - 1) + '</span>' : '');
+      var statusBadge = w.status === 'active'
+        ? '<span class="badge badge-green">启用</span>'
+        : '<span class="badge badge-gray">失效</span>';
+      var actions = '';
+      if (w.status === 'active') {
+        actions += '<span class="action-icon" data-tip="编辑"><i data-lucide="pencil" size="14"></i></span>'
+          + '<span class="action-icon" data-tip="失效"><i data-lucide="ban" size="14"></i></span>';
+      }
+      actions += '<span class="action-icon" data-tip="详情"><i data-lucide="book-open" size="14"></i></span>'
+        + '<span class="action-icon" data-tip="删除" onclick="openWebhookDelete(' + w.id + ')"><i data-lucide="trash-2" size="14"></i></span>';
+      return '<tr>'
+        + '<td><div class="copy-cell"><span style="font-family:Inter">URL: ' + w.url + '</span><span class="copy-icon" onclick="copyText(\'' + w.url + '\')"><i data-lucide="copy" size="13"></i></span></div></td>'
+        + '<td>' + eventTags + '</td>'
+        + '<td>' + statusBadge + '</td>'
+        + '<td><div class="action-cell">' + actions + '</div></td>'
+        + '</tr>';
+    }).join('');
+  }
+  document.getElementById('webhookPagTotal').textContent = '共 ' + list.length + ' 条';
+  lucide.createIcons();
+}
+
+function resetWebhookFilter() {
+  document.getElementById('whUrlInput').value = '';
+  renderWebhookList();
+}
+
+function openWebhookDelete(id) {
+  var w = WEBHOOKS.find(function(x) { return x.id === id; });
+  if (!w) return;
+  currentWebhookId = id;
+  document.getElementById('webhookDeleteUrl').textContent = w.url;
+  document.getElementById('webhookDeleteEvents').innerHTML = w.events.map(function(e) {
+    return '<span class="badge badge-gray" style="font-size:11px;padding:2px 6px;font-family:Inter">' + e + '</span>';
+  }).join('');
+  openModal('webhookDeleteModal');
+}
+
+function confirmWebhookDelete() {
+  WEBHOOKS = WEBHOOKS.filter(function(x) { return x.id !== currentWebhookId; });
+  closeModal('webhookDeleteModal');
+  showToast('删除成功');
+  renderWebhookList();
+}
+
+/* ─────────────────────────────────────────────────────
    概览权限控制
    URL 参数 ?ovp= 支持：
      none               → 全空（空状态）
@@ -4738,6 +4880,7 @@ memberFiltersInit();
 filterHistOrd();
 renderMemberList(MEMBERS);
 renderApiKeyList();
+renderWebhookList();
 initDrp(document.getElementById('drpTopupArr'));
 initDrp(document.getElementById('drpWithdrawReq'));
 initDrp(document.getElementById('drpMemberCreate'));
