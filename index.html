@@ -279,6 +279,9 @@
     .fp-textarea-wrap textarea { padding-bottom:22px !important; }
     .fp-textarea-count { position:absolute; right:18px; bottom:6px; font-size:12px; color:#909399; font-family:'Inter',sans-serif; background:#fff; line-height:1; pointer-events:none; }
     .fp-dr-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px 24px; }
+    /* 法币代付：状态旁的超时 / 待办标记、付款记录与举证要求卡片 */
+    .po-flag { display:inline-block; margin-left:6px; padding:0 6px; height:20px; line-height:18px; font-size:12px; border:1px solid; border-radius:3px; background:#fff; white-space:nowrap; }
+    .po-pay-card { border:1px solid #EBEEF5; border-radius:4px; padding:12px 14px; background:#F5F7FA; }
     .field-err { font-size:12px; color:#F56C6C; margin-top:6px; display:none; }
     .form-field { margin-bottom:24px; }
     .form-field:last-child { margin-bottom:0; }
@@ -669,8 +672,8 @@
         <div class="stat-row">
           <div class="stat-item">
             <div class="stat-label">余额</div>
-            <div class="stat-value">224,610.73<span class="stat-unit">USDT</span></div>
-            <div class="stat-sub">可用 224,609.72 USDT &nbsp;|&nbsp; 冻结 1.01 USDT</div>
+            <div class="stat-value"><span id="ovTotal">224,610.73</span><span class="stat-unit">USDT</span></div>
+            <div class="stat-sub" id="ovBalSub">可用 224,609.72 USDT &nbsp;|&nbsp; 冻结 1.01 USDT</div>
           </div>
           <div class="stat-sep"></div>
           <div class="stat-item">
@@ -703,6 +706,34 @@
             <div class="progress-card-count">0<span>条</span></div>
             <div class="progress-card-amount">0.00 USDT</div>
           </div>
+        </div>
+      </div>
+
+      <!-- 法币代付待办：只做订单级提醒，处理完成（终态）后移出；不做申诉统计 -->
+      <div id="ovCardPayout">
+        <div class="section-header"><span class="section-label">法币代付待办</span></div>
+        <div class="progress-cards">
+          <div class="progress-card progress-card-warning" onclick="poGoList('confirming')">
+            <div class="progress-card-title">待确认到账</div>
+            <div class="progress-card-count"><span id="ovPoConfirming">0</span><span>条</span></div>
+            <div class="progress-card-amount">冻结 <span id="ovPoConfirmingAmt">0.00</span> USDT</div>
+          </div>
+          <div class="progress-card progress-card-warning" onclick="poGoList('platform')">
+            <div class="progress-card-title">待平台确认（可确认到账或提交异议）</div>
+            <div class="progress-card-count"><span id="ovPoPlatform">0</span><span>条</span></div>
+            <div class="progress-card-amount">冻结 <span id="ovPoPlatformAmt">0.00</span> USDT</div>
+          </div>
+          <div class="progress-card progress-card-danger" onclick="poGoList('appeal')">
+            <div class="progress-card-title">待补证</div>
+            <div class="progress-card-count"><span id="ovPoEvid">0</span><span>条</span></div>
+            <div class="progress-card-amount">冻结 <span id="ovPoEvidAmt">0.00</span> USDT</div>
+          </div>
+        </div>
+        <div class="table-card" style="margin-top:12px">
+          <div class="table-wrap"><table style="table-layout:auto">
+            <thead><tr><th>代付订单号</th><th>客户 ID</th><th>订单金额</th><th>合计冻结</th><th>待办</th><th>截止时间</th><th>操作</th></tr></thead>
+            <tbody id="ovPoTodoTbody"></tbody>
+          </table></div>
         </div>
       </div>
 
@@ -989,8 +1020,14 @@
 
   <!-- ══ 账户明细 ═══════════════════════════════════════════ -->
   <div class="page" id="pageAccountLedger">
-    <div class="content-area">
-      <h2 class="page-title">账户明细</h2>
+    <div class="hist-page-hdr">
+      <h2 class="page-title" style="margin-bottom:14px">账户明细</h2>
+      <div class="hist-tab-nav">
+        <div class="hist-tab-item active" onclick="switchLedgerTab('ledgerFund',this)">资金明细</div>
+        <div class="hist-tab-item" onclick="switchLedgerTab('ledgerFreeze',this)">冻结明细</div>
+      </div>
+    </div>
+    <div class="hist-pane active" id="ledgerFund">
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" id="acctLedgerUid" placeholder="请输入客户 ID"></div></div>
@@ -1199,6 +1236,25 @@
         </table></div>
       </div>
     </div>
+
+    <!-- 冻结明细：本期仅法币代付冻结；下单 ＋(X＋F)，成功扣划解冻 －(X＋F)，失败释放 －(X＋F) -->
+    <div class="hist-pane" id="ledgerFreeze">
+      <div class="filter-card">
+        <div class="filter-grid">
+          <div class="filter-item"><span class="filter-label-el">关联订单号</span><div class="filter-control"><input class="field-input" id="frzRef" placeholder="请输入关联订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="frzType-lite" tabindex="0" onclick="msLiteToggle('frzType')" onblur="setTimeout(function(){msLiteClose('frzType')},150)"><span class="ms-lite-text placeholder" id="frzType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="frzType-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">时间</span><div class="filter-control"><div class="drp-wrap" id="drpFrz"></div></div></div>
+        </div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="frzReset()">重置</button><button class="btn btn-primary" onclick="frzRender()">查询</button></div>
+      </div>
+      <div class="table-card">
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="frzCount">0</span><span class="count-label">条</span><span class="count-label" style="margin-left:16px">当前代付冻结：</span><span class="count-value" id="frzNow">0.00</span><span class="count-label">USDT</span><div class="summary-spacer"></div><button class="export-btn" onclick="showToast('已按当前筛选导出冻结明细')"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1000px">
+          <thead><tr><th style="width:150px">客户 ID</th><th style="width:120px">类型</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:120px">金额</th><th style="width:140px">变动后代付冻结</th><th style="width:190px">关联订单号</th><th style="width:160px">时间</th></tr></thead>
+          <tbody id="frzTbody"></tbody>
+        </table></div>
+      </div>
+    </div>
   </div>
 
   <!-- ══ 提币 ═══════════════════════════════════════════ -->
@@ -1267,6 +1323,7 @@
                   <span>可用余额：<span style="font-family:Inter;color:#606266" id="wdBalance">224,609.72</span>&nbsp;<span id="wdBalanceToken">USDT1</span></span>
                   <span class="wd-max-link" onclick="wdFillMax()">全部</span>
                 </div>
+                <div id="wdPoHint" style="font-size:12px;color:#909399;margin-top:4px"></div>
               </div>
               <div class="wd-summary-row"><span>手续费</span><span style="font-family:Inter">0.01 <span id="wdFeeToken">USDT1</span></span></div>
               <div class="wd-summary-row"><span>实际到账</span><span style="font-family:Inter;font-weight:600" id="wdNetAmount">—</span></div>
@@ -1371,6 +1428,7 @@
         <div class="hist-tab-item" onclick="switchHistTab('histOrd',this)">充币订单</div>
         <div class="hist-tab-item" onclick="switchHistTab('histRampIn',this)">On Ramp</div>
         <div class="hist-tab-item" onclick="switchHistTab('histFiat',this)">法币收款</div>
+        <div class="hist-tab-item" id="histPayoutTab" onclick="switchHistTab('histPayout',this)">法币代付</div>
         <div class="hist-tab-item" onclick="switchHistTab('histRampOut',this)">出金</div>
       </div>
     </div>
@@ -2024,6 +2082,32 @@
       </div>
     </div>
 
+    <!-- ── 法币代付 Pane ── -->
+    <div class="hist-pane" id="histPayout">
+      <div class="filter-card">
+        <div class="filter-grid">
+          <div class="filter-item"><span class="filter-label-el">代付订单号</span><div class="filter-control"><input class="field-input" id="pofId" placeholder="请输入代付订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">商户订单号</span><div class="filter-control"><input class="field-input" id="pofRef" placeholder="请输入商户订单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" id="pofUid" placeholder="请输入客户 ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histPayoutStatus-lite" tabindex="0" onclick="msLiteToggle('histPayoutStatus')" onblur="setTimeout(function(){msLiteClose('histPayoutStatus')},150)"><span class="ms-lite-text placeholder" id="histPayoutStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histPayoutStatus-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">创建时间</span><div class="filter-control"><div class="drp-wrap" id="drpPayoutCreate"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">完成时间</span><div class="filter-control"><div class="drp-wrap" id="drpPayoutDone"></div></div></div>
+        </div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="poReset()">重置</button><button class="btn btn-primary" onclick="poSearch()">查询</button></div>
+      </div>
+      <div class="table-card">
+        <div class="summary-bar" style="border-bottom:1px solid #EBEEF5;"><div class="summary-spacer"></div><button class="export-btn" onclick="poExport()"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1780px;table-layout:auto">
+          <thead><tr>
+            <th>代付订单号</th><th>商户订单号</th><th>客户 ID</th><th>订单金额</th><th>汇率</th><th>代付金额</th><th>手续费</th><th>合计冻结 / 扣款</th>
+            <th>状态</th><th>创建时间</th><th>完成时间</th><th>操作</th>
+          </tr></thead>
+          <tbody id="poTbody"></tbody>
+        </table></div>
+        <div class="pagination-bar" id="poPager"></div>
+      </div>
+    </div>
+
     <!-- ── 出金 Pane ── -->
     <div class="hist-pane" id="histRampOut">
       <div class="filter-card">
@@ -2324,6 +2408,100 @@
   <div class="fp-drawer-ft"><button class="btn btn-default btn-sm" onclick="closeFiatDrawer('fiatAppeal')">取消</button><button class="btn btn-primary btn-sm" id="fiatAppealBtn" onclick="fiatAppealSubmit()">提交申诉</button></div>
 </div>
 
+<!-- 法币代付订单详情（右侧抽屉） -->
+<div class="fp-drawer-mask" id="poDetailMask" onclick="closeFiatDrawer('poDetail')"></div>
+<div class="fp-drawer" id="poDetailDrawer" style="width:680px">
+  <div class="fp-drawer-hd">
+    <div><div class="fp-drawer-title">法币代付订单详情</div><div class="fp-drawer-sub" id="poDetailSub"></div></div>
+    <span class="fp-drawer-close" onclick="closeFiatDrawer('poDetail')"><i data-lucide="x" size="18"></i></span>
+  </div>
+  <div class="fp-drawer-body"><div class="fp-dr-grid" id="poDetailBody"></div></div>
+  <div class="fp-drawer-ft" id="poDetailFooter"></div>
+</div>
+
+<!-- 法币代付：提交异议（未到账 / 金额异常） -->
+<div class="fp-drawer-mask" id="poDisputeMask" onclick="closeFiatDrawer('poDispute')"></div>
+<div class="fp-drawer" id="poDisputeDrawer" style="width:520px">
+  <div class="fp-drawer-hd">
+    <div><div class="fp-drawer-title">提交异议</div><div class="fp-drawer-sub" id="poDisputeSub"></div></div>
+    <span class="fp-drawer-close" onclick="closeFiatDrawer('poDispute')"><i data-lucide="x" size="18"></i></span>
+  </div>
+  <div class="fp-drawer-body" style="display:flex;flex-direction:column;gap:16px">
+    <div class="alert-box alert-warning" style="margin-bottom:0"><i data-lucide="alert-triangle" size="14" class="alert-icon"></i><span>提交后订单转入申诉中，资金保持冻结，由平台核实裁定。客户流水可稍后在申诉中补充。</span></div>
+    <div class="fp-dr-grid" id="poDisputeMeta"></div>
+    <div>
+      <label class="form-field-label"><span class="req">*</span>异议类型</label>
+      <div class="radio-group">
+        <label class="el-radio"><span class="el-radio__input"><input type="radio" name="poDisputeType" value="未到账" class="el-radio__original"><span class="el-radio__inner"></span></span><span class="el-radio__label">未到账</span></label>
+        <label class="el-radio"><span class="el-radio__input"><input type="radio" name="poDisputeType" value="金额异常" class="el-radio__original"><span class="el-radio__inner"></span></span><span class="el-radio__label">金额异常</span></label>
+      </div>
+      <div class="field-err" id="poDisputeTypeErr">请选择异议类型</div>
+    </div>
+    <div>
+      <label class="form-field-label"><span class="req">*</span>异议说明</label>
+      <div class="fp-textarea-wrap">
+        <textarea class="field-input" id="poDisputeNote" rows="4" maxlength="500" placeholder="请输入异议说明" style="width:100%;height:auto;padding:8px 10px;resize:vertical" oninput="poCount('poDispute')"></textarea>
+        <span class="fp-textarea-count" id="poDisputeCount">0/500</span>
+      </div>
+      <div class="field-err" id="poDisputeNoteErr">请输入异议说明</div>
+    </div>
+    <div>
+      <label class="form-field-label">客户收款流水</label>
+      <button class="btn btn-default btn-sm" onclick="document.getElementById('poDisputeFile').click()"><i data-lucide="upload" size="13"></i>上传文件</button>
+      <input type="file" id="poDisputeFile" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="poAddFiles(this,'poDisputeFiles')">
+      <div style="font-size:12px;color:#909399;margin-top:6px">支持 JPG / JPEG / PNG / PDF，单个 10MB 以内，最多 5 个</div>
+      <div id="poDisputeFiles" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="fp-drawer-ft"><button class="btn btn-default btn-sm" onclick="closeFiatDrawer('poDispute')">取消</button><button class="btn btn-primary btn-sm" id="poDisputeBtn" onclick="poDisputeSubmit()">提交异议</button></div>
+</div>
+
+<!-- 法币代付：补充材料（追加到原申诉，不新建申诉） -->
+<div class="fp-drawer-mask" id="poEvidMask" onclick="closeFiatDrawer('poEvid')"></div>
+<div class="fp-drawer" id="poEvidDrawer" style="width:520px">
+  <div class="fp-drawer-hd">
+    <div><div class="fp-drawer-title">补充材料</div><div class="fp-drawer-sub" id="poEvidSub"></div></div>
+    <span class="fp-drawer-close" onclick="closeFiatDrawer('poEvid')"><i data-lucide="x" size="18"></i></span>
+  </div>
+  <div class="fp-drawer-body" style="display:flex;flex-direction:column;gap:16px">
+    <div class="fp-dr-grid" id="poEvidMeta"></div>
+    <div>
+      <label class="form-field-label">补充说明</label>
+      <div class="fp-textarea-wrap">
+        <textarea class="field-input" id="poEvidNote" rows="4" maxlength="500" placeholder="请输入补充说明" style="width:100%;height:auto;padding:8px 10px;resize:vertical" oninput="poCount('poEvid')"></textarea>
+        <span class="fp-textarea-count" id="poEvidCount">0/500</span>
+      </div>
+    </div>
+    <div>
+      <label class="form-field-label"><span class="req">*</span>材料</label>
+      <button class="btn btn-default btn-sm" onclick="document.getElementById('poEvidFile').click()"><i data-lucide="upload" size="13"></i>上传文件</button>
+      <input type="file" id="poEvidFile" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="poAddFiles(this,'poEvidFiles')">
+      <div style="font-size:12px;color:#909399;margin-top:6px">支持 JPG / JPEG / PNG / PDF，单个 10MB 以内，最多 5 个</div>
+      <div id="poEvidFiles" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div>
+      <div class="field-err" id="poEvidFileErr">请上传至少 1 个文件</div>
+    </div>
+  </div>
+  <div class="fp-drawer-ft"><button class="btn btn-default btn-sm" onclick="closeFiatDrawer('poEvid')">取消</button><button class="btn btn-primary btn-sm" id="poEvidBtn" onclick="poEvidSubmit()">提交</button></div>
+</div>
+
+<!-- 法币代付：确认到账（二次确认） -->
+<div class="modal-overlay" id="poConfirmModal">
+  <div class="modal" style="width:500px">
+    <div class="modal-header">
+      <span class="modal-title">确认到账</span>
+      <span class="modal-close" onclick="closeModal('poConfirmModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box alert-warning"><i data-lucide="alert-triangle" size="14" class="alert-icon"></i><span id="poCfTip"></span></div>
+      <div class="fp-dr-grid" id="poCfMeta"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('poConfirmModal')">取消</button>
+      <button class="btn btn-primary btn-sm" id="poCfBtn" onclick="poConfirmSubmit()">确认到账</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="rampDetailModal">
   <div class="modal" style="width:560px">
     <div class="modal-header">
@@ -2596,6 +2774,7 @@
           <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOnramp" value="onramp"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="法币入金：发起 KYC、创建及查询入金订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">On Ramp</span></label>
           <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermOfframp" value="offramp" checked><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="法币出金：将数字货币兑换为法币，创建及查询出金订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">Off Ramp</span></label>
           <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermFiatpayin" value="fiatpayin"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="法币收款：创建及查询法币收款订单" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">Fiat Pay-in</span></label>
+          <label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original ak-perm" id="akPermFiatpayout" value="fiatpayout"><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" data-tip="法币代付：创建、查询代付订单，确认到账 / 提交异议，补充举证" style="border-bottom:1px dashed #909399;cursor:help;line-height:1.4">Fiat Pay-out</span></label>
         </div>
       </div>
       <div class="form-field" id="akStatusRow" style="display:none">
@@ -2640,6 +2819,66 @@
     <div class="modal-footer">
       <button class="btn btn-default btn-sm" onclick="closeModal('apiKeyToggleModal')">取消</button>
       <button class="btn btn-primary btn-sm" id="apiKeyToggleConfirmBtn" onclick="confirmApiKeyToggle()">确认禁用</button>
+    </div>
+  </div>
+</div>
+
+<!-- Webhook 编辑 -->
+<div class="modal-overlay" id="webhookEditModal">
+  <div class="modal" style="width:520px">
+    <div class="modal-header">
+      <span class="modal-title">编辑 Webhook</span>
+      <span class="modal-close" onclick="closeModal('webhookEditModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> URL</label>
+        <input class="field-input f-readonly" style="width:100%;font-family:Inter" id="whEditUrl" readonly>
+      </div>
+      <div class="form-field">
+        <label class="form-field-label">描述</label>
+        <input class="field-input" style="width:100%" id="whEditDesc" maxlength="30" placeholder="请输入描述">
+      </div>
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 事件通知订阅</label>
+        <div id="whEditEvents" style="display:flex;flex-direction:column;gap:10px;padding:2px 0"></div>
+        <div class="field-err" id="whEditEventsErr">至少选中一个事件订阅</div>
+      </div>
+      <div class="form-field" style="margin-bottom:0">
+        <label class="form-field-label"><span class="req">*</span> 状态</label>
+        <div class="radio-group">
+          <label class="el-radio"><span class="el-radio__input"><input type="radio" name="whStatus" id="whStatusActive" value="active" class="el-radio__original"><span class="el-radio__inner"></span></span><span class="el-radio__label">启用</span></label>
+          <label class="el-radio"><span class="el-radio__input"><input type="radio" name="whStatus" id="whStatusDisabled" value="disabled" class="el-radio__original"><span class="el-radio__inner"></span></span><span class="el-radio__label">禁用</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('webhookEditModal')">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="saveWebhookEdit()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Webhook 状态切换确认 -->
+<div class="modal-overlay" id="webhookStatusModal" style="z-index:1001">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="whStatusTitle">确定禁用该 Webhook？</span>
+      <span class="modal-close" onclick="closeModal('webhookStatusModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box" id="whStatusAlert">
+        <i data-lucide="alert-circle" class="alert-icon" size="16"></i>
+        <span id="whStatusText"></span>
+      </div>
+      <div class="modal-detail-row" style="grid-template-columns:auto 1fr">
+        <span class="modal-detail-label">URL</span>
+        <span class="modal-detail-value" id="whStatusUrl" style="font-family:Inter;word-break:break-all">—</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('webhookStatusModal')">取消</button>
+      <button class="btn btn-primary btn-sm" id="whStatusConfirmBtn" onclick="confirmWebhookStatus()">确定</button>
     </div>
   </div>
 </div>
@@ -2803,6 +3042,15 @@ const PERM_GROUPS = [
       { id:'hist_fiat_view',   label:'查看' },
       { id:'hist_fiat_appeal', label:'申诉' },
       { id:'hist_fiat_export', label:'导出' }
+    ]},
+    // 法币代付：查看、确认到账、异议 / 申诉、补证、附件、导出分别授权；新增权限不自动授予存量用户
+    { id:'asset_hist_payout', label:'历史记录 / 法币代付', items:[
+      { id:'hist_payout_view',     label:'查看' },
+      { id:'hist_payout_confirm',  label:'确认到账' },
+      { id:'hist_payout_dispute',  label:'异议 / 申诉' },
+      { id:'hist_payout_evidence', label:'补证' },
+      { id:'hist_payout_file',     label:'附件预览 / 下载' },
+      { id:'hist_payout_export',   label:'导出' }
     ]},
     { id:'asset_hist_ramp_out', label:'历史记录 / 出金', items:[
       { id:'hist_ramp_out_view',   label:'查看' },
@@ -3545,7 +3793,7 @@ function acctLedgerFiltersInit() {
   ], '全部');
   msLiteInit('acctLedgerType', [
     {value:'充值',label:'充值'},{value:'提现',label:'提现'},{value:'手续费',label:'手续费'},{value:'调账',label:'调账'},
-    {value:'法币收款',label:'法币收款'}
+    {value:'法币收款',label:'法币收款'},{value:'法币代付',label:'法币代付'}
   ], '全部');
 }
 // 账户明细筛选：客户 ID 模糊匹配；代币 / 网络 / 类型多选；时间按日期范围（含起止两天）
@@ -4368,6 +4616,516 @@ function fiatAppealDone(note) {
   showToast('申诉已提交，等待平台裁定');
 }
 
+/* ─────────────────────────────────────────────────────
+   历史记录 · 法币代付
+   商户可见：订单金额 CNY、汇率 Rm、代付金额 X、手续费 F、合计冻结 / 扣款 X＋F、客户收款账户、实际付款记录与凭证、申诉 / 举证进度、确认来源；
+   不展示收款服务商汇率 Rc、服务商入账 Y、价差及收款服务商身份（处理记录文案统一写「收款服务商」）
+   状态与管理系统一致：待付款 / 付款中 / 待确认（管理系统称「待商户确认」）/ 待平台确认 / 申诉中 / 成功 / 失败
+   商户动作：待确认、待平台确认可「确认到账」或「提交异议」；申诉中只能「补充材料」（追加到原申诉）；终态只读
+───────────────────────────────────────────────────── */
+var PO_T1 = 30, PO_T2 = 30, PO_T3 = 120;   // 分钟：T1 派单起；T2 有效凭证提交起；T3 举证请求起（建议值）
+var PO_BASE_TOTAL = 224610.73, PO_OTHER_FROZEN = 1.01;   // 代付发生前的总余额、其他冻结（同概览原值）
+var PO_ST = { pending:['待付款', 'badge-blue'], paying:['付款中', 'badge-blue'], confirming:['待确认', 'badge-orange'], platform:['待平台确认', 'badge-orange'],
+  appeal:['申诉中', 'badge-purple'], success:['成功', 'badge-green'], failed:['失败', 'badge-gray'] };
+var PO_SRC_MP = { timeout:'出款超时核实', merchant:'商户异议', partner:'收款服务商出款异常', platform:'平台转核实' };
+var PO_FAIL_MP = { partner_rejected:'收款服务商未执行拒单', no_payment:'核实未付款', fully_returned:'付款已全额退回' };
+var PO_CSRC = { portal:'商户后台确认', api:'商户 API 确认', platform:'平台代为确认', ruling:'平台裁定足额到账' };
+var PO_BANK_MP = { processing:['处理中', '#E6A23C'], succeeded:['成功', '#67C23A'], returned:['已退回', '#F56C6C'], failed:['失败', '#909399'] };
+var PO_ID_TYPE = { ID_CARD:'身份证', PASSPORT:'护照' };
+var PO_OPERATOR = 'zhangweiming@example.com';   // 当前登录用户（原型）
+
+function poMsMP(t) { return new Date(t.replace(/-/g, '/')).getTime(); }
+function poAddMP(t, min) { return fiatAgo((Date.now() - poMsMP(t)) / 60000 - min); }
+function poFloor4(v) { return Math.floor(Math.round(v * 1e8) / 1e4) / 1e4; }
+function poCeil2(v) { return Math.ceil(Math.round(v * 1e6) / 1e4) / 100; }
+function poR2(v) { return Math.round(v * 100) / 100; }
+function poMask(s, head, tail) { s = s.replace(/\s/g, ''); return s.slice(0, head) + ' **** ' + s.slice(-tail); }
+function poPayMP(no, amt, at, bank, payer, note) { return { no:no, amt:amt, at:at, bank:bank, payer:payer, note:note || '', files:[['银行回单_' + no.slice(-6) + '.pdf', '386 KB']] }; }
+
+// 报价快照：Rm＝Rc×(1－加点) 向下取整 4 位；X＝CNY÷Rm 向上取整 2 位；F 按 X 比例向上取整 2 位；下单冻结 X＋F（rc 仅用于计算，不展示）
+function poMkMP(d) {
+  var o = Object.assign({ markup:1.0, feeRate:0.5, payments:[], log:[], idType:'ID_CARD' }, d);
+  o.rm = poFloor4(o.rc * (1 - o.markup / 100));
+  o.x = poCeil2(o.cny / o.rm);
+  o.fee = poCeil2(o.x * o.feeRate / 100);
+  o.hold = poR2(o.x + o.fee);
+  o.t1 = poAddMP(o.created, PO_T1);
+  if (o.proofAt) o.t2 = poAddMP(o.proofAt, PO_T2);
+  if (o.appeal) { o.appeal.adds = o.appeal.adds || []; o.appeal.files = o.appeal.files || []; }
+  o.log.unshift([o.created, '订单创建', '冻结 ' + fiatFmt(o.hold) + ' USDT（代付金额 ' + fiatFmt(o.x) + ' ＋ 手续费 ' + fiatFmt(o.fee) + '）']);
+  return o;
+}
+var PO_D = fiatAgo(0).slice(0, 10).replace(/-/g, '');
+var PO_ORDERS_MP = [
+  poMkMP({ id:'PZPO' + PO_D + '-00021', mno:'CFD-PO-' + PO_D + '-0021', uid:'635102950', name:'李娜', idNo:'440301199003151234', acctNo:'6222021234567890123', bank:'中国工商银行',
+    cny:100000, rc:7.10, status:'pending', created:fiatAgo(6) }),
+  poMkMP({ id:'PZPO' + PO_D + '-00019', mno:'CFD-PO-' + PO_D + '-0019', uid:'291654802', name:'张伟', idNo:'310101198807223318', acctNo:'6217001288904521006', bank:'中国建设银行',
+    cny:50000, rc:7.12, status:'paying', created:fiatAgo(14), log:[[fiatAgo(9), '收款服务商开始付款', '订单转付款中']] }),
+  poMkMP({ id:'PZPO' + PO_D + '-00018', mno:'CFD-PO-' + PO_D + '-0018', uid:'291654802', name:'王芳', idNo:'330106199201015547', acctNo:'6225880177662210', bank:'招商银行',
+    cny:80000, rc:7.0950, status:'confirming', created:fiatAgo(32), proofAt:fiatAgo(12),
+    payments:[poPayMP('BT' + PO_D + '093355108', 80000, fiatAgo(14), 'succeeded', '招商银行 尾号 3391')],
+    log:[[fiatAgo(28), '收款服务商开始付款', ''], [fiatAgo(12), '收款服务商提交付款凭证', '实付 80,000.00 CNY；请在确认截止前核实客户账户到账']] }),
+  // 演示「状态变化刷新」：点确认到账时平台已先一步代为确认，返回最新状态而不是重复结算
+  poMkMP({ id:'PZPO' + PO_D + '-00016', mno:'CFD-PO-' + PO_D + '-0016', uid:'518230417', name:'黄磊', idNo:'440106199109093315', acctNo:'6225880244107731', bank:'招商银行',
+    cny:30000, rc:7.10, status:'platform', created:fiatAgo(140), proofAt:fiatAgo(100), race:true,
+    payments:[poPayMP('BT' + PO_D + '081207733', 30000, fiatAgo(103), 'succeeded', '农业银行 尾号 5562')],
+    log:[[fiatAgo(135), '收款服务商开始付款', ''], [fiatAgo(100), '收款服务商提交付款凭证', '实付 30,000.00 CNY'],
+      [fiatAgo(70), '确认超时，转待平台确认', '资金保持冻结；平台将线下联系核实，期间仍可确认到账或提交异议']] }),
+  poMkMP({ id:'PZPO' + PO_D + '-00013', mno:'CFD-PO-' + PO_D + '-0013', uid:'460466237', name:'陈静', idNo:'320102199406186622', acctNo:'6013820011883302554', bank:'中国银行',
+    cny:60000, rc:7.12, status:'appeal', created:fiatAgo(150), proofAt:fiatAgo(128),
+    payments:[poPayMP('BT' + PO_D + '073320415', 60000, fiatAgo(130), 'succeeded', '建设银行 尾号 1204')],
+    appeal:{ no:'POA-' + PO_D + '-0007', src:'merchant', reason:'金额异常', time:fiatAgo(110), note:'客户反馈实际到账 55,000 CNY，与订单金额 60,000 CNY 不符', by:PO_OPERATOR,
+      reqs:[{ id:'ER-0007-1', target:'merchant', material:'客户账户入账流水（含付款方、金额、入账时间）', note:'请提供客户当日全部入账流水截图', time:fiatAgo(50), deadline:poAddMP(fiatAgo(50), PO_T3), reply:null },
+            { id:'ER-0007-2', target:'partner', material:'银行回单及转账成功证明', time:fiatAgo(50), deadline:poAddMP(fiatAgo(50), PO_T3), reply:null }], ruling:null },
+    log:[[fiatAgo(145), '收款服务商开始付款', ''], [fiatAgo(128), '收款服务商提交付款凭证', '实付 60,000.00 CNY'], [fiatAgo(110), '商户提交异议', '金额异常；转申诉中，资金保持冻结'],
+      [fiatAgo(50), '平台要求举证', '对象：本商户、收款服务商；截止 ' + poAddMP(fiatAgo(50), PO_T3)]] }),
+  poMkMP({ id:'PZPO' + PO_D + '-00010', mno:'CFD-PO-' + PO_D + '-0010', uid:'518230417', name:'黄磊', idNo:'440106199109093315', acctNo:'6225880244107731', bank:'招商银行',
+    cny:100000, rc:7.0950, status:'appeal', created:fiatAgo(260),
+    appeal:{ no:'POA-' + PO_D + '-0006', src:'timeout', reason:'出款截止前未提交有效付款凭证', time:fiatAgo(230),
+      reqs:[{ id:'ER-0006-1', target:'partner', material:'银行转账记录或未转账证明', time:fiatAgo(220), deadline:poAddMP(fiatAgo(220), PO_T3), reply:null }], ruling:null },
+    log:[[fiatAgo(255), '收款服务商开始付款', ''], [fiatAgo(230), '出款超时，转申诉中', '系统自动转入出款超时核实；资金保持冻结，不自动取消'],
+      [fiatAgo(220), '平台要求举证', '对象：收款服务商；截止 ' + poAddMP(fiatAgo(220), PO_T3)]] }),
+  poMkMP({ id:'PZPO20261016-00080', mno:'CFD-PO-20261016-0080', uid:'460466237', name:'吴敏', idNo:'510104199507287736', acctNo:'6228480077651029914', bank:'中国农业银行',
+    cny:20000, rc:7.12, status:'appeal', created:'2026-10-16 11:20:45', proofAt:'2026-10-16 11:41:02',
+    payments:[poPayMP('BT20261016113805277', 20000, '2026-10-16 11:38:05', 'returned', '建设银行 尾号 1204', '收款行退回：户名与账号不符')],
+    appeal:{ no:'POA-20261016-0003', src:'merchant', reason:'未到账', time:'2026-10-16 12:02:19', note:'客户未收到款项', by:PO_OPERATOR,
+      reqs:[{ id:'ER-0003-1', target:'partner', material:'退回凭证及原路退回到账记录', time:'2026-10-16 12:15:00', deadline:'2026-10-16 14:15:00', reply:{ time:'2026-10-16 13:30:12' } }], ruling:null },
+    log:[['2026-10-16 11:22:30', '收款服务商开始付款', ''], ['2026-10-16 11:41:02', '收款服务商提交付款凭证', '实付 20,000.00 CNY'], ['2026-10-16 12:02:19', '商户提交异议', '未到账；转申诉中'],
+      ['2026-10-16 12:15:00', '平台要求举证', '对象：收款服务商'], ['2026-10-16 13:30:12', '收款服务商补交证据', '银行退汇通知；平台核实中']] }),
+  poMkMP({ id:'PZPO20261016-00068', mno:'CFD-PO-20261016-0068', uid:'291654802', name:'赵磊', idNo:'370202199012113376', acctNo:'6217001233018840225', bank:'中国建设银行',
+    cny:60000, rc:7.12, status:'success', created:'2026-10-16 10:15:33', proofAt:'2026-10-16 10:36:10', done:'2026-10-16 10:49:27',
+    confirm:{ src:'portal', by:PO_OPERATOR, time:'2026-10-16 10:49:27' },
+    payments:[poPayMP('BT20261016103322108', 60000, '2026-10-16 10:33:22', 'succeeded', '建设银行 尾号 1204')],
+    log:[['2026-10-16 10:17:02', '收款服务商开始付款', ''], ['2026-10-16 10:36:10', '收款服务商提交付款凭证', '实付 60,000.00 CNY']] }),
+  poMkMP({ id:'PZPO20261016-00066', mno:'CFD-PO-20261016-0066', uid:'635102950', name:'周杰', idNo:'440304198702027715', acctNo:'6225880190324416', bank:'招商银行',
+    cny:100000, rc:7.10, status:'success', created:'2026-10-16 09:40:18', proofAt:'2026-10-16 10:02:44', done:'2026-10-16 11:05:12',
+    confirm:{ src:'platform', time:'2026-10-16 11:05:12' },
+    payments:[poPayMP('BT20261016100015932', 100000, '2026-10-16 10:00:15', 'succeeded', '招商银行 尾号 3391')],
+    log:[['2026-10-16 09:41:55', '收款服务商开始付款', ''], ['2026-10-16 10:02:44', '收款服务商提交付款凭证', '实付 100,000.00 CNY'],
+      ['2026-10-16 10:32:44', '确认超时，转待平台确认', '资金保持冻结'], ['2026-10-16 10:52:00', '平台线下联系商户核实', '商户财务确认客户已足额到账']] }),
+  poMkMP({ id:'PZPO20261016-00063', mno:'CFD-PO-20261016-0063', uid:'460466237', name:'冯雪', idNo:'210102199308085527', acctNo:'6226220155310087', bank:'浦发银行',
+    cny:25000, rc:7.0950, status:'success', created:'2026-10-16 09:12:40', proofAt:'2026-10-16 09:30:18', done:'2026-10-16 09:44:02',
+    confirm:{ src:'api', by:'API Key test', time:'2026-10-16 09:44:02' },
+    payments:[poPayMP('BT20261016092801446', 25000, '2026-10-16 09:28:01', 'succeeded', '农业银行 尾号 5562')],
+    log:[['2026-10-16 09:14:10', '收款服务商开始付款', ''], ['2026-10-16 09:30:18', '收款服务商提交付款凭证', '实付 25,000.00 CNY']] }),
+  poMkMP({ id:'PZPO20261016-00057', mno:'CFD-PO-20261016-0057', uid:'635102950', name:'孙丽', idNo:'130102199611214428', acctNo:'6222024011876630512', bank:'中国工商银行',
+    cny:40000, rc:7.10, status:'failed', created:'2026-10-16 16:42:11', done:'2026-10-16 16:50:37', failReason:'partner_rejected',
+    log:[] }),
+  poMkMP({ id:'PZPO20261016-00050', mno:'CFD-PO-20261016-0050', uid:'518230417', name:'许诺', idNo:'440303199211306619', acctNo:'6217003066214408', bank:'中国建设银行',
+    cny:70000, rc:7.12, status:'failed', created:'2026-10-16 08:30:05', done:'2026-10-16 11:20:48', failReason:'no_payment',
+    appeal:{ no:'POA-20261016-0001', src:'timeout', reason:'出款截止前未提交有效付款凭证', time:'2026-10-16 09:00:05',
+      reqs:[{ id:'ER-0001-1', target:'partner', material:'银行转账记录或未转账证明', time:'2026-10-16 09:10:00', deadline:'2026-10-16 11:10:00', reply:{ time:'2026-10-16 10:40:27' } }],
+      ruling:{ result:'fail', note:'核实收款服务商未付款，全额释放冻结', time:'2026-10-16 11:20:48' } },
+    log:[['2026-10-16 08:31:40', '收款服务商开始付款', ''], ['2026-10-16 09:00:05', '出款超时，转申诉中', '系统自动转入出款超时核实'],
+      ['2026-10-16 09:10:00', '平台要求举证', '对象：收款服务商'], ['2026-10-16 10:40:27', '收款服务商补交证据', '']] }),
+  poMkMP({ id:'PZPO20261015-00040', mno:'CFD-PO-20261015-0040', uid:'291654802', name:'马丽', idNo:'610102199004156647', acctNo:'6222021177403389026', bank:'中国工商银行',
+    cny:35000, rc:7.10, status:'success', created:'2026-10-15 14:20:16', proofAt:'2026-10-15 14:41:50', done:'2026-10-15 17:02:33',
+    confirm:{ src:'ruling', time:'2026-10-15 17:02:33' },
+    payments:[poPayMP('BT20261015143911207', 35000, '2026-10-15 14:39:11', 'succeeded', '招商银行 尾号 3391')],
+    appeal:{ no:'POA-20261015-0001', src:'merchant', reason:'未到账', time:'2026-10-15 15:05:40', note:'客户称未到账', by:PO_OPERATOR,
+      reqs:[{ id:'ER-15-0001-1', target:'merchant', material:'客户账户 14:30 后入账流水', time:'2026-10-15 15:20:00', deadline:'2026-10-15 17:20:00',
+        reply:{ time:'2026-10-15 16:44:20', note:'客户重新查询，14:39 已到账 35,000 CNY', files:[['客户流水_0040.png', '560 KB']], by:PO_OPERATOR } }],
+      ruling:{ result:'success', note:'双方流水一致，足额到账', time:'2026-10-15 17:02:33' } },
+    log:[['2026-10-15 14:22:03', '收款服务商开始付款', ''], ['2026-10-15 14:41:50', '收款服务商提交付款凭证', '实付 35,000.00 CNY'], ['2026-10-15 15:05:40', '商户提交异议', '未到账；转申诉中'],
+      ['2026-10-15 15:20:00', '平台要求举证', '对象：本商户'], ['2026-10-15 16:44:20', '商户补充材料', '客户流水 1 份']] }),
+];
+var poFilter = {}, poPage = 1, poSize = 10, poCurId = null, poFiles = [];
+
+function poGet(id) { return PO_ORDERS_MP.filter(function(o){ return o.id === id; })[0]; }
+function poCanConfirm(o) { return o.status === 'confirming' || o.status === 'platform'; }
+function poOpenMerchantReqs(o) { return o.appeal ? o.appeal.reqs.filter(function(r){ return r.target === 'merchant' && !r.reply; }) : []; }
+function poHoldText(o) { return o.status === 'success' ? '已扣划' : o.status === 'failed' ? '已释放' : '冻结中'; }
+function poFlag(t, c) { return '<span class="po-flag" style="color:' + c + ';border-color:' + c + '">' + t + '</span>'; }
+// 超时 / 待办标记：出款超时、确认超时、待补证 / 补证逾期（逾期只标记，不判负）
+function poFlags(o) {
+  var f = [];
+  if (o.appeal && o.appeal.src === 'timeout') f.push(poFlag('出款超时', '#F56C6C'));
+  if (o.status === 'platform') f.push(poFlag('确认超时', '#E6A23C'));
+  var open = poOpenMerchantReqs(o);
+  if (open.length && o.status === 'appeal') f.push(open.some(function(r){ return poMsMP(r.deadline) < Date.now(); }) ? poFlag('补证逾期', '#F56C6C') : poFlag('待补证', '#E6A23C'));
+  return f.join('');
+}
+function poLeftText(t) {
+  var m = Math.round((poMsMP(t) - Date.now()) / 60000);
+  return m >= 0 ? '<span style="color:#E6A23C">（剩余 ' + m + ' 分钟）</span>' : '<span style="color:#F56C6C">（已超时）</span>';
+}
+
+function poSearch() {
+  poFilter = { id:document.getElementById('pofId').value.trim(), ref:document.getElementById('pofRef').value.trim(), uid:document.getElementById('pofUid').value.trim(),
+    status:msLiteGet('histPayoutStatus'), cre:drpGet(document.getElementById('drpPayoutCreate')), done:drpGet(document.getElementById('drpPayoutDone')) };
+  poPage = 1;
+  renderPoOrders();
+}
+function poReset() {
+  ['pofId', 'pofRef', 'pofUid'].forEach(function(id){ document.getElementById(id).value = ''; });
+  msLiteReset('histPayoutStatus');
+  drpReset(document.getElementById('drpPayoutCreate'));
+  drpReset(document.getElementById('drpPayoutDone'));
+  poSearch();
+}
+function poRows() {
+  var f = poFilter;
+  var inRange = function(t, r){ if (!r) return true; if (!t) return false; var d = t.slice(0, 10); return d >= r.s && d <= r.e; };
+  return PO_ORDERS_MP.filter(function(o){
+    return (!f.id || o.id.indexOf(f.id) !== -1) && (!f.ref || o.mno.indexOf(f.ref) !== -1) && (!f.uid || o.uid.indexOf(f.uid) !== -1) &&
+      (!f.status || !f.status.length || f.status.indexOf(o.status) !== -1) && inRange(o.created, f.cre) && inRange(o.done, f.done);
+  }).sort(function(a, b){ return poMsMP(b.created) - poMsMP(a.created); });
+}
+// 导出：按当前筛选的全部结果（不限当前页），不含操作列；字段边界同列表，不含 Rc / Y / 价差 / 服务商身份
+function poExport() { showToast('已按当前筛选导出 ' + poRows().length + ' 条法币代付订单'); }
+function poGo(p) { poPage = p; renderPoOrders(); }
+function poSetSize(v) { poSize = parseInt(v, 10); poPage = 1; renderPoOrders(); }
+function renderPoOrders() {
+  var E = '<span class="cell-empty">—</span>';
+  var unit = function(u){ return ' <span style="color:#909399;font-size:12px">' + u + '</span>'; };
+  var rows = poRows(), pages = Math.max(1, Math.ceil(rows.length / poSize));
+  poPage = Math.min(poPage, pages);
+  document.getElementById('poTbody').innerHTML = rows.slice((poPage - 1) * poSize, poPage * poSize).map(function(o){
+    var st = PO_ST[o.status];
+    var ops = '<span class="action-icon" title="详情" onclick="openPoDetail(\'' + o.id + '\')"><i data-lucide="eye" size="14"></i></span>';
+    if (poCanConfirm(o)) ops += '<span class="action-icon" title="确认到账" onclick="openPoConfirm(\'' + o.id + '\')"><i data-lucide="circle-check" size="14"></i></span>' +
+      '<span class="action-icon" title="提交异议" onclick="openPoDispute(\'' + o.id + '\')"><i data-lucide="flag" size="14"></i></span>';
+    if (o.status === 'appeal') ops += '<span class="action-icon" title="补充材料" onclick="openPoEvid(\'' + o.id + '\')"><i data-lucide="file-plus" size="14"></i></span>';
+    return '<tr>' +
+      '<td><div class="copy-cell"><span>' + o.id + '</span><span class="copy-icon" onclick="copyText(\'' + o.id + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
+      '<td><div class="copy-cell"><span>' + o.mno + '</span><span class="copy-icon" onclick="copyText(\'' + o.mno + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
+      '<td class="asset-num">' + o.uid + '</td>' +
+      '<td class="asset-num">' + fiatFmt(o.cny) + unit('CNY') + '</td>' +
+      '<td class="asset-num">1 USDT = ' + o.rm.toFixed(4) + ' CNY</td>' +
+      '<td class="asset-num">' + fiatFmt(o.x) + unit('USDT') + '</td>' +
+      '<td class="asset-num">' + fiatFmt(o.fee) + unit('USDT') + '</td>' +
+      '<td class="asset-num">' + fiatFmt(o.hold) + unit('USDT') + ' <span style="color:#909399;font-size:12px">' + poHoldText(o) + '</span></td>' +
+      '<td><span class="badge ' + st[1] + '">' + st[0] + '</span>' + poFlags(o) + '</td>' +
+      '<td style="font-family:Inter">' + o.created + '</td><td style="font-family:Inter">' + (o.done || E) + '</td>' +
+      '<td><div class="action-cell">' + ops + '</div></td></tr>';
+  }).join('') || '<tr><td colspan="12" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>';
+  var btns = '';
+  for (var i = 1; i <= pages; i++) btns += '<button class="page-btn' + (i === poPage ? ' active' : '') + '" onclick="poGo(' + i + ')">' + i + '</button>';
+  document.getElementById('poPager').innerHTML = '<span class="pagination-total">共 ' + rows.length + ' 条</span>' +
+    '<select class="page-size-select" onchange="poSetSize(this.value)">' + [10, 20, 50].map(function(n){ return '<option value="' + n + '"' + (n === poSize ? ' selected' : '') + '>' + n + ' 条/页</option>'; }).join('') + '</select>' +
+    '<button class="page-btn" ' + (poPage <= 1 ? 'disabled' : '') + ' onclick="poGo(' + (poPage - 1) + ')"><i data-lucide="chevron-left" size="14"></i></button>' + btns +
+    '<button class="page-btn" ' + (poPage >= pages ? 'disabled' : '') + ' onclick="poGo(' + (poPage + 1) + ')"><i data-lucide="chevron-right" size="14"></i></button>';
+  lucide.createIcons();
+}
+
+// ── 详情 ──
+function poFileList(list) { return list.map(function(f){ return fiatFileRow(f[0], f[1]); }).join(''); }
+function openPoDetail(id) {
+  var o = poGet(id), a = o.appeal, E = '—', st = PO_ST[o.status], I = fiatItem;
+  poCurId = id;
+  var html = '<div class="fp-sec">订单信息</div>' +
+    I('代付订单号', o.id) + I('商户订单号', o.mno) + I('客户 ID', o.uid) +
+    I('状态', '<span class="badge ' + st[1] + '">' + st[0] + '</span>' + poFlags(o)) +
+    I('创建时间', o.created) + I('完成时间', o.done || E) +
+    (o.status === 'success' ? I('确认来源', PO_CSRC[o.confirm.src] + (o.confirm.by ? '<span style="color:#909399">（' + o.confirm.by + '）</span>' : '')) + I('确认时间', o.confirm.time) : '') +
+    (o.status === 'failed' ? I('失败原因', PO_FAIL_MP[o.failReason]) + I('释放金额', fiatFmt(o.hold) + '&nbsp;USDT') : '') +
+    '<div class="fp-sec">收款人与收款账户</div>' +
+    I('收款人姓名', o.name) + I('证件', PO_ID_TYPE[o.idType] + '&nbsp;' + o.idNo.slice(0, 4) + '**********' + o.idNo.slice(-4)) +
+    I('收款户名', o.name) + I('银行卡号', poMask(o.acctNo, 4, 4)) + I('开户银行', o.bank) +
+    '<div class="fp-sec">金额与结算</div>' +
+    I('订单金额', fiatFmt(o.cny) + '&nbsp;CNY') + I('汇率', '1 USDT = ' + o.rm.toFixed(4) + ' CNY') +
+    I('代付金额', fiatFmt(o.x) + '&nbsp;USDT') + I('手续费', fiatFmt(o.fee) + '&nbsp;USDT') +
+    I('合计冻结 / 扣款', fiatFmt(o.hold) + '&nbsp;USDT <span style="color:#909399">（' + poHoldText(o) + '）</span>');
+  // 截止时间：只显示当前进行中的节点
+  if (o.status === 'pending' || o.status === 'paying') html += '<div class="fp-sec">处理进度</div>' + I('出款截止时间', o.t1 + poLeftText(o.t1), true);
+  if (o.status === 'confirming') html += '<div class="fp-sec">处理进度</div>' + I('确认截止时间', o.t2 + poLeftText(o.t2) +
+    '<div style="font-size:12px;color:#909399;margin-top:4px">超时未处理将转待平台确认，资金保持冻结</div>', true);
+  if (o.status === 'platform') html += '<div class="fp-sec">处理进度</div>' + I('确认截止时间', o.t2 + '<span style="color:#F56C6C">（已超时）</span>' +
+    '<div style="font-size:12px;color:#909399;margin-top:4px">平台将线下联系核实到账情况；核实到账前你仍可确认到账或提交异议</div>', true);
+  if (o.payments.length) {
+    html += '<div class="fp-sec">付款记录</div><div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">' + o.payments.map(function(p){
+      var b = PO_BANK_MP[p.bank];
+      return '<div class="po-pay-card"><div class="fp-dr-grid">' + I('银行流水号', '<span style="font-family:Inter">' + p.no + '</span>') + I('银行状态', '<span style="color:' + b[1] + '">' + b[0] + '</span>' + (p.note ? '<span style="color:#909399">（' + p.note + '）</span>' : '')) +
+        I('实付金额', fiatFmt(p.amt) + '&nbsp;CNY') + I('付款时间', p.at) + I('付款账户', p.payer) + I('凭证', poFileList(p.files), true) + '</div></div>';
+    }).join('') + '</div>';
+  }
+  if (a) {
+    var prog = a.ruling ? (a.ruling.result === 'success' ? '已裁定：足额到账，订单成功' : '已裁定：' + PO_FAIL_MP[o.failReason] + '，全额释放冻结') : '平台处理中';
+    html += '<div class="fp-sec">申诉信息</div>' + I('申诉号', a.no) + I('申诉来源', PO_SRC_MP[a.src]) + I('原因', a.reason) + I('发起时间', a.time) +
+      I('处理进度', a.ruling ? prog + '<span style="color:#909399">（' + a.ruling.time + '）</span>' : '<span style="color:#E6A23C">' + prog + '</span>', true) +
+      (a.ruling && a.ruling.note ? I('裁定说明', a.ruling.note, true) : '') +
+      (a.src === 'merchant' && a.note ? I('异议说明', a.note, true) : '') +
+      (a.files.length ? I('异议附件', poFileList(a.files), true) : '');
+    // 举证要求：对本商户的要求展示完整内容；对收款服务商的要求只展示进度
+    if (a.reqs.length) html += '<div class="fp-sec">举证要求</div><div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px">' + a.reqs.map(function(r){
+      var mine = r.target === 'merchant', overdue = !r.reply && poMsMP(r.deadline) < Date.now();
+      var state = r.reply ? '<span style="color:#67C23A">已补交（' + r.reply.time + '）</span>' : overdue ? '<span style="color:#F56C6C">已逾期，仍可补交</span>' : '<span style="color:#E6A23C">待补交</span>';
+      return '<div class="po-pay-card"><div class="fp-dr-grid">' + I('举证对象', mine ? '本商户' : '收款服务商') + I('状态', state) +
+        (mine ? I('所需材料', r.material, true) + (r.note ? I('说明', r.note, true) : '') : '') +
+        I('要求时间', r.time) + I('截止时间', r.deadline) +
+        (mine && r.reply && r.reply.files ? I('已补交材料', (r.reply.note ? '<div style="margin-bottom:6px">' + r.reply.note + '</div>' : '') + poFileList(r.reply.files), true) : '') + '</div></div>';
+    }).join('') + '</div>';
+    var adds = a.adds.filter(function(x){ return !x.reqId; });
+    if (adds.length) html += '<div class="fp-sec">补充材料</div>' + adds.map(function(x){
+      return I(x.time, (x.note ? '<div style="margin-bottom:6px">' + x.note + '</div>' : '') + poFileList(x.files), true);
+    }).join('');
+  }
+  var tl = o.log.slice();
+  if (o.status === 'failed' && o.failReason === 'partner_rejected') tl.push([o.done, '收款服务商未执行拒单，订单失败', '已全额释放冻结 ' + fiatFmt(o.hold) + ' USDT']);
+  if (a && a.ruling && a.ruling.result === 'fail') tl.push([a.ruling.time, '平台裁定：' + PO_FAIL_MP[o.failReason] + '，订单失败', '已全额释放冻结 ' + fiatFmt(o.hold) + ' USDT']);
+  if (o.status === 'success') tl.push([o.done, PO_CSRC[o.confirm.src] + '，订单成功', '已扣划 ' + fiatFmt(o.hold) + ' USDT']);
+  tl.sort(function(x, y){ return poMsMP(x[0]) - poMsMP(y[0]); });
+  html += '<div class="fp-sec">处理记录</div><div class="fp-tl">' + tl.map(function(t){
+    return '<div class="fp-tl-item"><span class="fp-tl-dot"></span><div><div class="fp-tl-label">' + t[1] + '</div>' + (t[2] ? '<div class="fp-tl-sub" style="font-family:inherit">' + t[2] + '</div>' : '') + '<div class="fp-tl-sub">' + t[0] + '</div></div></div>';
+  }).join('') + '</div>';
+  document.getElementById('poDetailSub').textContent = o.id;
+  document.getElementById('poDetailBody').innerHTML = html;
+  var ft = '<button class="btn btn-default btn-sm" onclick="closeFiatDrawer(\'poDetail\')">关闭</button>';
+  if (poCanConfirm(o)) ft += '<button class="btn btn-default btn-sm" onclick="openPoDispute(\'' + o.id + '\')">提交异议</button><button class="btn btn-primary btn-sm" onclick="openPoConfirm(\'' + o.id + '\')">确认到账</button>';
+  if (o.status === 'appeal') ft += '<button class="btn btn-primary btn-sm" onclick="openPoEvid(\'' + o.id + '\')">补充材料</button>';
+  document.getElementById('poDetailFooter').innerHTML = ft;
+  openFiatDrawer('poDetail');
+}
+function poRefreshDetail() {
+  if (document.getElementById('poDetailDrawer').classList.contains('show') && poCurId) openPoDetail(poCurId);
+}
+
+// ── 确认到账（二次确认）：提示实际扣款 X＋F 与不可撤销；提交期间按钮禁用 ──
+function openPoConfirm(id) {
+  var o = poGet(id);
+  poCurId = id;
+  document.getElementById('poCfTip').innerHTML = '确认后将扣划 <b style="font-family:Inter">' + fiatFmt(o.hold) + '</b> USDT，订单成功且不能撤销；请确认客户指定账户已足额到账。';
+  document.getElementById('poCfMeta').innerHTML = fiatItem('代付订单号', o.id) + fiatItem('客户 ID', o.uid) +
+    fiatItem('订单金额', fiatFmt(o.cny) + '&nbsp;CNY') + fiatItem('收款账户', o.name + '&nbsp;' + o.bank + '<br>' + poMask(o.acctNo, 4, 4)) +
+    fiatItem('代付金额', fiatFmt(o.x) + '&nbsp;USDT') + fiatItem('手续费', fiatFmt(o.fee) + '&nbsp;USDT') +
+    fiatItem('合计扣款', '<b>' + fiatFmt(o.hold) + '&nbsp;USDT</b>');
+  openModal('poConfirmModal');
+  lucide.createIcons();
+}
+function poBusy(btnId, label, fn) {
+  var btn = document.getElementById(btnId);
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" size="13" class="btn-spin"></i>提交中';
+  lucide.createIcons();
+  setTimeout(function(){ btn.disabled = false; btn.innerHTML = label; fn(); }, 800);
+}
+function poConfirmSubmit() {
+  poBusy('poCfBtn', '确认到账', function(){
+    var o = poGet(poCurId);
+    // 服务端按状态 / 版本复核：平台已先代为确认时返回最新状态，不重复结算、不盲目重试
+    if (o.race) {
+      delete o.race;
+      o.status = 'success'; o.done = fiatAgo(0); o.confirm = { src:'platform', time:o.done };
+      o.log.push([fiatAgo(1), '平台线下联系商户核实', '商户财务确认客户已足额到账']);
+    }
+    if (!poCanConfirm(o)) {
+      closeModal('poConfirmModal');
+      poRefreshAll(); poRefreshDetail();
+      showToast('订单状态已变更（当前：' + PO_ST[o.status][0] + '），已刷新', 'error');
+      return;
+    }
+    o.status = 'success'; o.done = fiatAgo(0); o.confirm = { src:'portal', by:PO_OPERATOR, time:o.done };
+    closeModal('poConfirmModal');
+    poRefreshAll(); poRefreshDetail();
+    showToast('已确认到账，订单成功');
+  });
+}
+
+// ── 附件（JPG / JPEG / PNG / PDF，单个 ≤10MB，最多 5 个；上传失败原因显示在字段旁） ──
+function poAddFiles(input, boxId) {
+  Array.prototype.forEach.call(input.files, function(f){
+    var ext = (f.name.split('.').pop() || '').toLowerCase();
+    if (['pdf', 'jpg', 'jpeg', 'png'].indexOf(ext) === -1) { showToast(f.name + ' 格式不支持', 'error'); return; }
+    if (f.size > 10 * 1024 * 1024) { showToast(f.name + ' 超过 10MB', 'error'); return; }
+    if (poFiles.length >= 5) { showToast('最多上传 5 个文件', 'error'); return; }
+    poFiles.push([f.name, f.size < 1024 * 1024 ? Math.ceil(f.size / 1024) + ' KB' : (f.size / 1024 / 1024).toFixed(1) + ' MB']);
+  });
+  input.value = '';
+  poRenderFiles(boxId);
+}
+function poRemoveFile(i, boxId) { poFiles.splice(i, 1); poRenderFiles(boxId); }
+function poRenderFiles(boxId) {
+  document.getElementById(boxId).innerHTML = poFiles.map(function(f, i){
+    return '<div class="fp-file"><i data-lucide="paperclip" size="13" style="color:#909399"></i><span>' + f[0] + '</span><span style="color:#909399;font-size:12px;font-family:Inter">' + f[1] + '</span><a onclick="poRemoveFile(' + i + ',\'' + boxId + '\')">删除</a></div>';
+  }).join('');
+  if (boxId === 'poEvidFiles' && poFiles.length) document.getElementById('poEvidFileErr').style.display = 'none';
+  lucide.createIcons();
+}
+function poCount(k) { document.getElementById(k + 'Count').textContent = document.getElementById(k + 'Note').value.length + '/500'; }
+
+// ── 提交异议：说明必填、客户流水可后补；受理后转申诉中 ──
+function openPoDispute(id) {
+  var o = poGet(id);
+  poCurId = id; poFiles = [];
+  closeModal('poConfirmModal');
+  document.getElementById('poDisputeSub').textContent = o.id;
+  document.getElementById('poDisputeMeta').innerHTML = fiatItem('代付订单号', o.id) + fiatItem('客户 ID', o.uid) +
+    fiatItem('订单金额', fiatFmt(o.cny) + '&nbsp;CNY') + fiatItem('收款账户', o.bank + '&nbsp;' + poMask(o.acctNo, 4, 4));
+  document.querySelectorAll('input[name="poDisputeType"]').forEach(function(r){ r.checked = false; });
+  document.getElementById('poDisputeNote').value = '';
+  poCount('poDispute');
+  ['poDisputeTypeErr', 'poDisputeNoteErr'].forEach(function(e){ document.getElementById(e).style.display = 'none'; });
+  poRenderFiles('poDisputeFiles');
+  openFiatDrawer('poDispute');
+}
+function poDisputeSubmit() {
+  var typeEl = document.querySelector('input[name="poDisputeType"]:checked'), note = document.getElementById('poDisputeNote').value.trim();
+  document.getElementById('poDisputeTypeErr').style.display = typeEl ? 'none' : 'block';
+  document.getElementById('poDisputeNoteErr').style.display = note ? 'none' : 'block';
+  if (!typeEl || !note) return;
+  poBusy('poDisputeBtn', '提交异议', function(){
+    var o = poGet(poCurId), now = fiatAgo(0);
+    // 已进入申诉：不重复建申诉，本次内容追加为补充材料
+    if (o.status === 'appeal') {
+      o.appeal.adds.push({ time:now, note:typeEl.value + '：' + note, files:poFiles.slice(), by:PO_OPERATOR });
+      o.log.push([now, '商户补充材料', '订单已在申诉中，异议内容转为补充材料']);
+      closeFiatDrawer('poDispute'); poRefreshAll(); poRefreshDetail();
+      showToast('订单已在申诉中，内容已作为补充材料提交');
+      return;
+    }
+    // 已终态：保留已输入内容，提示刷新
+    if (!poCanConfirm(o)) { showToast('订单状态已变更（当前：' + PO_ST[o.status][0] + '），无法提交异议，请刷新', 'error'); return; }
+    o.status = 'appeal';
+    o.appeal = { no:'POA-' + PO_D + '-' + ('000' + (8 + Math.floor(Math.random() * 90))).slice(-4), src:'merchant', reason:typeEl.value, time:now, note:note, files:poFiles.slice(), by:PO_OPERATOR, reqs:[], adds:[], ruling:null };
+    o.log.push([now, '商户提交异议', typeEl.value + '；转申诉中，资金保持冻结']);
+    closeFiatDrawer('poDispute'); poRefreshAll(); poRefreshDetail();
+    showToast('异议已提交，订单转入申诉中');
+  });
+}
+
+// ── 补充材料：追加到原申诉；有待补交的举证要求时绑定该要求；逾期仍可补交 ──
+function openPoEvid(id) {
+  var o = poGet(id), req = poOpenMerchantReqs(o)[0];
+  poCurId = id; poFiles = [];
+  document.getElementById('poEvidSub').textContent = o.id;
+  document.getElementById('poEvidMeta').innerHTML = fiatItem('代付订单号', o.id) + fiatItem('申诉号', o.appeal.no) +
+    (req ? fiatItem('平台要求材料', req.material, true) + fiatItem('举证截止时间', req.deadline + poLeftText(req.deadline), true)
+         : fiatItem('说明', '<span style="color:#909399">暂无平台举证要求，可主动补充客户流水等材料</span>', true));
+  document.getElementById('poEvidNote').value = '';
+  poCount('poEvid');
+  document.getElementById('poEvidFileErr').style.display = 'none';
+  poRenderFiles('poEvidFiles');
+  openFiatDrawer('poEvid');
+}
+function poEvidSubmit() {
+  if (!poFiles.length) { document.getElementById('poEvidFileErr').style.display = 'block'; return; }
+  poBusy('poEvidBtn', '提交', function(){
+    var o = poGet(poCurId), now = fiatAgo(0), note = document.getElementById('poEvidNote').value.trim();
+    if (o.status !== 'appeal') { showToast('订单状态已变更（当前：' + PO_ST[o.status][0] + '），无法补充材料，请刷新', 'error'); return; }
+    var req = poOpenMerchantReqs(o)[0], item = { time:now, note:note, files:poFiles.slice(), by:PO_OPERATOR };
+    if (req) { req.reply = item; item.reqId = req.id; }
+    o.appeal.adds.push(item);
+    o.log.push([now, '商户补充材料', (req ? '响应举证要求；' : '') + '材料 ' + item.files.length + ' 份']);
+    closeFiatDrawer('poEvid'); poRefreshAll(); poRefreshDetail();
+    showToast('材料已提交，等待平台核实');
+  });
+}
+
+// ── 资金：成功写「法币代付」−X 与「手续费」−F（F＝0 不写）；冻结明细：下单＋(X＋F)，成功扣划解冻 / 失败释放 −(X＋F) ──
+function poMainUid() { return '<td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>'; }
+function poLedgerSync() {
+  var tbody = document.getElementById('acctLedgerTbody');
+  tbody.querySelectorAll('tr[data-po]').forEach(function(tr){ tr.remove(); });
+  var bal = PO_BASE_TOTAL, rows = [];
+  PO_ORDERS_MP.filter(function(o){ return o.status === 'success'; }).sort(function(a, b){ return poMsMP(a.done) - poMsMP(b.done); }).forEach(function(o){
+    bal = poR2(bal - o.x); rows.push(['法币代付', 'badge-orange', o.x, bal, o]);
+    if (o.fee > 0) { bal = poR2(bal - o.fee); rows.push(['手续费', 'badge-gray', o.fee, bal, o]); }
+  });
+  tbody.insertAdjacentHTML('afterbegin', rows.reverse().map(function(r){
+    return '<tr data-po="1">' + poMainUid() + '<td><span class="badge ' + r[1] + '">' + r[0] + '</span></td><td>USDT</td><td>TRON</td>' +
+      '<td class="asset-num" style="color:#F56C6C">-' + fiatFmt(r[2]) + '</td><td class="asset-num">' + fiatFmt(r[3]) + '</td>' +
+      '<td class="asset-num">' + r[4].id + '</td><td style="font-family:Inter">' + r[4].done + '</td></tr>';
+  }).join(''));
+  acctLedgerSearch();
+  return bal;
+}
+var PO_FRZ_TYPES = { freeze:['代付冻结', 'badge-blue', '+'], deduct:['代付扣划解冻', 'badge-gray', '-'], release:['代付释放', 'badge-gray', '-'] };
+function poFreezeRows() {
+  var ev = [];
+  PO_ORDERS_MP.forEach(function(o){
+    ev.push({ t:o.created, type:'freeze', o:o });
+    if (o.status === 'success') ev.push({ t:o.done, type:'deduct', o:o });
+    if (o.status === 'failed') ev.push({ t:o.done, type:'release', o:o });
+  });
+  ev.sort(function(a, b){ return poMsMP(a.t) - poMsMP(b.t); });
+  var bal = 0;
+  ev.forEach(function(e){ bal = poR2(bal + (e.type === 'freeze' ? e.o.hold : -e.o.hold)); e.bal = bal; });
+  return ev.reverse();
+}
+function frzRender() {
+  var ref = document.getElementById('frzRef').value.trim(), types = msLiteGet('frzType'), range = drpGet(document.getElementById('drpFrz'));
+  var all = poFreezeRows(), rows = all.filter(function(e){
+    var d = e.t.slice(0, 10);
+    return (!ref || e.o.id.indexOf(ref) !== -1) && (!types.length || types.indexOf(e.type) !== -1) && (!range || (d >= range.s && d <= range.e));
+  });
+  document.getElementById('frzTbody').innerHTML = rows.map(function(e){
+    var t = PO_FRZ_TYPES[e.type];
+    return '<tr>' + poMainUid() + '<td><span class="badge ' + t[1] + '">' + t[0] + '</span></td><td>USDT</td><td>TRON</td>' +
+      '<td class="asset-num" style="color:' + (t[2] === '+' ? '#E6A23C' : '#909399') + '">' + t[2] + fiatFmt(e.o.hold) + '</td><td class="asset-num">' + fiatFmt(e.bal) + '</td>' +
+      '<td class="asset-num">' + e.o.id + '</td><td style="font-family:Inter">' + e.t + '</td></tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>';
+  document.getElementById('frzCount').textContent = rows.length;
+  document.getElementById('frzNow').textContent = fiatFmt(all.length ? all[0].bal : 0);
+}
+function frzReset() {
+  document.getElementById('frzRef').value = '';
+  msLiteReset('frzType');
+  drpReset(document.getElementById('drpFrz'));
+  frzRender();
+}
+function switchLedgerTab(paneId, el) {
+  document.querySelectorAll('#pageAccountLedger .hist-tab-item').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  document.querySelectorAll('#pageAccountLedger .hist-pane').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(paneId).classList.add('active');
+  lucide.createIcons();
+}
+
+// ── 余额：代付与提币共享可用余额；下单只冻结不改总余额，成功减总余额并解冻，失败仅释放冻结 ──
+function poBalanceSync(total) {
+  var poFrozen = poR2(PO_ORDERS_MP.filter(function(o){ return o.status !== 'success' && o.status !== 'failed'; }).reduce(function(s, o){ return s + o.hold; }, 0));
+  var frozen = poR2(PO_OTHER_FROZEN + poFrozen), avail = poR2(total - frozen);
+  document.getElementById('ovTotal').textContent = fiatFmt(total);
+  document.getElementById('ovBalSub').innerHTML = '可用 ' + fiatFmt(avail) + ' USDT &nbsp;|&nbsp; 冻结 ' + fiatFmt(frozen) + ' USDT（含代付冻结 ' + fiatFmt(poFrozen) + ' USDT）';
+  document.getElementById('wdBalance').textContent = fiatFmt(avail);
+  document.getElementById('wdPoHint').textContent = '可用余额已扣除代付冻结 ' + fiatFmt(poFrozen) + ' USDT（代付与提币共享可用余额）';
+}
+
+// ── 概览待办：待确认 / 待平台确认 / 待补证；终态后自动移出 ──
+function poTodoSync() {
+  var groups = { confirming:[], platform:[], evid:[] };
+  PO_ORDERS_MP.forEach(function(o){
+    if (o.status === 'confirming') groups.confirming.push(o);
+    if (o.status === 'platform') groups.platform.push(o);
+    if (o.status === 'appeal' && poOpenMerchantReqs(o).length) groups.evid.push(o);
+  });
+  var sum = function(l){ return fiatFmt(l.reduce(function(s, o){ return s + o.hold; }, 0)); };
+  document.getElementById('ovPoConfirming').textContent = groups.confirming.length; document.getElementById('ovPoConfirmingAmt').textContent = sum(groups.confirming);
+  document.getElementById('ovPoPlatform').textContent = groups.platform.length; document.getElementById('ovPoPlatformAmt').textContent = sum(groups.platform);
+  document.getElementById('ovPoEvid').textContent = groups.evid.length; document.getElementById('ovPoEvidAmt').textContent = sum(groups.evid);
+  var rows = [];
+  groups.confirming.forEach(function(o){ rows.push([o, '待确认到账', o.t2 + poLeftText(o.t2)]); });
+  groups.platform.forEach(function(o){ rows.push([o, '待平台确认', '<span style="color:#909399">已超过确认截止，平台核实中</span>']); });
+  groups.evid.forEach(function(o){ var r = poOpenMerchantReqs(o)[0]; rows.push([o, '待补证', r.deadline + poLeftText(r.deadline)]); });
+  document.getElementById('ovPoTodoTbody').innerHTML = rows.map(function(r){
+    var o = r[0];
+    return '<tr><td class="asset-num">' + o.id + '</td><td class="asset-num">' + o.uid + '</td><td class="asset-num">' + fiatFmt(o.cny) + ' CNY</td>' +
+      '<td class="asset-num">' + fiatFmt(o.hold) + ' USDT</td><td>' + r[1] + '</td><td style="font-family:Inter">' + r[2] + '</td>' +
+      '<td><a style="color:#409EFF;cursor:pointer" onclick="openPoDetail(\'' + o.id + '\')">去处理</a></td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#C0C4CC;height:60px">暂无待办</td></tr>';
+}
+function poGoList(status) {
+  switchSubPage('pageHistory', '历史记录');
+  switchHistTab('histPayout', document.getElementById('histPayoutTab'));
+  ['pofId', 'pofRef', 'pofUid'].forEach(function(id){ document.getElementById(id).value = ''; });
+  msLiteSetSingle('histPayoutStatus', status);
+  poSearch();
+}
+
+function poRefreshAll() {
+  renderPoOrders();
+  poBalanceSync(poLedgerSync());
+  frzRender();
+  poTodoSync();
+  lucide.createIcons();
+}
+function poInit() {
+  msLiteInit('histPayoutStatus', Object.keys(PO_ST).map(function(k){ return { value:k, label:PO_ST[k][0] }; }), '全部');
+  msLiteInit('frzType', Object.keys(PO_FRZ_TYPES).map(function(k){ return { value:k, label:PO_FRZ_TYPES[k][0] }; }), '全部');
+  poRefreshAll();
+}
+
 function openRampDetail(type, orderId) {
   document.getElementById('rampDetailTitle').textContent = (type === 'in' ? 'On Ramp' : '出金') + '订单详情';
   var rows;
@@ -4610,7 +5368,7 @@ function openRampDetail(type, orderId) {
 var API_KEYS = [
   { id:1, name:'test', key:'MCowBQYDK2VwAyEAPyYEO7Hc1FcJas9eSRDpJjUh3fDbRuHQ5pJe9N2h3kM=', ips:['104.30.178.73'], perms:['deposit','withdraw','onramp','offramp'], status:'active', createdAt:'2026-06-01 09:44:34' }
 ];
-var AK_PERM_LABELS = { deposit:'充币', withdraw:'提币', onramp:'On Ramp', offramp:'Off Ramp', fiatpayin:'Fiat Pay-in' };
+var AK_PERM_LABELS = { deposit:'充币', withdraw:'提币', onramp:'On Ramp', offramp:'Off Ramp', fiatpayin:'Fiat Pay-in', fiatpayout:'Fiat Pay-out' };
 var currentAkId = null;
 var akMode = 'create';
 
@@ -4673,6 +5431,7 @@ function openApiKeyModal(mode, id) {
   });
   document.getElementById('akPermOnramp').checked = false;
   document.getElementById('akPermFiatpayin').checked = false;
+  document.getElementById('akPermFiatpayout').checked = false;   // Fiat Pay-out 默认不勾选，需显式开通
   document.getElementById('akStatusActive').checked = true;
   document.getElementById('akStatusDisabled').checked = false;
   if (isEdit && id) {
@@ -4682,7 +5441,7 @@ function openApiKeyModal(mode, id) {
     document.getElementById('akKeyVal').value = ak.key;
     document.getElementById('akStatusActive').checked   = ak.status === 'active';
     document.getElementById('akStatusDisabled').checked = ak.status !== 'active';
-    ['deposit','withdraw','onramp','offramp','fiatpayin'].forEach(function(p) {
+    ['deposit','withdraw','onramp','offramp','fiatpayin','fiatpayout'].forEach(function(p) {
       var el = document.getElementById('akPerm' + p.charAt(0).toUpperCase() + p.slice(1));
       if (el) el.checked = ak.perms.indexOf(p) !== -1;
     });
@@ -4757,7 +5516,7 @@ var WEBHOOKS = [
     events:['transaction.deposit.succeeded','transaction.withdrawal.succeeded','transaction.withdrawal.failed'] },
   { id:2, url:'http://10.207.15.146:8089/subscribe', status:'active',
     events:['transaction.withdrawal.failed','transaction.deposit.succeeded','transaction.payinorder.expired','transaction.withdrawal.succeeded','transaction.payinorder.succeeded','transaction.payinorder.failed'] },
-  { id:3, url:'https://old.merchant-demo.com/callback', status:'revoked',
+  { id:3, url:'https://old.merchant-demo.com/callback', status:'disabled',
     events:['transaction.deposit.succeeded'] }
 ];
 var currentWebhookId = null;
@@ -4775,14 +5534,9 @@ function renderWebhookList() {
         + (w.events.length > 1 ? '<span class="badge badge-gray" style="font-size:11px;padding:2px 6px">+' + (w.events.length - 1) + '</span>' : '');
       var statusBadge = w.status === 'active'
         ? '<span class="badge badge-green">启用</span>'
-        : '<span class="badge badge-gray">失效</span>';
-      var actions = '';
-      if (w.status === 'active') {
-        actions += '<span class="action-icon" data-tip="编辑"><i data-lucide="pencil" size="14"></i></span>'
-          + '<span class="action-icon" data-tip="失效"><i data-lucide="ban" size="14"></i></span>';
-      }
-      actions += '<span class="action-icon" data-tip="详情"><i data-lucide="book-open" size="14"></i></span>'
-        + '<span class="action-icon" data-tip="删除" onclick="openWebhookDelete(' + w.id + ')"><i data-lucide="trash-2" size="14"></i></span>';
+        : '<span class="badge badge-gray">禁用</span>';
+      var actions = '<span class="action-icon" data-tip="编辑" onclick="openWebhookEdit(' + w.id + ')"><i data-lucide="pencil" size="14"></i></span>'
+        + '<span class="action-icon" data-tip="详情"><i data-lucide="book-open" size="14"></i></span>';
       return '<tr>'
         + '<td><div class="copy-cell"><span style="font-family:Inter">URL: ' + w.url + '</span><span class="copy-icon" onclick="copyText(\'' + w.url + '\')"><i data-lucide="copy" size="13"></i></span></div></td>'
         + '<td>' + eventTags + '</td>'
@@ -4797,6 +5551,79 @@ function renderWebhookList() {
 
 function resetWebhookFilter() {
   document.getElementById('whUrlInput').value = '';
+  renderWebhookList();
+}
+
+var WEBHOOK_EVENT_TYPES = [
+  'transaction.deposit.succeeded',
+  'transaction.withdrawal.succeeded',
+  'transaction.withdrawal.failed',
+  'transaction.payinorder.succeeded',
+  'transaction.payinorder.failed',
+  'transaction.payinorder.expired',
+  // 法币代付事件：回调投递不依赖 API Key 是否勾选 Fiat Pay-out
+  'transaction.fiat.payout.proof_submitted',
+  'transaction.fiat.payout.platform_confirmation_pending',
+  'transaction.fiat.payout.appealed',
+  'transaction.fiat.payout.evidence_required',
+  'transaction.fiat.payout.completed',
+  'transaction.fiat.payout.failed'
+];
+
+function openWebhookEdit(id) {
+  var w = WEBHOOKS.find(function(x) { return x.id === id; });
+  if (!w) return;
+  currentWebhookId = id;
+  document.getElementById('whEditUrl').value = w.url;
+  document.getElementById('whEditDesc').value = w.desc || '';
+  document.getElementById('whEditEvents').innerHTML = WEBHOOK_EVENT_TYPES.map(function(e) {
+    return '<label class="el-checkbox"><span class="el-checkbox__input"><input type="checkbox" class="el-checkbox__original wh-event" value="' + e + '"' + (w.events.indexOf(e) > -1 ? ' checked' : '') + '><span class="el-checkbox__inner"></span></span><span class="el-checkbox__label" style="font-family:Inter">' + e + '</span></label>';
+  }).join('');
+  document.getElementById('whEditEventsErr').style.display = 'none';
+  document.getElementById(w.status === 'active' ? 'whStatusActive' : 'whStatusDisabled').checked = true;
+  openModal('webhookEditModal');
+}
+
+function saveWebhookEdit() {
+  var w = WEBHOOKS.find(function(x) { return x.id === currentWebhookId; });
+  if (!w) return;
+  var events = Array.prototype.slice.call(document.querySelectorAll('.wh-event:checked')).map(function(el) { return el.value; });
+  if (events.length === 0) {
+    document.getElementById('whEditEventsErr').style.display = 'block';
+    return;
+  }
+  var status = document.getElementById('whStatusActive').checked ? 'active' : 'disabled';
+  // 状态有变化时先二次确认，确认后再保存
+  if (status !== w.status) {
+    var toDisable = status === 'disabled';
+    document.getElementById('whStatusTitle').textContent = toDisable ? '确定禁用该 Webhook？' : '确定启用该 Webhook？';
+    document.getElementById('whStatusText').textContent = toDisable
+      ? '禁用后将不再向此 URL 推送新事件，待重试的事件将被取消，正在发送中的请求不受影响。'
+      : '启用后将开始向此 URL 推送已订阅的事件，请确认该地址可正常接收请求。';
+    document.getElementById('whStatusAlert').className = 'alert-box ' + (toDisable ? 'alert-warning' : 'alert-info');
+    document.getElementById('whStatusUrl').textContent = w.url;
+    document.getElementById('whStatusConfirmBtn').textContent = toDisable ? '确定禁用' : '确定启用';
+    openModal('webhookStatusModal');
+    return;
+  }
+  applyWebhookEdit(events, status);
+}
+
+function confirmWebhookStatus() {
+  var events = Array.prototype.slice.call(document.querySelectorAll('.wh-event:checked')).map(function(el) { return el.value; });
+  var status = document.getElementById('whStatusActive').checked ? 'active' : 'disabled';
+  closeModal('webhookStatusModal');
+  applyWebhookEdit(events, status);
+}
+
+function applyWebhookEdit(events, status) {
+  var w = WEBHOOKS.find(function(x) { return x.id === currentWebhookId; });
+  if (!w) return;
+  w.desc = document.getElementById('whEditDesc').value.trim();
+  w.events = events;
+  w.status = status;
+  closeModal('webhookEditModal');
+  showToast('保存成功');
   renderWebhookList();
 }
 
@@ -4855,6 +5682,7 @@ function applyOverviewPerms() {
   vis('ovCardProgress', hasWdr);
   vis('ovCardChart',    hasView);
   vis('ovCardPending',  hasWdr);
+  vis('ovCardPayout',   hasView);
   vis('ovChartsRow',    hasView || hasWdr);
 
   var empty = document.getElementById('ovEmptyState');
@@ -4895,6 +5723,10 @@ initDrp(document.getElementById('drpRampInDone'));
 initDrp(document.getElementById('drpFiatCreate'));
 initDrp(document.getElementById('drpFiatDone'));
 renderFiatOrders();
+initDrp(document.getElementById('drpPayoutCreate'));
+initDrp(document.getElementById('drpPayoutDone'));
+initDrp(document.getElementById('drpFrz'));
+poInit();
 initDrp(document.getElementById('drpRampOutCreate'));
 initDrp(document.getElementById('drpRampOutDone'));
 
