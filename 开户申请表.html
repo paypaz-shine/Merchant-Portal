@@ -182,6 +182,7 @@
   .up-row + .up-row { border-top:1px solid #EBEEF5; }
   .up-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; }
   .up-name { font-size:13px; color:#303133; }
+  .up-name .opt { color:#909399; font-size:12px; margin-left:4px; }
   .up-files { display:flex; flex-direction:column; gap:4px; }
   .up-file { display:flex; align-items:center; gap:6px; font-size:12px; color:#606266; }
   .up-file .fname { font-family:'Inter',sans-serif; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:420px; }
@@ -311,8 +312,8 @@ const TXT = {
   suppTag: ['待补件', 'To update'],
   roStepNote: ['此部分无需修改，仅供查看。', 'No changes are required in this section.'],
   suppTitle: ['需要补充资料', 'Additional information required'],
-  suppText: ['请修改标记「待补件」的部分，其余部分只读；修改完成后需在第 ⑥ 步重新签名并提交。',
-             'Please update the sections marked "To update". Other sections are read-only. You will need to sign again in Step 6 before resubmitting.'],
+  suppText: ['请修改标记「待补件」的部分，其余部分只读；修改完成后需在第 ⑤ 步重新签名并提交。',
+             'Please update the sections marked "To update". Other sections are read-only. You will need to sign again in Step 5 before resubmitting.'],
   suppScope: ['需补充部分', 'Sections to update'],
   roTitle: ['申请已提交，资料不可修改', 'Application submitted — it can no longer be edited'],
   roText: ['我们正在审核您的申请，如需补充资料会通过邮件联系您。', 'We are reviewing your application and will contact you by email if anything else is needed.'],
@@ -322,9 +323,10 @@ const TXT = {
   viewSubmitted: ['查看已提交资料', 'View submitted information'],
   invalidTitle: ['链接无效或已过期', 'Link invalid or expired'],
   invalidText: ['此链接无效或已过期，请联系我们获取新的链接。', 'This link is invalid or has expired. Please contact us for a new link.'],
+  backHome: ['返回平台', 'Back to Paypaz'],
   upBtn: ['上传文件', 'Upload'], upEmpty: ['未上传', 'No file uploaded'],
-  upTip: ['PDF / JPG / PNG，单个不超过 10MB', 'PDF / JPG / PNG, max 10MB each'],
-  upBadType: ['仅支持 PDF / JPG / PNG 格式', 'Only PDF / JPG / PNG files are supported'],
+  upTip: ['PDF / JPG / JPEG / PNG / WEBP / HEIC，单个不超过 10MB', 'PDF / JPG / JPEG / PNG / WEBP / HEIC, max 10MB each'],
+  upBadType: ['仅支持 PDF / JPG / JPEG / PNG / WEBP / HEIC 格式', 'Only PDF / JPG / JPEG / PNG / WEBP / HEIC files are supported'],
   upTooBig: ['单个文件不能超过 10MB', 'Each file must not exceed 10MB'],
   addPerson: ['添加人员', 'Add person'], person: ['人员', 'Person'], del: ['删除', 'Remove'],
   peopleTip: ['请为每位董事、UBO、股东和授权签字人分别添加；同一人担任多个角色时只需添加一次并勾选全部角色。至少需要 1 名董事和 1 名 UBO（直接或间接持股 / 控制 ≥25%）。',
@@ -333,9 +335,8 @@ const TXT = {
   errPct: ['请输入 0–100 之间的数值，最多 2 位小数', 'Enter a value between 0 and 100, up to 2 decimals'],
   errExpiry: ['护照到期日须晚于今天', 'Passport expiry date must be later than today'],
   errAmount: ['请输入大于 0 的金额，最多 2 位小数', 'Enter an amount greater than 0, up to 2 decimals'],
-  docFiles: ['证明文件', 'Supporting documents'],
-  docCompanyDesc: ['如注册证书、存续证明、公司章程、股权结构、地址证明、监管牌照、财务报表等', 'e.g. certificate of incorporation, good standing, M&A, ownership structure, proof of address, licences, financial statements'],
-  docPersonDesc: ['如护照、持股证明、UBO 证明等', 'e.g. passport, proof of shareholding, proof of UBO status'],
+  docCompany: ['企业信息（证明文件）', 'Entity Information (Supporting documents)'],
+  docPerson: ['人员信息（证明文件）', 'Individual (Supporting Documents)'],
   secOwn: ['所有权声明', 'Declaration of ownership'], secRisk: ['风险确认', 'Risk acknowledgement'], secProof: ['钱包所有权证明', 'Proof of wallet ownership'],
   agreeOwn: ['我已阅读并确认以上所有权声明', 'I have read and confirm the declaration of ownership above'],
   agreeRisk: ['我已阅读并确认以上风险提示', 'I have read and acknowledge the risks above'],
@@ -387,9 +388,10 @@ const SCHEMA = {
   e: [
     F('legalName','text','企业法定全称','Full legal name of entity',{ span:2 }),
     F('tradingName','text','注册商号 / 品牌','Registered trading name(s) / brand(s)',{ req:false }),
-    F('legalForm','text','法律形式 / 企业类型','Legal form / entity type',{ hint:['按注册证书上的法律形式填写，如 IBC、Ltd','As reflected in the certificate of incorporation, e.g. IBC, Ltd'] }),
+    F('legalForm','text','法律形式 / 企业类型','Legal form / entity type',{ req:false, hint:['按注册证书上的法律形式填写，如 IBC、Ltd','As reflected in the certificate of incorporation, e.g. IBC, Ltd'] }),
     F('regNo','text','注册号','Registration / incorporation number'),
     F('incDate','date','成立日期','Date of incorporation'),
+    F('website','text','官网 / 域名','Official website / domain(s)',{ ph:['请输入官网 / 域名','e.g. https://www.example.com'] }),
     F('incCountry','text','注册国家/地区','Country & place of incorporation'),
     F('regAddress','textarea','注册地址','Registered address',{ span:2 }),
     F('physAddress','address','实际经营地址','Physical address',{ span:2, same:'regAddress' }),
@@ -405,12 +407,6 @@ const SCHEMA = {
     F('sanction','radio','是否涉及受制裁国家 / 地区或受制裁人员','Any transactions involving sanctioned countries/territories or persons?',{ span:2, opts:'yesno', hint:['包括直接或间接交易','Including direct or indirect transactions'] }),
     F('sanctionDetail','textarea','制裁相关说明','Sanctions details',{ span:2, show: d => d.sanction === 'yes', ph:['请说明涉及的国家 / 地区、业务性质和预计交易量','Please provide the jurisdictions, nature of activity and expected transaction volume'] }),
     F('parent','text','集团 / 母公司名称','Group / parent company name',{ span:2, req:false }),
-  ],
-  c: [
-    F('website','text','官网 / 域名','Official website / domain(s)',{ span:2, ph:['请输入官网 / 域名','e.g. https://www.example.com'] }),
-    F('email','email','公司邮箱','Email'),
-    F('phone','phone','联系电话','Contact number'),
-    F('other','text','其他联系方式','Other contact details',{ span:2, req:false, ph:['如 Telegram / Teams','e.g. Telegram / Teams'] }),
   ],
   a: [
     F('name','text','姓名','Full name',{ span:2 }),
@@ -459,9 +455,8 @@ const SCHEMA = {
 
 /* 手动输入框的长度上限（按去掉首尾空格后的字符数计算）与格式规则 */
 const MAXLEN = {
-  e:{ legalName:200, tradingName:200, legalForm:100, regNo:50, incCountry:100, regAddress:500, physAddress:500, lei:20, tin:50,
+  e:{ legalName:200, tradingName:200, legalForm:100, regNo:50, incCountry:100, website:200, regAddress:500, physAddress:500, lei:20, tin:50,
       natureOther:100, purposeOther:100, currencyOther:100, marketOther:100, marketCountries:200, sanctionDetail:1000, parent:200 },
-  c:{ website:200, email:100, other:200 },
   a:{ name:100, email:100, other:200 },
   p:{ name:100, address:500, passportNo:30, pepTitle:100, pepFunction:500, pepRelation:100, pepName:100, pepPosition:100, email:100 },
   w:{ legalName:200, idNo:50, userId:50, email:100, address:100, networkOther:50, proofContent:1000, proofOther:200 },
@@ -508,16 +503,32 @@ const LEGAL = {
 
 const STEPS = [
   { n:1, l:['企业信息','Entity information'], sub:['企业注册与业务信息','Entity registration and business profile'] },
-  { n:2, l:['公司联系方式','Company contact'], sub:['公司官网、邮箱和电话','Company website, email and phone'] },
-  { n:3, l:['授权联系人','Authorized contact'], sub:['负责本次开户沟通的联系人','Person we will contact about this application'] },
-  { n:4, l:['人员信息','Individuals'], sub:['董事 / UBO / 股东 / 授权签字人','Directors / UBOs / Shareholders / Authorized Signatories'] },
-  { n:5, l:['钱包授权','Wallet authorization'], sub:['登记用于充值 / 提现的数字资产钱包','Register the virtual asset wallet for deposits / withdrawals'] },
-  { n:6, l:['声明与签名','Declaration & signature'], sub:['确认声明并手写签名','Confirm the declaration and sign'] },
+  { n:2, l:['授权联系人','Authorized contact'], sub:['负责本次开户沟通的联系人','Person we will contact about this application'] },
+  { n:3, l:['人员信息','Individuals'], sub:['董事 / UBO / 股东 / 授权签字人','Directors / UBOs / Shareholders / Authorized Signatories'] },
+  { n:4, l:['钱包授权','Wallet authorization'], sub:['登记用于充值 / 提现的数字资产钱包','Register the virtual asset wallet for deposits / withdrawals'] },
+  { n:5, l:['声明与签名','Declaration & signature'], sub:['确认声明并手写签名','Confirm the declaration and sign'] },
 ];
-const CIRCLED = ['','①','②','③','④','⑤','⑥'];
+const CIRCLED = ['','①','②','③','④','⑤'];
+const LAST = STEPS.length;
+
+/* 证明文件：每类文件单独上传 */
+const DOCS = {
+  company: [
+    { k:'coi', req:true, l:['公司注册证书', 'Certificate of Incorporation'] },
+    { k:'incumbency', req:true, l:['在职证明', 'Certificate of Incumbency'] },
+    { k:'chart', req:true, l:['公司股权结构图（穿透至 UBO）', 'Company Structure Chart up to UBO Level'] },
+    { k:'other', req:false, l:['其他证明文件', 'Other supporting documents'] },
+  ],
+  person: [
+    { k:'passport', req:true, l:['护照', 'Passport'] },
+    { k:'poa', req:true, l:['地址证明（3 个月内）', 'Proof of address dated within 3 months'] },
+    { k:'other', req:false, l:['其他证明文件', 'Other supporting documents'] },
+  ],
+};
 
 /* ══════════════════ 状态 ══════════════════ */
 const APP = { no:'KYB-2026-0012', company:'Nova Markets Ltd' };
+const HOME_URL = 'https://www.paypaz.com/'; // Paypaz 官网
 let S; // 页面状态
 let errors = {};
 
@@ -528,7 +539,7 @@ function initFill() {
     expire:'2026-10-29 10:15:30',
     d: {
       e:{ legalName:APP.company, currency:[], purpose:[], market:[] },
-      c:{ phoneCode:'+852' }, a:{ phoneCode:'+852' },
+      a:{ phoneCode:'+852' },
       p:[blankPerson(1)], pid:1,
       files:{}, w:{ proofs:[] }, d:{ sig:null },
     },
@@ -537,18 +548,17 @@ function initFill() {
 function f(name, kb) { return { name, size: kb * 1024 }; }
 function sampleData() {
   return {
-    e:{ legalName:'Nova Markets Ltd', tradingName:'NovaFX', legalForm:'IBC', regNo:'IBC 2019-004512', incDate:'2019-03-18', incCountry:'Seychelles',
+    e:{ legalName:'Nova Markets Ltd', tradingName:'NovaFX', legalForm:'IBC', regNo:'IBC 2019-004512', incDate:'2019-03-18', incCountry:'Seychelles', website:'https://www.novamarkets.com',
         regAddress:'Suite 3, Global Village, Jivan\'s Complex, Mont Fleuri, Mahé, Seychelles', physAddress:'Level 12, 1 Harbour Road, Wan Chai, Hong Kong', physSame:false,
         lei:'', tin:'', nature:'cfd', purpose:['pay','dw'], volume:'100_500', currency:['USDT','USDC'], market:['apac','me'], marketCountries:'Malaysia, Thailand, UAE',
         sanction:'no', parent:'Nova Group Holdings Ltd' },
-    c:{ website:'https://www.novamarkets.com', email:'ops@novamarkets.com', phoneCode:'+852', phone:'2345 6789', other:'Telegram @novamarkets_ops' },
     a:{ name:'Chan Tai Man', email:'tm.chan@novamarkets.com', phoneCode:'+852', phone:'9123 4567', other:'' },
     p:[{ id:1, roles:['director','ubo','sign'], name:'Chan Tai Man', dob:'1984-06-12', nationality:'HK', residence:'HK', address:'Flat 8B, 18 Kennedy Road, Mid-Levels, Hong Kong',
          passportNo:'K12345678', passportCountry:'HK', passportExpiry:'2031-05-20', own:'80', vote:'80', pep:'no', email:'tm.chan@novamarkets.com', phoneCode:'+852', phone:'9123 4567' }],
     pid:1,
-    files:{ company:[f('Certificate_of_Incorporation.pdf',820), f('Certificate_of_Incumbency_2026-08.pdf',410), f('M&A_Nova_Markets.pdf',2300),
-            f('Register_of_Shareholders.pdf',260), f('Utility_Bill_2026-08.pdf',530), f('Org_Chart.png',180)],
-            p1_docs:[f('Passport_ChanTaiMan.jpg',1650), f('Proof_of_Shareholding_ChanTaiMan.pdf',420), f('UBO_Declaration_ChanTaiMan.pdf',310)],
+    files:{ company_coi:[f('Certificate_of_Incorporation.pdf',820)], company_incumbency:[f('Certificate_of_Incumbency_2026-08.pdf',410)],
+            company_chart:[f('Structure_Chart_to_UBO.png',180)], company_other:[f('M&A_Nova_Markets.pdf',2300)],
+            p1_passport:[f('Passport_ChanTaiMan.jpg',1650)], p1_poa:[f('Utility_Bill_ChanTaiMan_2026-08.pdf',530)],
             w_provider:[f('Wallet_Provider_Screenshot.png',720)] },
     w:{ legalName:'Nova Markets Ltd', idNo:'IBC 2019-004512', userId:'', email:'ops@novamarkets.com', address:'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE', network:'tron', use:'both',
         agreeOwn:true, agreeRisk:true, proofs:['provider'] },
@@ -557,14 +567,14 @@ function sampleData() {
 }
 function initSupp() {
   const s = initFill();
-  Object.assign(s, { mode:'supp', reached:6, done:new Set([1,2,3,4,5,6]), expire:'2026-10-30 09:20:05',
-    supp:{ parts:[1,4], note:'1. Please correct the registered address so that it matches the Certificate of Incorporation.\n2. Please add the second director and upload their passport and proof of address.' } });
+  Object.assign(s, { mode:'supp', reached:LAST, done:new Set([1,2,3,4,5]), expire:'2026-10-30 09:20:05',
+    supp:{ parts:[1,3], note:'1. Please correct the registered address so that it matches the Certificate of Incorporation.\n2. Please add the second director and upload their passport and proof of address.' } });
   s.d = sampleData(); s.d.d.sig = null; s.d.d.agree = false;
   return s;
 }
 function initRo() {
   const s = initFill();
-  Object.assign(s, { mode:'ro', reached:6, done:new Set([1,2,3,4,5,6]), expire:'—' });
+  Object.assign(s, { mode:'ro', reached:LAST, done:new Set([1,2,3,4,5]), expire:'—' });
   s.d = sampleData(); s.d.d.sig = fakeSignature();
   return s;
 }
@@ -572,7 +582,7 @@ function initRo() {
 /* 可编辑判断 */
 function stepEditable(n) {
   if (S.mode === 'ro') return false;
-  if (S.mode === 'supp') return n === 6 || S.supp.parts.includes(n);
+  if (S.mode === 'supp') return n === LAST || S.supp.parts.includes(n);
   return true;
 }
 
@@ -690,21 +700,20 @@ function gridHTML(fields, prefix, obj, ro, tail) {
 }
 
 /* ══════════════════ 各步骤 ══════════════════ */
-function renderStep1(ro) { return gridHTML(SCHEMA.e, 'e', S.d.e, ro, docsItemHTML('company', t('docCompanyDesc'), ro)); }
-function renderStep2(ro) { return gridHTML(SCHEMA.c, 'c', S.d.c, ro); }
-function renderStep3(ro) { return gridHTML(SCHEMA.a, 'a', S.d.a, ro); }
+function renderStep1(ro) { return gridHTML(SCHEMA.e, 'e', S.d.e, ro, docsItemHTML('company', 'company', t('docCompany'), ro)); }
+function renderStep2(ro) { return gridHTML(SCHEMA.a, 'a', S.d.a, ro); }
 function personTitle(p, i) {
   const roles = (p.roles || []).map(r => optLabel('roles', r).replace(/（.*）/, '')).join(' / ');
   return `${t('person')} ${i + 1}${p.name ? ' · ' + esc(p.name) : ''}${roles ? `<span class="badge badge-blue">${esc(roles)}</span>` : ''}`;
 }
-function renderStep4(ro) {
+function renderStep3(ro) {
   const err = errors['p._roles'];
   return `<div class="alert-box alert-info"><i data-lucide="info" class="alert-icon" style="width:16px;height:16px"></i><div class="alert-body alert-text">${t('peopleTip')}</div></div>
     ${err ? `<div class="alert-box alert-danger" data-err-for="p._roles"><i data-lucide="alert-circle" class="alert-icon" style="width:16px;height:16px"></i><div class="alert-body">${esc(err)}</div></div>` : ''}
     ${S.d.p.map((p, i) => `<div class="person-card">
       <div class="person-head"><span class="person-name">${personTitle(p, i)}</span><span class="spacer"></span>
         ${!ro && S.d.p.length > 1 ? `<span class="icon-btn" onclick="removePerson(${i})">${icon('trash-2')}${t('del')}</span>` : ''}</div>
-      <div class="person-body">${gridHTML(SCHEMA.p, `p.${i}`, p, ro, docsItemHTML(`p${p.id}_docs`, t('docPersonDesc'), ro))}</div>
+      <div class="person-body">${gridHTML(SCHEMA.p, `p.${i}`, p, ro, docsItemHTML('person', `p${p.id}`, t('docPerson'), ro))}</div>
     </div>`).join('')}
     ${!ro ? `<button class="btn btn-dashed" onclick="addPerson()">${icon('plus')}${t('addPerson')}</button>` : ''}`;
 }
@@ -712,7 +721,7 @@ function uploadRow(key, label, req, ro) {
   const files = S.d.files[key] || [], err = errors['files.' + key];
   return `<div class="up-row ${err ? 'is-error' : ''}" data-err-for="files.${key}">
     <div class="up-info">
-      <div class="up-name">${req ? '<span class="req">*</span>' : ''}${esc(label)}</div>
+      <div class="up-name">${req ? '<span class="req">*</span>' : ''}${esc(label)}${!req ? `<span class="opt">${t('optional')}</span>` : ''}</div>
       <div class="up-files">${files.length ? files.map((fl, j) => `<div class="up-file">${icon('paperclip', 12)}<span class="fname">${esc(fl.name)}</span><span class="fsize">${fmtSize(fl.size)}</span>
         ${!ro ? `<span class="fdel" onclick="delFile('${key}',${j})">${icon('x', 12)}</span>` : ''}</div>`).join('') : `<span class="up-empty">${t('upEmpty')}</span>`}</div>
       <div class="fm-err">${esc(err || '')}</div>
@@ -721,16 +730,18 @@ function uploadRow(key, label, req, ro) {
   </div>`;
 }
 function roNote(show) { return show ? `<div class="alert-box alert-gray"><i data-lucide="lock" class="alert-icon" style="width:14px;height:14px"></i><div class="alert-body">${t('roStepNote')}</div></div>` : ''; }
-/* 证明文件：选填，统一一个上传按钮，可一次上传多个文件 */
-function docsItemHTML(key, desc, ro) {
-  const files = S.d.files[key] || [];
+/* 证明文件：必填，按文件类型逐项上传 */
+function docsItemHTML(type, prefix, title, ro) {
   return `<div class="fm-item span2">
-    <div class="fm-label">${t('docFiles')}<span class="opt">${t('optional')}</span></div>
-    <div class="fm-hint">${esc(desc)}</div>
-    ${!ro ? `<div><button class="btn btn-default btn-sm" onclick="pickFile('${key}')">${icon('upload')}${t('upBtn')}</button></div><div class="fm-hint">${t('upTip')}</div>` : ''}
-    <div class="up-files">${files.length ? files.map((fl, j) => `<div class="up-file">${icon('paperclip', 12)}<span class="fname">${esc(fl.name)}</span><span class="fsize">${fmtSize(fl.size)}</span>
-      ${!ro ? `<span class="fdel" onclick="delFile('${key}',${j})">${icon('x', 12)}</span>` : ''}</div>`).join('') : (ro ? `<span class="up-empty">${t('upEmpty')}</span>` : '')}</div>
+    <div class="fm-label"><span class="req">*</span>${esc(title)}</div>
+    ${!ro ? `<div class="fm-hint">${t('upTip')}</div>` : ''}
+    <div class="up-list">${DOCS[type].map(dc => uploadRow(`${prefix}_${dc.k}`, L(dc.l), dc.req, ro)).join('')}</div>
   </div>`;
+}
+function checkDocs(type, prefix, out) {
+  DOCS[type].forEach(dc => {
+    if (dc.req && !(S.d.files[`${prefix}_${dc.k}`] || []).length) out[`files.${prefix}_${dc.k}`] = t('errUpload') + L(dc.l);
+  });
 }
 function agreeHTML(path, label, ro) {
   const err = errors[path];
@@ -738,7 +749,7 @@ function agreeHTML(path, label, ro) {
     <label class="el-checkbox ${ro ? 'is-disabled' : ''}"><input type="checkbox" data-path="${path}" data-bool="1" ${getP(path) ? 'checked' : ''} ${ro ? 'disabled' : ''}><span class="el-checkbox__inner"></span><span class="opt-label"><span class="req">*</span>${esc(label)}</span></label>
     <div class="fm-err">${esc(err || '')}</div></div>`;
 }
-function renderStep5(ro) {
+function renderStep4(ro) {
   const w = S.d.w, perr = errors['w.proofs'];
   return `${gridHTML(SCHEMA.w, 'w', w, ro)}
     <div><div class="sec-title">${t('secOwn')}</div><div class="legal">${LEGAL.own}</div><div style="margin-top:12px">${agreeHTML('w.agreeOwn', t('agreeOwn'), ro)}</div></div>
@@ -768,7 +779,7 @@ function renderStep5(ro) {
       <div class="fm-hint" style="margin-top:10px">${t('proofFooter')}</div>
     </div>`;
 }
-function renderStep6(ro) {
+function renderStep5(ro) {
   const dd = S.d.d, sErr = errors['d.sig'];
   const sig = ro
     ? `<div class="sig-pad is-ro">${dd.sig ? `<img src="${dd.sig}" alt="signature">` : ''}</div>`
@@ -791,7 +802,7 @@ function renderStep6(ro) {
         : `<span class="k">${t('sigDate')}</span><span class="v">${t('sigDateAuto')}</span>`}</div>
     </div>`;
 }
-const RENDER = [null, renderStep1, renderStep2, renderStep3, renderStep4, renderStep5, renderStep6];
+const RENDER = [null, renderStep1, renderStep2, renderStep3, renderStep4, renderStep5];
 
 /* ══════════════════ 校验 ══════════════════ */
 const reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -823,17 +834,16 @@ function checkFields(fields, prefix, obj, out) {
 }
 function validateStep(n) {
   const out = {}, d = S.d;
-  if (n === 1) checkFields(SCHEMA.e, 'e', d.e, out);
-  if (n === 2) checkFields(SCHEMA.c, 'c', d.c, out);
-  if (n === 3) checkFields(SCHEMA.a, 'a', d.a, out);
-  if (n === 4) {
-    d.p.forEach((p, i) => checkFields(SCHEMA.p, `p.${i}`, p, out));
+  if (n === 1) { checkFields(SCHEMA.e, 'e', d.e, out); checkDocs('company', 'company', out); }
+  if (n === 2) checkFields(SCHEMA.a, 'a', d.a, out);
+  if (n === 3) {
+    d.p.forEach((p, i) => { checkFields(SCHEMA.p, `p.${i}`, p, out); checkDocs('person', `p${p.id}`, out); });
     const roles = d.p.flatMap(p => p.roles || []), miss = [];
     if (!roles.includes('director')) miss.push(t('errDirector'));
     if (!roles.includes('ubo')) miss.push(t('errUbo'));
     if (miss.length) out['p._roles'] = miss.join(lang === 'zh' ? '；' : '; ');
   }
-  if (n === 5) {
+  if (n === 4) {
     checkFields(SCHEMA.w, 'w', d.w, out);
     if (!d.w.agreeOwn) out['w.agreeOwn'] = t('errAgree');
     if (!d.w.agreeRisk) out['w.agreeRisk'] = t('errAgree');
@@ -850,7 +860,7 @@ function validateStep(n) {
       else if (v === 'other' && tlen(d.w.proofOther) > MAXLEN.w.proofOther) out['w.proofOther'] = errMax(L(TXT.proofOtherDesc), MAXLEN.w.proofOther);
     });
   }
-  if (n === 6) {
+  if (n === 5) {
     checkFields(SCHEMA.d, 'd', d.d, out);
     if (!d.d.agree) out['d.agree'] = t('errAgree');
     if (!d.d.sig) out['d.sig'] = t('errSig');
@@ -898,8 +908,8 @@ function footHTML() {
   const n = S.step, ed = stepEditable(n);
   const prev = n > 1 ? `<button class="btn btn-default" onclick="goStep(${n - 1})">${icon('chevron-left')}${t('prev')}</button>` : '';
   let right;
-  if (!ed) right = n < 6 ? `<button class="btn btn-primary" onclick="goStep(${n + 1})">${t('next')}${icon('chevron-right')}</button>` : '';
-  else if (n < 6) right = `<button class="btn btn-default" onclick="saveDraft()">${t('save')}</button><button class="btn btn-primary" onclick="saveNext()">${t('saveNext')}</button>`;
+  if (!ed) right = n < LAST ? `<button class="btn btn-primary" onclick="goStep(${n + 1})">${t('next')}${icon('chevron-right')}</button>` : '';
+  else if (n < LAST) right = `<button class="btn btn-default" onclick="saveDraft()">${t('save')}</button><button class="btn btn-primary" onclick="saveNext()">${t('saveNext')}</button>`;
   else right = `<button class="btn btn-default" onclick="saveDraft()">${t('save')}</button><button class="btn btn-primary" onclick="submitApp()">${icon('send')}${t('submit')}</button>`;
   const hint = ed && S.savedAt ? `<span class="save-hint">${t('savedAt')} ${S.savedAt}</span>` : '';
   return `<div class="form-foot">${prev}<span class="spacer"></span>${hint}${right}</div>`;
@@ -921,13 +931,15 @@ function render(keepScroll) {
   document.querySelectorAll('#demoOpts span').forEach(el => el.classList.toggle('active', el.dataset.s === S.scenario));
   const app = document.getElementById('app');
   if (S.view === 'invalid') {
-    app.innerHTML = `<div class="card result"><div class="result-icon warn">${icon('link-2-off', 26)}</div><div class="result-title">${t('invalidTitle')}</div><div class="result-text">${t('invalidText')}</div></div>`;
+    app.innerHTML = `<div class="card result"><div class="result-icon warn">${icon('link-2-off', 26)}</div><div class="result-title">${t('invalidTitle')}</div><div class="result-text">${t('invalidText')}</div>
+      <button class="btn btn-primary" onclick="goHome()">${t('backHome')}</button></div>`;
   } else if (S.view === 'success') {
     app.innerHTML = `${introHTML()}<div class="card result"><div class="result-icon ok">${icon('check', 28)}</div><div class="result-title">${t('okTitle')}</div><div class="result-text">${t('okText')}</div>
-      <button class="btn btn-default" onclick="viewSubmitted()">${icon('file-text')}${t('viewSubmitted')}</button></div>`;
+      <button class="btn btn-default" onclick="viewSubmitted()">${icon('file-text')}${t('viewSubmitted')}</button>
+      <button class="btn btn-primary" onclick="goHome()">${t('backHome')}</button></div>`;
   } else {
     app.innerHTML = introHTML() + bannerHTML() + stepsHTML() + formHTML();
-    if (S.step === 6 && stepEditable(6)) initSig();
+    if (S.step === LAST && stepEditable(LAST)) initSig();
   }
   lucide.createIcons();
   if (keepScroll) window.scrollTo(0, y);
@@ -970,10 +982,10 @@ function clearErr(path) {
 }
 
 function goStep(n) {
-  if (n < 1 || n > 6) return;
+  if (n < 1 || n > LAST) return;
   errors = {};
   S.step = n; S.reached = Math.max(S.reached, n);
-  if (n === 5 && stepEditable(5) && !S.d.w.idNo && S.d.e.regNo) S.d.w.idNo = S.d.e.regNo;
+  if (n === 4 && stepEditable(4) && !S.d.w.idNo && S.d.e.regNo) S.d.w.idNo = S.d.e.regNo;
   render(); window.scrollTo(0, 0);
 }
 function saveDraft() {
@@ -1000,7 +1012,7 @@ function saveNext() {
   goStep(S.step + 1);
 }
 function submitApp() {
-  const toCheck = [1,2,3,4,5,6].filter(stepEditable);
+  const toCheck = STEPS.map(st => st.n).filter(stepEditable);
   S.errSteps = new Set();
   let first = null;
   toCheck.forEach(n => { if (Object.keys(validateStep(n)).length) { S.errSteps.add(n); if (!first) first = n; } });
@@ -1009,12 +1021,13 @@ function submitApp() {
     errors = validateStep(first);
     render(); showToast(t('errStep').replace('{n}', CIRCLED[first]), 'error'); focusFirstError(); return;
   }
-  S.done = new Set([1,2,3,4,5,6]);
+  S.done = new Set(STEPS.map(st => st.n));
   S.d.d.signedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
   S.d.d.ip = '203.0.113.24';
   S.view = 'success';
   render(); window.scrollTo(0, 0);
 }
+function goHome() { location.href = HOME_URL; }
 function viewSubmitted() {
   S.mode = 'ro'; S.view = 'form'; S.step = 1; S.errSteps = new Set(); errors = {};
   render(); window.scrollTo(0, 0);
@@ -1026,18 +1039,18 @@ function addPerson() {
 }
 function removePerson(i) {
   const p = S.d.p[i];
-  delete S.d.files[`p${p.id}_docs`];
+  DOCS.person.forEach(dc => delete S.d.files[`p${p.id}_${dc.k}`]);
   S.d.p.splice(i, 1);
   errors = {};
   render(true);
 }
 function pickFile(key) {
   const inp = document.createElement('input');
-  inp.type = 'file'; inp.multiple = true; inp.accept = '.pdf,.jpg,.jpeg,.png';
+  inp.type = 'file'; inp.multiple = true; inp.accept = '.pdf,.jpg,.jpeg,.png,.webp,.heic';
   inp.onchange = () => {
     const ok = [];
     for (const fl of inp.files) {
-      if (!/\.(pdf|jpe?g|png)$/i.test(fl.name)) { showToast(t('upBadType'), 'error'); continue; }
+      if (!/\.(pdf|jpe?g|png|webp|heic)$/i.test(fl.name)) { showToast(t('upBadType'), 'error'); continue; }
       if (fl.size > 10 * 1024 * 1024) { showToast(t('upTooBig'), 'error'); continue; }
       ok.push({ name: fl.name, size: fl.size });
     }
@@ -1106,7 +1119,7 @@ function setScenario(s) {
   S.scenario = s;
   render(); window.scrollTo(0, 0);
 }
-window.addEventListener('resize', () => { if (S.view === 'form' && S.step === 6 && stepEditable(6)) initSig(); });
+window.addEventListener('resize', () => { if (S.view === 'form' && S.step === LAST && stepEditable(LAST)) initSig(); });
 
 setScenario('fill');
 </script>
