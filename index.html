@@ -179,6 +179,7 @@
     .field-input.f-readonly { background:#F5F7FA; color:#909399; cursor:default; }
     .field-input.is-error { border-color:#F56C6C; }
     .field-input.is-error:focus { border-color:#F56C6C; }
+    .field-select.is-error, .field-select.is-error:focus { border-color:#F56C6C; }
     .wd-code-field { position:relative; }
     .wd-code-field .field-input { width:100%; padding-right:60px; }
     .wd-code-send { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:13px; color:#409EFF; cursor:pointer; user-select:none; }
@@ -530,6 +531,10 @@
     .wd-field { margin-bottom:16px; }
     .wd-field:last-child { margin-bottom:0; }
     .wd-field-label { font-size:12px; color:#909399; margin-bottom:6px; display:block; }
+    /* Settlement 单笔：白名单地址可搜索下拉（输入名称 / 地址关键字过滤） */
+    .wd-addr-search { position:relative; width:100%; }
+    .wd-addr-search .ms-dropdown { left:0; top:36px; max-height:240px; }
+    .wd-addr-search .ms-option-empty { padding:0 12px; height:34px; display:flex; align-items:center; font-size:13px; color:#C0C4CC; }
     .wd-balance-row { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:#909399; margin-top:6px; }
     .wd-balance-row .wd-max-link { color:#409EFF; cursor:pointer; }
     .wd-summary-row { display:flex; justify-content:space-between; font-size:13px; color:#606266; padding:8px 0; }
@@ -680,6 +685,16 @@
       <div class="nav-sub-item" onclick="switchSubPage('pageToken','代币')">代币</div>
     </div>
 
+    <div class="nav-item nav-parent" id="navTransfer" onclick="toggleNav('navSubTransfer',this)">
+      <i data-lucide="send" class="nav-icon" size="16"></i>
+      <span class="nav-label">转账</span>
+      <i data-lucide="chevron-right" class="nav-chevron" size="14"></i>
+    </div>
+    <div class="nav-sub" id="navSubTransfer">
+      <div class="nav-sub-item" id="navTransferDo" onclick="switchSubPage('pageTransfer','转账')">转账</div>
+      <div class="nav-sub-item" id="navTransferHist" onclick="switchSubPage('pageTransferHist','转账记录')">转账记录</div>
+    </div>
+
     <div class="nav-item nav-parent" onclick="toggleNav('navSubRamp',this)">
       <i data-lucide="arrow-left-right" class="nav-icon" size="16"></i>
       <span class="nav-label">On/Off Ramp</span>
@@ -733,6 +748,7 @@
     </div>
     <div class="nav-sub" id="navSubSettings">
       <div class="nav-sub-item" id="navMemberItem" onclick="switchSubPage('pageMember','用户与权限')">用户与权限</div>
+      <div class="nav-sub-item" id="navWhitelist" onclick="switchSubPage('pageWhitelist','提币白名单')"><span>提币白名单</span></div>
     </div>
   </div>
 
@@ -1418,6 +1434,12 @@
 
     <!-- ── 单笔提币 Pane ── -->
     <div class="hist-pane active" id="wdSingle">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:13px;color:#909399">模拟运营已开启提币白名单（测试用）</span>
+        <div class="el-switch on" id="wlOnSwitch" onclick="wlToggleOn()">
+          <div class="el-switch-track"><div class="el-switch-thumb"></div></div>
+        </div>
+      </div>
       <div class="wd-form-card">
 
         <div class="wd-step">
@@ -1444,7 +1466,7 @@
             <div class="wd-field">
               <span class="wd-field-label">网络</span>
               <div class="select-wrap" style="width:100%">
-                <select class="field-select" style="width:100%" id="wdNetwork" onchange="wdCheckStep3();wdNetSync()">
+                <select class="field-select" style="width:100%" id="wdNetwork" onchange="wlFillWdAddr();wdCheckStep3();wdNetSync()">
                   <option value="">选择网络</option>
                   <option>TRON</option>
                   <option>Ethereum</option>
@@ -1455,6 +1477,12 @@
             <div class="wd-field">
               <span class="wd-field-label">地址</span>
               <input class="field-input" style="width:100%" id="wdAddress" placeholder="请输入一个地址" oninput="wdCheckStep3()">
+              <!-- 白名单开启时：从该网络下的白名单地址中选择，支持按地址名称 / 地址关键字搜索 -->
+              <div class="wd-addr-search" style="display:none" id="wdAddrSelWrap">
+                <input class="field-input" style="width:100%" id="wdAddrKw" autocomplete="off" onfocus="wdAddrOpen()" oninput="wdAddrInput()" onblur="setTimeout(wdAddrClose,150)">
+                <div class="ms-dropdown" id="wdAddrDd" style="display:none"></div>
+              </div>
+              <div id="wdWlHint" style="font-size:12px;color:#909399;margin-top:4px;display:none"></div>
             </div>
           </div>
         </div>
@@ -2455,6 +2483,170 @@
     </div>
   </div>
 
+
+  <!-- ══ 系统设置 › 提币白名单 ═══════════════════════════════════ -->
+  <div class="page" id="pageWhitelist">
+    <div class="hist-page-hdr no-tabs"><h2 class="page-title"><span>提币白名单</span></h2></div>
+
+    <div class="hist-pane active">
+      <div class="filter-card">
+        <div class="filter-grid">
+          <div class="filter-item"><span class="filter-label-el">地址名称</span><div class="filter-control"><input class="field-input" id="wlFName" placeholder="请输入地址名称"></div></div>
+          <div class="filter-item"><span class="filter-label-el">地址</span><div class="filter-control"><input class="field-input" id="wlFAddr" placeholder="请输入地址"></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="wlFNet-lite" tabindex="0" onclick="msLiteToggle('wlFNet')" onblur="setTimeout(function(){msLiteClose('wlFNet')},150)"><span class="ms-lite-text placeholder" id="wlFNet-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="wlFNet-dropdown" style="display:none"></div></div></div>
+        </div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="wlReset()">重置</button><button class="btn btn-primary" onclick="wlRender()">查询</button></div>
+      </div>
+      <div class="table-card">
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="wlCount">0</span><span class="count-label">条</span><div class="summary-spacer"></div><span style="font-size:13px;color:#909399;margin-right:12px">已添加 <span style="font-family:Inter;color:#606266" id="wlQuota">0 / 100</span></span><button class="btn btn-primary btn-sm" id="wlAddBtn" onclick="wlOpenForm(null)"><i data-lucide="plus" size="14"></i>添加地址</button></div>
+        <div class="table-wrap"><table style="min-width:1000px">
+          <thead><tr>
+            <th style="width:150px">地址名称</th>
+            <th style="width:90px">网络</th>
+            <th style="width:340px">地址</th>
+            <th style="width:200px">备注</th>
+            <th style="width:120px">添加人</th>
+            <th style="width:160px">添加时间</th>
+            <th style="width:80px">操作</th>
+          </tr></thead>
+          <tbody id="wlTbody"></tbody>
+        </table></div>
+        <div class="pagination-bar">
+          <span class="pagination-total" id="wlPagTotal">共 0 条</span>
+          <select class="page-size-select"><option>10 条/页</option><option>20 条/页</option><option>50 条/页</option></select>
+          <button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 转账 › 转账 ═══════════════════════════════════════ -->
+  <div class="page" id="pageTransfer">
+    <div class="content-area">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 class="page-title"><span>转账</span></h2>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;color:#909399">模拟未绑定谷歌验证器（测试用）</span>
+          <div class="el-switch" id="mtGaSwitch" onclick="mtToggleGaSwitch()">
+            <div class="el-switch-track"><div class="el-switch-thumb"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="wd-form-card">
+
+        <div class="wd-step">
+          <div class="wd-step-num">1</div>
+          <div class="wd-step-body">
+            <div class="wd-step-title">选择收款商户</div>
+            <div class="wd-field">
+              <div class="select-wrap" style="width:100%">
+                <select class="field-select" style="width:100%" id="mtTo" onchange="mtClearErr('mtTo');mtClearErr('mtNet');mtCalc()"></select>
+                <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+              </div>
+              <div class="field-err" id="mtToErr"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wd-step">
+          <div class="wd-step-num">2</div>
+          <div class="wd-step-body">
+            <div class="wd-step-title">选择币种和网络</div>
+            <div class="wd-field">
+              <span class="wd-field-label">代币</span>
+              <div class="select-wrap" style="width:100%">
+                <select class="field-select" style="width:100%" id="mtToken" onchange="mtClearErr('mtNet');mtClearErr('mtAmount');mtCalc()">
+                  <option>USDT</option>
+                  <option>USDC</option>
+                </select>
+                <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+              </div>
+            </div>
+            <div class="wd-field">
+              <span class="wd-field-label">网络</span>
+              <div class="select-wrap" style="width:100%">
+                <select class="field-select" style="width:100%" id="mtNet" onchange="mtClearErr('mtNet');mtClearErr('mtAmount');mtCalc()">
+                  <option>TRON</option>
+                  <option>Ethereum</option>
+                  <option>BSC</option>
+                  <option>Polygon</option>
+                </select>
+                <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+              </div>
+              <div class="field-err" id="mtNetErr"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wd-step">
+          <div class="wd-step-num">3</div>
+          <div class="wd-step-body">
+            <div class="wd-step-title">设置转账金额</div>
+            <div class="wd-field">
+              <span class="wd-field-label">转账金额</span>
+              <input class="field-input" style="width:100%" id="mtAmount" type="number" placeholder="请输入转账金额" oninput="mtClearErr('mtAmount');mtCalc()">
+              <div class="field-err" id="mtAmountErr"></div>
+              <div class="wd-balance-row">
+                <span>可用余额：<span style="font-family:Inter;color:#606266" id="mtAvail">0.00</span>&nbsp;<span id="mtAvailToken">USDT</span></span>
+                <span class="wd-max-link" onclick="mtFillMax()">全部</span>
+              </div>
+            </div>
+            <div class="wd-field" style="margin-top:16px">
+              <span class="wd-field-label">备注</span>
+              <input class="field-input" style="width:100%" id="mtRemark" maxlength="100" placeholder="请输入备注">
+            </div>
+            <button class="btn btn-primary" style="width:100%;margin-top:20px;height:36px" id="mtSubmitBtn" onclick="mtSubmit()">提交转账</button>
+            <div class="field-err" id="mtFormErr" style="text-align:center"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 转账 › 转账记录（转出与转入合并展示）═══ -->
+  <div class="page" id="pageTransferHist">
+    <div class="hist-page-hdr no-tabs"><h2 class="page-title"><span>转账记录</span></h2></div>
+
+    <div class="hist-pane active" id="mtHistPane">
+      <div class="filter-card">
+        <div class="filter-grid">
+          <div class="filter-item"><span class="filter-label-el">转账单号</span><div class="filter-control"><input class="field-input" id="mtHNo" placeholder="请输入转账单号"></div></div>
+          <div class="filter-item"><span class="filter-label-el">方向</span><div class="filter-control"><div class="ms-lite" id="mtHDir-lite" tabindex="0" onclick="msLiteToggle('mtHDir')" onblur="setTimeout(function(){msLiteClose('mtHDir')},150)"><span class="ms-lite-text placeholder" id="mtHDir-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="mtHDir-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">对方商户</span><div class="filter-control"><div class="ms-lite" id="mtHPeer-lite" tabindex="0" onclick="msLiteToggle('mtHPeer')" onblur="setTimeout(function(){msLiteClose('mtHPeer')},150)"><span class="ms-lite-text placeholder" id="mtHPeer-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="mtHPeer-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="mtHToken-lite" tabindex="0" onclick="msLiteToggle('mtHToken')" onblur="setTimeout(function(){msLiteClose('mtHToken')},150)"><span class="ms-lite-text placeholder" id="mtHToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="mtHToken-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="mtHNet-lite" tabindex="0" onclick="msLiteToggle('mtHNet')" onblur="setTimeout(function(){msLiteClose('mtHNet')},150)"><span class="ms-lite-text placeholder" id="mtHNet-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="mtHNet-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">转账时间</span><div class="filter-control"><div class="drp-wrap" id="drpMtHist"></div></div></div>
+        </div>
+        <div class="filter-actions"><button class="btn btn-default" onclick="mtHistReset()">重置</button><button class="btn btn-primary" onclick="mtHistRender()">查询</button></div>
+      </div>
+      <div class="table-card">
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="mtHCount">0</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn" id="mtHExportBtn" onclick="showToast('导出成功')"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:1100px">
+          <thead><tr>
+            <th style="width:180px">转账单号</th>
+            <th style="width:70px">方向</th>
+            <th style="width:170px">对方商户</th>
+            <th style="width:70px">代币</th>
+            <th style="width:90px">网络</th>
+            <th style="width:120px">转账金额</th>
+            <th style="width:220px">备注</th>
+            <th style="width:160px">转账时间</th>
+          </tr></thead>
+          <tbody id="mtHTbody"></tbody>
+        </table></div>
+        <div class="pagination-bar">
+          <span class="pagination-total" id="mtHPagTotal">共 0 条</span>
+          <select class="page-size-select"><option>10 条/页</option></select>
+          <button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn" disabled><i data-lucide="chevron-right" size="14"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="page" id="pageToken"><div class="content-area"><h2 class="page-title">代币</h2><div style="margin-top:60px;text-align:center;color:#C0C4CC;font-size:13px">页面开发中…</div></div></div>
   <div class="page" id="pageRiskReview"><div class="content-area"><h2 class="page-title">提现审核</h2><div style="margin-top:60px;text-align:center;color:#C0C4CC;font-size:13px">页面开发中…</div></div></div>
   <div class="page" id="pageRiskRule"><div class="content-area"><h2 class="page-title">风控规则</h2><div style="margin-top:60px;text-align:center;color:#C0C4CC;font-size:13px">页面开发中…</div></div></div>
@@ -2803,6 +2995,138 @@
 </div>
 
 <!-- 提币详情弹窗 -->
+<!-- 转账：身份验证 -->
+<div class="modal-overlay" id="mtVerifyModal">
+  <div class="modal" style="width:520px">
+    <div class="modal-header">
+      <span class="modal-title">确认转账</span>
+      <span class="modal-close" onclick="closeModal('mtVerifyModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box alert-warning" style="margin-bottom:16px"><i data-lucide="alert-triangle" size="14" class="alert-icon"></i><span>转账提交后立即到账，不可撤销，请核对收款商户与金额</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;margin-bottom:24px" id="mtVerifyMeta"></div>
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 邮箱验证码</label>
+        <div class="wd-code-field">
+          <input class="field-input" id="mtEmailCode" maxlength="6" placeholder="请输入邮箱验证码" oninput="document.getElementById('mtEmailCodeErr').style.display='none'">
+          <span class="wd-code-send" onclick="showToast('验证码已发送')">发送</span>
+        </div>
+        <div class="field-err" id="mtEmailCodeErr">请输入6位验证码</div>
+      </div>
+      <div class="form-field" style="margin-bottom:0">
+        <label class="form-field-label"><span class="req">*</span> 谷歌验证码</label>
+        <input class="field-input" style="width:100%" id="mtAuthCode" maxlength="6" placeholder="请输入谷歌验证码" oninput="document.getElementById('mtAuthCodeErr').style.display='none'">
+        <div class="field-err" id="mtAuthCodeErr">请输入6位验证码</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('mtVerifyModal')">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="mtVerifySubmit()">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 提币白名单：添加 / 编辑地址 -->
+<div class="modal-overlay" id="wlFormModal">
+  <div class="modal" style="width:520px">
+    <div class="modal-header">
+      <span class="modal-title" id="wlFormTitle">添加地址</span>
+      <span class="modal-close" onclick="closeModal('wlFormModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 网络</label>
+        <div class="select-wrap" style="width:100%">
+          <select class="field-select" style="width:100%" id="wlNet" onchange="wlClearErr('wlNet');wlClearErr('wlAddr')">
+            <option value="">请选择网络</option>
+            <option>TRON</option>
+            <option>Ethereum</option>
+          </select>
+          <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+        </div>
+        <div class="field-err" id="wlNetErr"></div>
+      </div>
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 地址</label>
+        <input class="field-input" style="width:100%" id="wlAddr" placeholder="请输入地址" oninput="wlClearErr('wlAddr')">
+        <div class="field-err" id="wlAddrErr"></div>
+      </div>
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 地址名称</label>
+        <input class="field-input" style="width:100%" id="wlName" maxlength="30" placeholder="请输入地址名称" oninput="wlClearErr('wlName')">
+        <div class="field-err" id="wlNameErr"></div>
+      </div>
+      <div class="form-field" style="margin-bottom:0">
+        <label class="form-field-label">备注</label>
+        <textarea class="field-input" id="wlRemark" rows="3" maxlength="200" placeholder="请输入备注" style="width:100%;height:auto;padding:8px 10px;resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('wlFormModal')">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="wlFormSubmit()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 提币白名单：删除确认 -->
+<div class="modal-overlay" id="wlDelModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">删除地址</span>
+      <span class="modal-close" onclick="closeModal('wlDelModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="alert-box alert-warning">
+        <i data-lucide="alert-circle" class="alert-icon" size="16"></i>
+        <span>删除后该地址将不能用于提币。确认删除吗？</span>
+      </div>
+      <div class="modal-detail-row">
+        <span class="modal-detail-label">地址名称</span>
+        <span class="modal-detail-value" id="wlDelName">—</span>
+        <span class="modal-detail-label">网络</span>
+        <span class="modal-detail-value" id="wlDelNet">—</span>
+      </div>
+      <div class="modal-detail-row">
+        <span class="modal-detail-label">地址</span>
+        <span class="modal-detail-value" id="wlDelAddr" style="font-family:Inter;word-break:break-all">—</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('wlDelModal')">取消</button>
+      <button class="btn btn-danger btn-sm" onclick="wlDelConfirm()">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- 提币白名单：安全验证（新增 / 删除） -->
+<div class="modal-overlay" id="wlVerifyModal">
+  <div class="modal" style="width:520px">
+    <div class="modal-header">
+      <span class="modal-title">安全验证</span>
+      <span class="modal-close" onclick="closeModal('wlVerifyModal')"><i data-lucide="x" size="16"></i></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-field-label"><span class="req">*</span> 邮箱验证码</label>
+        <div class="wd-code-field">
+          <input class="field-input" id="wlEmailCode" maxlength="6" placeholder="请输入邮箱验证码" oninput="document.getElementById('wlEmailCodeErr').style.display='none'">
+          <span class="wd-code-send" onclick="showToast('验证码已发送')">发送</span>
+        </div>
+        <div class="field-err" id="wlEmailCodeErr">请输入6位验证码</div>
+      </div>
+      <div class="form-field" style="margin-bottom:0">
+        <label class="form-field-label"><span class="req">*</span> 谷歌验证码</label>
+        <input class="field-input" style="width:100%" id="wlAuthCode" maxlength="6" placeholder="请输入谷歌验证码" oninput="document.getElementById('wlAuthCodeErr').style.display='none'">
+        <div class="field-err" id="wlAuthCodeErr">请输入6位验证码</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default btn-sm" onclick="closeModal('wlVerifyModal')">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="wlVerifySubmit()">确认</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="wdrDetailModal">
   <div class="modal" style="width:560px">
     <div class="modal-header">
@@ -3326,6 +3650,17 @@ const PERM_GROUPS = [
       { id:'asset_token_history',  label:'历史记录' }
     ]}
   ]},
+  // 转账：菜单还需商户已开通转账（所在转账关系启用且该关系内还有其他成员）；新增权限不自动授予存量用户
+  { id:'transfer', label:'转账', rows:[
+    { id:'transfer_do', label:'转账', items:[
+      { id:'transfer_view',   label:'查看' },
+      { id:'transfer_submit', label:'转账' }
+    ]},
+    { id:'transfer_hist', label:'转账记录', items:[
+      { id:'transfer_hist_view',   label:'查看' },
+      { id:'transfer_hist_export', label:'导出' }
+    ]}
+  ]},
   { id:'onoff_ramp', label:'<span>On/Off Ramp</span>', rows:[
     { id:'asset_hist_ramp_in',  label:'<span>On Ramp 记录</span>', items:[
       { id:'hist_ramp_in_view',   label:'查看' },
@@ -3397,6 +3732,11 @@ const PERM_GROUPS = [
       { id:'settings_member_edit',     label:'编辑' },
       { id:'settings_member_activate', label:'激活' },
       { id:'settings_member_delete',   label:'删除' }
+    ]},
+    // 提币白名单：菜单还需运营在管理后台为该商户开启白名单；新增权限不自动授予存量用户
+    { id:'settings_whitelist', label:'提币白名单', items:[
+      { id:'whitelist_view',   label:'查看' },
+      { id:'whitelist_manage', label:'管理' }
     ]}
   ]}
 ];
@@ -3481,12 +3821,14 @@ function resetMemberFilter() {
 /* ─────────────────────────────────────────────────────
    权限树
 ───────────────────────────────────────────────────── */
+// 「转账」权限分组只对已开通转账的商户显示（同菜单开通条件）
+function permGroupVisible(g) { return g.id !== 'transfer' || mtOpened(); }
 function renderPermTree(containerId, perms, editable) {
   var container = document.getElementById(containerId);
   if (!container) return;
 
   var sections = '';
-  PERM_GROUPS.forEach(function(sect) {
+  PERM_GROUPS.filter(permGroupVisible).forEach(function(sect) {
     // Section-level check state
     var sectAllIds = [];
     sect.rows.forEach(function(r) { r.items.forEach(function(i) { sectAllIds.push(i.id); }); });
@@ -3571,7 +3913,7 @@ function renderPermTree(containerId, perms, editable) {
   lucide.createIcons();
 
   // Set indeterminate states
-  PERM_GROUPS.forEach(function(sect) {
+  PERM_GROUPS.filter(permGroupVisible).forEach(function(sect) {
     sect.rows.forEach(function(row) {
       var allIds = row.items.map(function(i) { return i.id; });
       var n = allIds.filter(function(id) { return perms.indexOf(id) !== -1; }).length;
@@ -3685,7 +4027,10 @@ function saveEdit() {
   if (m.status !== 'inactive') {
     m.status = document.getElementById('editStatusActive').checked ? 'active' : 'disabled';
   }
-  m.perms = Array.from(document.querySelectorAll('#editPermTree .perm-child-cb:checked')).map(function(c) { return c.dataset.perm; });
+  var hiddenPerms = PERM_GROUPS.filter(function(g) { return !permGroupVisible(g); })
+    .reduce(function(a, g) { return a.concat(g.rows.reduce(function(b, r) { return b.concat(r.items.map(function(i) { return i.id; })); }, [])); }, [])
+    .filter(function(id) { return m.perms.indexOf(id) !== -1; });
+  m.perms = Array.from(document.querySelectorAll('#editPermTree .perm-child-cb:checked')).map(function(c) { return c.dataset.perm; }).concat(hiddenPerms);
   m.updatedAt = '2026-06-23 ' + new Date().toTimeString().slice(0,8);
   showToast('保存成功');
   renderMemberList(MEMBERS);
@@ -4102,7 +4447,8 @@ function acctLedgerFiltersInit() {
   msLiteInit('acctLedgerType', [
     {value:'Top Up',label:'Top Up'},{value:'充币',label:'充币'},{value:'Settlement',label:'Settlement'},{value:'提币',label:'提币'},
     {value:'手续费',label:'手续费'},{value:'网络费',label:'网络费'},{value:'调账',label:'调账'},
-    {value:'法币收款',label:'法币收款'},{value:'法币付款',label:'法币付款'}
+    {value:'法币收款',label:'法币收款'},{value:'法币付款',label:'法币付款'},
+    {value:'转账转出',label:'转账转出'},{value:'转账转入',label:'转账转入'}
   ], '全部');
 }
 // 账户明细筛选：客户 ID 模糊匹配；关联单号精确匹配；代币 / 网络 / 类型多选；时间按日期范围（含起止两天）
@@ -4137,6 +4483,7 @@ function acctLedgerReset() {
 }
 // 关联单号跳转：充币类 → 充币记录（按流水号），提币类 → 提币记录（按订单号），法币收款类 → 法币收款记录（按收款订单号）；先重置该页筛选，再填单号并查询
 function ledgerGoOrder(kind, ref) {
+  if (kind === 'mt') { if (poPerm('transfer_hist_view')) mtGoOrder(ref); return; }
   if (kind === 'fiat') { if (!poPerm('hist_fiat_view')) return; switchSubPage('pageHistFiat', '法币收款记录'); fiatReset(); document.getElementById('fpfId').value = ref; fiatSearch(); return; }
   if (!poPerm(kind === 'wdr' ? 'hist_wdr_view' : 'hist_dep_view')) return;
   if (kind === 'wdr') switchSubPage('pageHistWdr', '提币记录'); else switchSubPage('pageHistDep', '充币记录');
@@ -4385,7 +4732,7 @@ function switchWdTab(paneId, el) {
 }
 
 function wdCheckStep3() {
-  var ready = !!document.getElementById('wdNetwork').value && !!document.getElementById('wdAddress').value.trim();
+  var ready = !!document.getElementById('wdNetwork').value && !!wdAddrValue();
   document.getElementById('wdStep3Num').classList.toggle('pending', !ready);
   document.getElementById('wdStep3Title').classList.toggle('pending', !ready);
   document.getElementById('wdStep3Content').style.display = ready ? 'block' : 'none';
@@ -4413,13 +4760,16 @@ function wdCalcNet() {
 
 function submitSingleWithdraw() {
   var network = document.getElementById('wdNetwork').value;
-  var address = document.getElementById('wdAddress').value.trim();
+  var address = wdAddrValue();
   var amount  = parseFloat(document.getElementById('wdAmount').value);
-  if (!network || !address) { showToast('请先选择网络并填写收款地址', 'error'); return; }
+  if (!network || !address) { showToast(WL_ON ? '请先选择网络和白名单地址' : '请先选择网络并填写收款地址', 'error'); return; }
+  // 后端校验（PRD 2.4）：白名单开启时，地址须在该商户白名单中且未删除
+  if (WL_ON && !wlFind(network, address)) { showToast('该地址不在提币白名单中', 'error'); return; }
   if (!amount || amount <= 0) { showToast('请输入提现金额', 'error'); return; }
   showToast('提币申请已提交，等待处理');
   document.getElementById('wdNetwork').value = '';
   document.getElementById('wdAddress').value = '';
+  wlFillWdAddr();
   document.getElementById('wdAmount').value  = '';
   wdCheckStep3();
   wdCalcNet();
@@ -5551,6 +5901,7 @@ function poLedgerSync() {
       '<td class="asset-num" style="color:#F56C6C">-' + fiatFmt(r[2]) + '</td><td class="asset-num">' + fiatFmt(r[3]) + '</td>' +
       '<td style="font-family:Inter">' + r[4].done + '</td></tr>';
   }).join(''));
+  if (typeof mtLedgerSync === 'function') mtLedgerSync();
   acctLedgerSearch();
   PO_NET_BAL = bal;
   return poR2(Object.keys(bal).reduce(function(s, k){ return s + bal[k]; }, 0));
@@ -6396,6 +6747,446 @@ function applyOverviewPerms() {
 }
 
 /* ─────────────────────────────────────────────────────
+   转账：商户间平台内转账（当前登录商户 kara 635102950）
+   转账关系由运营在管理后台「商户转账 › 转账关系」配置，同一关系内任意两个成员可相互转账；
+   不收手续费、不限额、无审核，提交即到账；所在转账关系为启用且该关系内还有其他成员时才显示「转账」菜单
+───────────────────────────────────────────────────── */
+var MT_ME = { id:'635102950', name:'kara' };
+var MT_GROUP = {
+  name:'Kara 集团', status:'enabled',
+  // 组内其他成员；pairs：该商户已开通的代币 + 网络（发起时校验 B 已开通所选代币网络）
+  members:[ { id:'884590488', name:'kara2', status:'enabled', pairs:['USDT|TRON', 'USDT|Ethereum', 'USDC|Ethereum'] },
+            { id:'460466234', name:'kara3', status:'enabled', pairs:['USDT|TRON'] },
+            { id:'291654802', name:'kara4', status:'enabled', pairs:['USDT|TRON', 'USDC|Ethereum'] } ]
+};
+// dir：out 转出（我是 A）/ in 转入（我是 B）；转账单均为已完成，time 为转账时间
+var MT_ORDERS = [
+  { id:'MT20261029000001', dir:'out', peerId:'884590488', peerName:'kara2', token:'USDT', net:'TRON', amount:500, remark:'10 月货款结算', time:'2026-10-29 10:12:30' },
+  { id:'MT20261028000002', dir:'in', peerId:'884590488', peerName:'kara2', token:'USDC', net:'Ethereum', amount:260, remark:'', time:'2026-10-28 15:40:18' },
+  { id:'MT20261028000001', dir:'out', peerId:'460466234', peerName:'kara3', token:'USDT', net:'TRON', amount:120, remark:'内部资金调拨', time:'2026-10-28 11:05:12' },
+  { id:'MT20261027000001', dir:'out', peerId:'884590488', peerName:'kara2', token:'USDT', net:'TRON', amount:200, remark:'9 月货款结算', time:'2026-10-27 14:58:40' },
+  { id:'MT20261024000001', dir:'in', peerId:'291654802', peerName:'kara4', token:'USDT', net:'TRON', amount:60, remark:'', time:'2026-10-24 13:10:00' },
+  { id:'MT20261020000001', dir:'in', peerId:'291654802', peerName:'kara4', token:'USDT', net:'TRON', amount:300, remark:'服务费', time:'2026-10-20 10:58:00' }
+];
+
+function mtFmt(v) { return (+v || 0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function mtEsc(v) { return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function mtNow() {
+  var d = new Date(), p = function(n) { return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+}
+function mtEnabledPayees() { return MT_GROUP.members.filter(function(p) { return p.status === 'enabled'; }); }
+// 账户明细中该代币 + 网络最新一笔的变动后余额；skipMt 时不计转账流水（用作转账流水的滚存起点）
+function mtLedgerLatest(token, net, skipMt) {
+  var best = null, bal = 0;
+  Array.prototype.forEach.call(document.getElementById('acctLedgerTbody').rows, function(tr) {
+    if (tr.id === 'acctLedgerEmpty' || (skipMt && tr.hasAttribute('data-mt')) || tr.cells.length < 8) return;
+    var c = tr.cells, t = c[7].textContent.trim();
+    if (c[3].textContent.trim() !== token || c[4].textContent.trim() !== net) return;
+    if (best === null || t > best) { best = t; bal = parseFloat(c[6].textContent.replace(/,/g, '')) || 0; }
+  });
+  return bal;
+}
+// 可用余额 = 账户明细该代币 + 网络最新余额（转账无冻结）
+function mtAvailOf(token, net) { return Math.max(0, mtLedgerLatest(token, net, false)); }
+
+// 菜单：所在转账关系为启用且该关系内还有其他启用的成员时才显示；子项再按权限 transfer_view / transfer_hist_view 显示，都无权限时一级菜单隐藏
+// 操作按钮：提交跟随 transfer_submit，导出跟随 transfer_hist_export
+function mtOpened() { return MT_GROUP.status === 'enabled' && mtEnabledPayees().length > 0; }
+function mtSyncMenu() {
+  var on = mtOpened();
+  var doView = on && poPerm('transfer_view'), histView = on && poPerm('transfer_hist_view');
+  document.getElementById('navTransferDo').style.display = doView ? '' : 'none';
+  document.getElementById('navTransferHist').style.display = histView ? '' : 'none';
+  document.getElementById('navTransfer').style.display = doView || histView ? '' : 'none';
+  document.getElementById('navSubTransfer').style.display = doView || histView ? '' : 'none';
+  document.getElementById('mtSubmitBtn').style.display = poPerm('transfer_submit') ? '' : 'none';
+  document.getElementById('mtHExportBtn').style.display = poPerm('transfer_hist_export') ? '' : 'none';
+}
+
+/* ── 发起转账 ── */
+function mtFormInit() {
+  document.getElementById('mtTo').innerHTML = '<option value="">选择收款商户</option>' + mtEnabledPayees().map(function(p) {
+    return '<option value="' + p.id + '">' + p.name + '（' + p.id + '）</option>';
+  }).join('');
+  mtCalc();
+}
+function mtCalc() {
+  var token = document.getElementById('mtToken').value, net = document.getElementById('mtNet').value;
+  document.getElementById('mtAvail').textContent = mtFmt(mtAvailOf(token, net));
+  document.getElementById('mtAvailToken').textContent = token;
+}
+function mtFillMax() {
+  var token = document.getElementById('mtToken').value, net = document.getElementById('mtNet').value;
+  document.getElementById('mtAmount').value = mtAvailOf(token, net).toFixed(2);
+  mtCalc();
+}
+
+var mtDraft = null;
+// 校验顺序同 PRD 3.2：账户 / 转账关系 → 收款商户 → 收款商户开通代币网络 → 金额 → 余额 → 已绑定谷歌验证器；通过后进入身份验证
+var mtGaBound = true;   // 原型：页面右上角测试开关模拟未绑定
+function mtToggleGaSwitch() {
+  mtGaBound = !mtGaBound;
+  document.getElementById('mtGaSwitch').classList.toggle('on', !mtGaBound);
+}
+// 校验提示显示在对应字段下方；与输入框无关的（账户状态 / 谷歌验证器）显示在提交按钮下方
+function mtErr(field, msg) {
+  var el = document.getElementById(field + 'Err');
+  el.textContent = msg; el.style.display = 'block';
+  var input = document.getElementById(field);
+  if (input) input.classList.add('is-error');
+}
+function mtClearErr(field) {
+  var el = document.getElementById(field + 'Err');
+  if (el) el.style.display = 'none';
+  var input = document.getElementById(field);
+  if (input) input.classList.remove('is-error');
+  document.getElementById('mtFormErr').style.display = 'none';
+}
+function mtSubmit() {
+  ['mtTo', 'mtNet', 'mtAmount', 'mtForm'].forEach(mtClearErr);
+  var toId = document.getElementById('mtTo').value;
+  var token = document.getElementById('mtToken').value, net = document.getElementById('mtNet').value;
+  var raw = document.getElementById('mtAmount').value.trim(), x = parseFloat(raw);
+  if (MT_GROUP.status !== 'enabled') { mtErr('mtForm', '当前账户状态不支持转账'); return; }
+  if (!toId) { mtErr('mtTo', '请选择收款商户'); return; }
+  var payee = MT_GROUP.members.filter(function(p) { return p.id === toId; })[0];
+  if (payee.pairs.indexOf(token + '|' + net) === -1) { mtErr('mtNet', '收款商户未开通 ' + token + '（' + net + '），暂不可转账'); return; }
+  if (!raw || !(x > 0) || !/^\d+(\.\d{1,2})?$/.test(raw)) { mtErr('mtAmount', raw ? '请输入正确的转账金额' : '请输入转账金额'); return; }
+  if (mtAvailOf(token, net) < x) { mtErr('mtAmount', '可用余额不足'); return; }
+  if (!mtGaBound) { mtErr('mtForm', '未绑定谷歌验证器，请先绑定后再转账'); return; }
+  mtDraft = { payee:payee, token:token, net:net, amount:x, remark:document.getElementById('mtRemark').value.trim() };
+  var meta = [
+    ['收款商户', payee.name + '（' + payee.id + '）'],
+    ['代币 / 网络', token + ' / ' + net],
+    ['转账金额', '<b>' + mtFmt(x) + ' ' + token + '</b>'],
+    ['备注', mtDraft.remark ? mtEsc(mtDraft.remark) : '—']
+  ];
+  document.getElementById('mtVerifyMeta').innerHTML = meta.map(function(r) {
+    return '<div><div class="info-item-label">' + r[0] + '</div><div class="info-item-value" style="margin-top:4px">' + r[1] + '</div></div>';
+  }).join('');
+  ['mtEmailCode', 'mtAuthCode'].forEach(function(id) { document.getElementById(id).value = ''; document.getElementById(id + 'Err').style.display = 'none'; });
+  openModal('mtVerifyModal');
+  lucide.createIcons();
+}
+
+function mtVerifySubmit() {
+  var ok = true;
+  ['mtEmailCode', 'mtAuthCode'].forEach(function(id) {
+    var bad = !/^\d{6}$/.test(document.getElementById(id).value.trim());
+    document.getElementById(id + 'Err').style.display = bad ? 'block' : 'none';
+    if (bad) ok = false;
+  });
+  if (!ok || !mtDraft) return;
+  var now = mtNow(), d = mtDraft;
+  var seq = MT_ORDERS.length + 1;
+  MT_ORDERS.unshift({ id:'MT' + now.slice(0, 10).replace(/-/g, '') + ('00000' + seq).slice(-6), dir:'out', peerId:d.payee.id, peerName:d.payee.name,
+    token:d.token, net:d.net, amount:d.amount, remark:d.remark, time:now });
+  mtLedgerSync(); acctLedgerSearch(); lucide.createIcons();
+  closeModal('mtVerifyModal');
+  mtDraft = null;
+  document.getElementById('mtAmount').value = '';
+  document.getElementById('mtRemark').value = '';
+  ['mtTo', 'mtNet', 'mtAmount', 'mtForm'].forEach(mtClearErr);
+  mtCalc();
+  mtHistRender();
+  showToast('转账成功');
+}
+
+// 跳转到转账记录并按单号筛选（账户明细「关联单号」）
+function mtGoOrder(ref) {
+  if (!mtGet(ref)) return;
+  switchSubPage('pageTransferHist', '转账记录');
+  mtHistReset();
+  document.getElementById('mtHNo').value = ref;
+  mtHistRender();
+}
+// 账户明细：转出写「转账转出」−X，转入写「转账转入」+X；按代币 + 网络滚存，整体重算后插到顶部（同法币付款 poLedgerSync）
+function mtLedgerSync() {
+  var tbody = document.getElementById('acctLedgerTbody');
+  tbody.querySelectorAll('tr[data-mt]').forEach(function(tr) { tr.remove(); });
+  var bal = {}, rows = [];
+  MT_ORDERS.slice().sort(function(a, b) { return a.time < b.time ? -1 : a.time > b.time ? 1 : 0; }).forEach(function(o) {
+    var k = o.token + '|' + o.net;
+    if (!(k in bal)) bal[k] = mtLedgerLatest(o.token, o.net, true);
+    if (o.dir === 'in') { bal[k] += o.amount; rows.push(['转账转入', 'badge-green', '+', o.amount, bal[k], o]); return; }
+    bal[k] -= o.amount; rows.push(['转账转出', 'badge-purple', '-', o.amount, bal[k], o]);
+  });
+  tbody.insertAdjacentHTML('afterbegin', rows.reverse().map(function(r) {
+    var o = r[5];
+    return '<tr data-mt="1">' + poMainUid() + '<td><span class="badge ' + r[1] + '">' + r[0] + '</span></td>' +
+      '<td><div class="copy-cell"><span title="' + o.id + '"' + (poPerm('transfer_hist_view') ? ' class="ledger-ref-link"' : '') + ' data-ref-kind="mt" onclick="ledgerGoOrder(\'mt\',\'' + o.id + '\')">' + o.id + '</span><span class="copy-icon" onclick="copyText(\'' + o.id + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
+      '<td>' + o.token + '</td><td>' + o.net + '</td>' +
+      '<td class="asset-num" style="color:' + (r[2] === '+' ? '#67C23A' : '#F56C6C') + '">' + r[2] + mtFmt(r[3]) + '</td><td class="asset-num">' + mtFmt(r[4]) + '</td>' +
+      '<td style="font-family:Inter">' + o.time + '</td></tr>';
+  }).join(''));
+}
+
+/* ── 转账记录：转出与转入合并展示 ── */
+function mtHistFiltersInit() {
+  var seen = {}, peers = MT_ORDERS.filter(function(o) { return !seen[o.peerId] && (seen[o.peerId] = true); })
+    .map(function(o) { return { value:o.peerId, label:o.peerName }; });
+  msLiteInit('mtHDir', [{value:'out',label:'转出'},{value:'in',label:'转入'}], '全部');
+  msLiteInit('mtHPeer', peers, '全部');
+  msLiteInit('mtHToken', [{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
+  msLiteInit('mtHNet', [{value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'},{value:'BSC',label:'BSC'},{value:'Polygon',label:'Polygon'}], '全部');
+}
+function mtPeerCell(o) { return o.peerName + '<span style="color:#909399">（' + o.peerId + '）</span>'; }
+function mtNoCell(id) { return '<div class="copy-cell"><span>' + id + '</span><span class="copy-icon" onclick="copyText(\'' + id + '\')"><i data-lucide="copy" size="13"></i></span></div>'; }
+function mtDirTag(o) { return o.dir === 'out' ? '<span class="badge badge-purple">转出</span>' : '<span class="badge badge-green">转入</span>'; }
+var MT_EMPTY = '<span class="cell-empty">—</span>';
+
+function mtHistRender() {
+  var no = document.getElementById('mtHNo').value.trim();
+  var dirs = msLiteGet('mtHDir'), peers = msLiteGet('mtHPeer'), tokens = msLiteGet('mtHToken'), nets = msLiteGet('mtHNet');
+  var range = drpGet(document.getElementById('drpMtHist'));
+  var rows = MT_ORDERS.filter(function(o) {
+    return (!no || o.id.indexOf(no) !== -1) && (!dirs.length || dirs.indexOf(o.dir) !== -1) && (!peers.length || peers.indexOf(o.peerId) !== -1) &&
+      (!tokens.length || tokens.indexOf(o.token) !== -1) && (!nets.length || nets.indexOf(o.net) !== -1) && histInRange(o.time, range);
+  }).sort(function(a, b) { return a.time !== b.time ? (a.time < b.time ? 1 : -1) : (a.id < b.id ? 1 : -1); });
+  document.getElementById('mtHTbody').innerHTML = rows.map(function(o) {
+    var out = o.dir === 'out';
+    return '<tr><td>' + mtNoCell(o.id) + '</td><td>' + mtDirTag(o) + '</td><td>' + mtPeerCell(o) + '</td><td>' + o.token + '</td><td>' + o.net + '</td>' +
+      '<td class="asset-num" style="color:' + (out ? '#F56C6C' : '#67C23A') + '">' + (out ? '-' : '+') + mtFmt(o.amount) + '</td>' +
+      '<td>' + (o.remark ? mtEsc(o.remark) : MT_EMPTY) + '</td><td style="font-family:Inter">' + o.time + '</td></tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>';
+  document.getElementById('mtHCount').textContent = rows.length;
+  document.getElementById('mtHPagTotal').textContent = '共 ' + rows.length + ' 条';
+  lucide.createIcons();
+}
+function mtHistReset() {
+  document.getElementById('mtHNo').value = '';
+  ['mtHDir', 'mtHPeer', 'mtHToken', 'mtHNet'].forEach(msLiteReset);
+  drpReset(document.getElementById('drpMtHist'));
+  mtHistRender();
+}
+
+function mtGet(id) { return MT_ORDERS.filter(function(o) { return o.id === id; })[0]; }
+
+/* ─────────────────────────────────────────────────────
+   系统设置 › 提币白名单（PRD：提币白名单）
+   运营在管理后台按商户开启后，才显示「提币白名单」菜单，商户后台单笔提币只能选择白名单地址；
+   新增 / 删除需邮箱验证码 + 谷歌验证码，新增后立即生效；按「网络 + 地址」唯一，EVM 地址不区分大小写；最多 100 条
+───────────────────────────────────────────────────── */
+var WL_ON = true;   // 原型：Settlement 页测试开关模拟运营开启 / 关闭
+var WL_MAX = 100;
+var WL_LIST = [
+  { id:5, name:'币安主账户', net:'TRON', addr:'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', remark:'日常结算', by:'张伟明', time:'2026-10-28 16:20:11', deleted:false },
+  { id:4, name:'OKX 归集', net:'Ethereum', addr:'0x8f3Cc1B5a9E2d4F6a7B8c9D0e1F2a3B4c5D6e7F8', remark:'', by:'张伟明', time:'2026-10-25 10:05:42', deleted:false },
+  { id:3, name:'冷钱包', net:'TRON', addr:'TXpqZ3mNc4o6P8r0T2v4X6z8B0d2F4h6J8', remark:'大额资金归集', by:'李晓燕', time:'2026-10-20 09:31:08', deleted:false },
+  { id:2, name:'旧收款地址', net:'TRON', addr:'TAd9zHCayg9LumQ2Kx5nWbYh8Rc4o6P8r0', remark:'', by:'张伟明', time:'2026-10-12 14:12:55', deleted:true }
+];
+var wlEditId = null, wlPending = null;
+
+function wlActive() { return WL_LIST.filter(function(w) { return !w.deleted; }); }
+function wlSame(net, a, b) { return net === 'TRON' ? a === b : a.toLowerCase() === b.toLowerCase(); }
+function wlFind(net, addr) { return wlActive().filter(function(w) { return w.net === net && wlSame(net, w.addr, addr); })[0]; }
+function wlFormatOk(net, addr) { return net === 'TRON' ? /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(addr) : /^0x[0-9a-fA-F]{40}$/.test(addr); }
+
+// 菜单：运营开启且有 whitelist_view 权限时显示；添加 / 编辑 / 删除跟随 whitelist_manage
+function wlSyncMenu() {
+  var view = WL_ON && poPerm('whitelist_view');
+  document.getElementById('navWhitelist').style.display = view ? '' : 'none';
+  document.getElementById('wlAddBtn').style.display = poPerm('whitelist_manage') ? '' : 'none';
+  if (!view && document.getElementById('pageWhitelist').classList.contains('active')) switchSubPage('pageWithdrawAsset', 'Settlement');
+}
+function wlToggleOn() {
+  WL_ON = !WL_ON;
+  document.getElementById('wlOnSwitch').classList.toggle('on', WL_ON);
+  wlSyncMenu();
+  wlFillWdAddr();
+  wdCheckStep3();
+}
+
+/* ── Settlement 单笔：开启时地址改为下拉选择该网络下的白名单地址 ── */
+var wdAddrSel = '';   // 已选白名单地址
+function wdAddrValue() { return WL_ON ? wdAddrSel : document.getElementById('wdAddress').value.trim(); }
+function wdAddrList() {
+  var net = document.getElementById('wdNetwork').value;
+  return net ? wlActive().filter(function(w) { return w.net === net; }) : [];
+}
+function wdAddrLabel(w) { return w.name + '（' + w.addr + '）'; }
+function wlFillWdAddr() {
+  var net = document.getElementById('wdNetwork').value, hint = document.getElementById('wdWlHint'), kw = document.getElementById('wdAddrKw');
+  document.getElementById('wdAddress').style.display = WL_ON ? 'none' : '';
+  document.getElementById('wdAddrSelWrap').style.display = WL_ON ? '' : 'none';
+  hint.style.display = 'none';
+  wdAddrSel = '';
+  kw.value = '';
+  kw.disabled = !net;
+  kw.placeholder = net ? '请输入地址名称或地址搜索' : '请先选择网络';
+  if (!WL_ON) return;
+  var list = wdAddrList();
+  if (net && !list.length) {
+    hint.innerHTML = '暂无可用白名单地址，<span class="wd-max-link" onclick="wlGoAdd()">去添加</span>';
+    hint.style.display = 'block';
+  }
+}
+// 下拉：聚焦时展示该网络全部白名单地址；输入关键字后按地址名称 / 地址模糊匹配（不区分大小写）
+function wdAddrRender() {
+  var kw = document.getElementById('wdAddrKw').value.trim().toLowerCase();
+  var cur = wlFind(document.getElementById('wdNetwork').value, wdAddrSel);
+  if (cur && kw === wdAddrLabel(cur).toLowerCase()) kw = '';
+  var list = wdAddrList().filter(function(w) { return !kw || w.name.toLowerCase().indexOf(kw) !== -1 || w.addr.toLowerCase().indexOf(kw) !== -1; });
+  document.getElementById('wdAddrDd').innerHTML = list.map(function(w) {
+    var sel = w.addr === wdAddrSel;
+    return '<div class="ms-option' + (sel ? ' selected' : '') + '" onmousedown="event.preventDefault();wdAddrPick(\'' + w.addr + '\')">' +
+      '<span class="ms-option-text">' + mtEsc(wdAddrLabel(w)) + '</span><span class="ms-option-check">' + MS_CHECK_SVG + '</span></div>';
+  }).join('') || '<div class="ms-option-empty">无匹配的白名单地址</div>';
+}
+function wdAddrOpen() {
+  if (!wdAddrList().length) return;
+  wdAddrRender();
+  document.getElementById('wdAddrDd').style.display = '';
+}
+function wdAddrInput() {
+  wdAddrSel = '';
+  wdCheckStep3();
+  wdAddrOpen();
+}
+function wdAddrPick(addr) {
+  wdAddrSel = addr;
+  document.getElementById('wdAddrKw').value = wdAddrLabel(wlFind(document.getElementById('wdNetwork').value, addr));
+  document.getElementById('wdAddrDd').style.display = 'none';
+  document.getElementById('wdAddrKw').blur();
+  wdCheckStep3();
+}
+// 失焦时未选中任何地址则清空输入的关键字
+function wdAddrClose() {
+  document.getElementById('wdAddrDd').style.display = 'none';
+  if (!wdAddrSel) document.getElementById('wdAddrKw').value = '';
+}
+function wlGoAdd() {
+  switchSubPage('pageWhitelist', '提币白名单');
+  if (poPerm('whitelist_manage')) wlOpenForm(null);
+}
+
+/* ── 列表 ── */
+function wlFiltersInit() { msLiteInit('wlFNet', [{value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'}], '全部'); }
+function wlRender() {
+  var name = document.getElementById('wlFName').value.trim(), addr = document.getElementById('wlFAddr').value.trim().toLowerCase();
+  var nets = msLiteGet('wlFNet'), manage = poPerm('whitelist_manage');
+  var rows = wlActive().filter(function(w) {
+    return (!name || w.name.indexOf(name) !== -1) && (!addr || w.addr.toLowerCase().indexOf(addr) !== -1) && (!nets.length || nets.indexOf(w.net) !== -1);
+  }).sort(function(a, b) { return a.time < b.time ? 1 : -1; });
+  document.getElementById('wlTbody').innerHTML = rows.map(function(w) {
+    return '<tr><td>' + mtEsc(w.name) + '</td><td>' + w.net + '</td>' +
+      '<td><div class="copy-cell"><span style="font-family:Inter">' + w.addr + '</span><span class="copy-icon" onclick="copyText(\'' + w.addr + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
+      '<td>' + (w.remark ? mtEsc(w.remark) : MT_EMPTY) + '</td><td>' + w.by + '</td><td style="font-family:Inter">' + w.time + '</td>' +
+      '<td>' + (manage ? '<div class="action-cell">' +
+        '<span class="action-icon" data-tip="编辑" onclick="wlOpenForm(' + w.id + ')"><i data-lucide="pencil" size="14"></i></span>' +
+        '<span class="action-icon" data-tip="删除" onclick="wlOpenDel(' + w.id + ')"><i data-lucide="trash-2" size="14"></i></span></div>' : MT_EMPTY) + '</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#C0C4CC;height:80px">暂无白名单地址，请点击「添加地址」</td></tr>';
+  var n = wlActive().length, full = n >= WL_MAX, btn = document.getElementById('wlAddBtn');
+  document.getElementById('wlCount').textContent = rows.length;
+  document.getElementById('wlPagTotal').textContent = '共 ' + rows.length + ' 条';
+  // 满上限：按钮置灰，数量后提示（禁用按钮不触发悬浮提示，故提示放在文字里）
+  document.getElementById('wlQuota').textContent = n + ' / ' + WL_MAX + (full ? '（最多添加 ' + WL_MAX + ' 个地址）' : '');
+  btn.disabled = full;
+  lucide.createIcons();
+}
+function wlReset() {
+  document.getElementById('wlFName').value = '';
+  document.getElementById('wlFAddr').value = '';
+  msLiteReset('wlFNet');
+  wlRender();
+}
+
+/* ── 添加 / 编辑 ── */
+function wlErr(field, msg) {
+  var el = document.getElementById(field + 'Err');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById(field).classList.add('is-error');
+}
+function wlClearErr(field) {
+  document.getElementById(field + 'Err').style.display = 'none';
+  document.getElementById(field).classList.remove('is-error');
+}
+// 编辑时网络、地址只读，只改名称和备注
+function wlOpenForm(id) {
+  var w = id ? WL_LIST.filter(function(x) { return x.id === id; })[0] : null;
+  if (!w && wlActive().length >= WL_MAX) { showToast('最多添加 ' + WL_MAX + ' 个地址', 'error'); return; }
+  wlEditId = id;
+  document.getElementById('wlFormTitle').textContent = w ? '编辑地址' : '添加地址';
+  document.getElementById('wlNet').value = w ? w.net : '';
+  document.getElementById('wlAddr').value = w ? w.addr : '';
+  document.getElementById('wlName').value = w ? w.name : '';
+  document.getElementById('wlRemark').value = w ? w.remark : '';
+  document.getElementById('wlNet').disabled = !!w;
+  document.getElementById('wlAddr').readOnly = !!w;
+  document.getElementById('wlAddr').classList.toggle('f-readonly', !!w);
+  ['wlNet', 'wlAddr', 'wlName'].forEach(wlClearErr);
+  openModal('wlFormModal');
+  lucide.createIcons();
+}
+// 校验顺序：必填 → 地址格式 → 重复 → 数量上限；新增通过后进入安全验证，编辑直接保存
+function wlFormSubmit() {
+  ['wlNet', 'wlAddr', 'wlName'].forEach(wlClearErr);
+  var net = document.getElementById('wlNet').value, addr = document.getElementById('wlAddr').value.trim();
+  var name = document.getElementById('wlName').value.trim(), remark = document.getElementById('wlRemark').value.trim();
+  if (wlEditId) {
+    if (!name) { wlErr('wlName', '请输入地址名称'); return; }
+    var w = WL_LIST.filter(function(x) { return x.id === wlEditId; })[0];
+    w.name = name; w.remark = remark;
+    closeModal('wlFormModal');
+    wlRender(); wlFillWdAddr();
+    showToast('已保存');
+    return;
+  }
+  var ok = true;
+  if (!net) { wlErr('wlNet', '请选择网络'); ok = false; }
+  if (!addr) { wlErr('wlAddr', '请输入地址'); ok = false; }
+  else if (net && !wlFormatOk(net, addr)) { wlErr('wlAddr', '地址格式不正确'); ok = false; }
+  else if (net && wlFind(net, addr)) { wlErr('wlAddr', '该地址已在白名单中'); ok = false; }
+  if (!name) { wlErr('wlName', '请输入地址名称'); ok = false; }
+  if (!ok) return;
+  wlPending = { action:'add', data:{ net:net, addr:addr, name:name, remark:remark } };
+  closeModal('wlFormModal');
+  wlOpenVerify();
+}
+
+/* ── 删除 ── */
+function wlOpenDel(id) {
+  var w = WL_LIST.filter(function(x) { return x.id === id; })[0];
+  wlPending = { action:'del', id:id };
+  document.getElementById('wlDelName').textContent = w.name;
+  document.getElementById('wlDelNet').textContent = w.net;
+  document.getElementById('wlDelAddr').textContent = w.addr;
+  openModal('wlDelModal');
+  lucide.createIcons();
+}
+function wlDelConfirm() { closeModal('wlDelModal'); wlOpenVerify(); }
+
+/* ── 安全验证：邮箱验证码 + 谷歌验证码 ── */
+function wlOpenVerify() {
+  ['wlEmailCode', 'wlAuthCode'].forEach(function(id) { document.getElementById(id).value = ''; document.getElementById(id + 'Err').style.display = 'none'; });
+  openModal('wlVerifyModal');
+}
+function wlVerifySubmit() {
+  var ok = true;
+  ['wlEmailCode', 'wlAuthCode'].forEach(function(id) {
+    var bad = !/^\d{6}$/.test(document.getElementById(id).value.trim());
+    document.getElementById(id + 'Err').style.display = bad ? 'block' : 'none';
+    if (bad) ok = false;
+  });
+  if (!ok || !wlPending) return;
+  if (wlPending.action === 'add') {
+    var d = wlPending.data, me = MEMBERS.filter(function(m) { return m.email === PO_OPERATOR; })[0];
+    var nextId = Math.max.apply(null, WL_LIST.map(function(x) { return x.id; }).concat(0)) + 1;
+    WL_LIST.unshift({ id:nextId, name:d.name, net:d.net, addr:d.addr, remark:d.remark, by:me ? me.name : '—', time:mtNow(), deleted:false });
+    showToast('已添加');
+  } else {
+    WL_LIST.filter(function(x) { return x.id === wlPending.id; })[0].deleted = true;
+    showToast('已删除');
+  }
+  wlPending = null;
+  closeModal('wlVerifyModal');
+  wlRender();
+  wlFillWdAddr();
+  wdCheckStep3();
+}
+
+/* ─────────────────────────────────────────────────────
    初始化
 ───────────────────────────────────────────────────── */
 lucide.createIcons();
@@ -6436,6 +7227,17 @@ poInit();
 tuRender();
 initDrp(document.getElementById('drpRampOutCreate'));
 initDrp(document.getElementById('drpRampOutDone'));
+mtSyncMenu();
+mtLedgerSync();
+acctLedgerSearch();
+mtFormInit();
+mtHistFiltersInit();
+initDrp(document.getElementById('drpMtHist'));
+mtHistRender();
+wlFiltersInit();
+wlSyncMenu();
+wlRender();
+wlFillWdAddr();
 
 /* ── Auth Gate ──────────────────────────────────────── */
 function checkAuth() {
