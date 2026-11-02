@@ -18,6 +18,8 @@
     .logo-area { height:56px; background:#1a2236; display:flex; align-items:center; gap:8px; padding:0 16px; flex-shrink:0; white-space:nowrap; overflow:hidden; }
     .sidebar.collapsed .logo-area { justify-content:center; padding:0; }
     .sidebar.collapsed .logo-area img { display:none; }
+    .env-tag { font-size:14px; font-weight:600; color:#F56C6C; }   /* 测试环境 / UAT环境，生产不显示 */
+    .sidebar.collapsed .env-tag { display:none; }
 
     .nav-scroll { flex:1; overflow-y:auto; overflow-x:hidden; padding:6px 0; border-right:1px solid #EBEEF5; }
     .nav-scroll::-webkit-scrollbar { width:0; }
@@ -63,6 +65,8 @@
     .header-bar { height:56px; background:#1a2236; display:flex; align-items:center; justify-content:flex-end; padding:0 24px; gap:16px; flex-shrink:0; }
     .header-icon { color:#8a9ab5; cursor:pointer; display:flex; align-items:center; }
     .header-icon:hover { color:#fff; }
+    .env-banner { display:flex; align-items:center; gap:8px; padding:8px 20px; background:#F56C6C; color:#fff; font-size:13px; flex-shrink:0; }   /* 测试 / UAT 环境提示条，生产不显示 */
+    .env-banner svg.lucide { width:16px; height:16px; flex-shrink:0; }
 
     .page { display:none; flex:1; flex-direction:column; overflow:hidden; min-height:0; }
     .page.active { display:flex; }
@@ -534,6 +538,9 @@
     /* Settlement 单笔：白名单地址可搜索下拉（输入名称 / 地址关键字过滤） */
     .wd-addr-search { position:relative; width:100%; }
     .wd-addr-search .ms-dropdown { left:0; top:36px; max-height:240px; }
+    .wd-wl-hint { font-size:12px; color:#909399; margin-top:6px; display:flex; justify-content:flex-end; gap:12px; }
+    .wd-wl-last { margin-right:auto; }
+    .wd-wl-link { color:#409EFF; cursor:pointer; }
     .wd-addr-search .ms-option-empty { padding:0 12px; height:34px; display:flex; align-items:center; font-size:13px; color:#C0C4CC; }
     .wd-balance-row { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:#909399; margin-top:6px; }
     .wd-balance-row .wd-max-link { color:#409EFF; cursor:pointer; }
@@ -651,6 +658,7 @@
 <nav class="sidebar">
   <div class="logo-area">
     <img src="images/logo.png" alt="Paypaz" style="height:28px;object-fit:contain;">
+    <span class="env-tag">测试环境</span>
   </div>
 
   <div class="nav-scroll">
@@ -748,7 +756,7 @@
     </div>
     <div class="nav-sub" id="navSubSettings">
       <div class="nav-sub-item" id="navMemberItem" onclick="switchSubPage('pageMember','用户与权限')">用户与权限</div>
-      <div class="nav-sub-item" id="navWhitelist" onclick="switchSubPage('pageWhitelist','提币白名单')"><span>提币白名单</span></div>
+      <div class="nav-sub-item" id="navWhitelist" onclick="switchSubPage('pageWhitelist','Settlement 白名单')"><span>Settlement 白名单</span></div>
     </div>
   </div>
 
@@ -762,6 +770,10 @@
   <div class="header-bar">
     <span class="header-icon"><i data-lucide="user" size="16"></i></span>
     <span class="header-icon"><i data-lucide="globe" size="16"></i></span>
+  </div>
+  <div class="env-banner">
+    <i data-lucide="triangle-alert"></i>
+    <span>当前为测试环境，所有地址仅供测试使用，请勿转入任何真实资产，误转资金可能无法找回。</span>
   </div>
 
   <!-- ══ 概览 ══════════════════════════════════════════════ -->
@@ -1435,7 +1447,7 @@
     <!-- ── 单笔提币 Pane ── -->
     <div class="hist-pane active" id="wdSingle">
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:13px;color:#909399">模拟运营已开启提币白名单（测试用）</span>
+        <span style="font-size:13px;color:#909399">模拟运营已开启 Settlement 白名单（测试用）</span>
         <div class="el-switch on" id="wlOnSwitch" onclick="wlToggleOn()">
           <div class="el-switch-track"><div class="el-switch-thumb"></div></div>
         </div>
@@ -1482,7 +1494,7 @@
                 <input class="field-input" style="width:100%" id="wdAddrKw" autocomplete="off" onfocus="wdAddrOpen()" oninput="wdAddrInput()" onblur="setTimeout(wdAddrClose,150)">
                 <div class="ms-dropdown" id="wdAddrDd" style="display:none"></div>
               </div>
-              <div id="wdWlHint" style="font-size:12px;color:#909399;margin-top:4px;display:none"></div>
+              <div class="wd-wl-hint" id="wdWlHint" style="display:none"></div>
             </div>
           </div>
         </div>
@@ -2484,9 +2496,9 @@
   </div>
 
 
-  <!-- ══ 系统设置 › 提币白名单 ═══════════════════════════════════ -->
+  <!-- ══ 系统设置 › Settlement 白名单 ═══════════════════════════════════ -->
   <div class="page" id="pageWhitelist">
-    <div class="hist-page-hdr no-tabs"><h2 class="page-title"><span>提币白名单</span></h2></div>
+    <div class="hist-page-hdr no-tabs"><h2 class="page-title"><span>Settlement 白名单</span></h2></div>
 
     <div class="hist-pane active">
       <div class="filter-card">
@@ -3026,7 +3038,7 @@
   </div>
 </div>
 
-<!-- 提币白名单：添加 / 编辑地址 -->
+<!-- Settlement 白名单：添加 / 编辑地址 -->
 <div class="modal-overlay" id="wlFormModal">
   <div class="modal" style="width:520px">
     <div class="modal-header">
@@ -3068,7 +3080,7 @@
   </div>
 </div>
 
-<!-- 提币白名单：删除确认 -->
+<!-- Settlement 白名单：删除确认 -->
 <div class="modal-overlay" id="wlDelModal">
   <div class="modal">
     <div class="modal-header">
@@ -3080,15 +3092,11 @@
         <i data-lucide="alert-circle" class="alert-icon" size="16"></i>
         <span>删除后该地址将不能用于提币。确认删除吗？</span>
       </div>
-      <div class="modal-detail-row">
-        <span class="modal-detail-label">地址名称</span>
-        <span class="modal-detail-value" id="wlDelName">—</span>
-        <span class="modal-detail-label">网络</span>
-        <span class="modal-detail-value" id="wlDelNet">—</span>
-      </div>
-      <div class="modal-detail-row">
-        <span class="modal-detail-label">地址</span>
-        <span class="modal-detail-value" id="wlDelAddr" style="font-family:Inter;word-break:break-all">—</span>
+      <!-- 地址名称 / 网络并排，地址单独占一整行（同转账确认弹窗的信息排布） -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;margin-top:16px">
+        <div><div class="info-item-label">地址名称</div><div class="info-item-value" style="margin-top:4px" id="wlDelName">—</div></div>
+        <div><div class="info-item-label">网络</div><div class="info-item-value" style="margin-top:4px" id="wlDelNet">—</div></div>
+        <div style="grid-column:1/-1"><div class="info-item-label">地址</div><div class="info-item-value" style="margin-top:4px;font-family:Inter;word-break:break-all" id="wlDelAddr">—</div></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -3098,7 +3106,7 @@
   </div>
 </div>
 
-<!-- 提币白名单：安全验证（新增 / 删除） -->
+<!-- Settlement 白名单：安全验证（新增） -->
 <div class="modal-overlay" id="wlVerifyModal">
   <div class="modal" style="width:520px">
     <div class="modal-header">
@@ -3733,8 +3741,8 @@ const PERM_GROUPS = [
       { id:'settings_member_activate', label:'激活' },
       { id:'settings_member_delete',   label:'删除' }
     ]},
-    // 提币白名单：菜单还需运营在管理后台为该商户开启白名单；新增权限不自动授予存量用户
-    { id:'settings_whitelist', label:'提币白名单', items:[
+    // Settlement 白名单：菜单还需运营在管理后台为该商户开启白名单；新增权限不自动授予存量用户
+    { id:'settings_whitelist', label:'Settlement 白名单', items:[
       { id:'whitelist_view',   label:'查看' },
       { id:'whitelist_manage', label:'管理' }
     ]}
@@ -4764,8 +4772,9 @@ function submitSingleWithdraw() {
   var amount  = parseFloat(document.getElementById('wdAmount').value);
   if (!network || !address) { showToast(WL_ON ? '请先选择网络和白名单地址' : '请先选择网络并填写收款地址', 'error'); return; }
   // 后端校验（PRD 2.4）：白名单开启时，地址须在该商户白名单中且未删除
-  if (WL_ON && !wlFind(network, address)) { showToast('该地址不在提币白名单中', 'error'); return; }
+  if (WL_ON && !wlFind(network, address)) { showToast('该地址不在 Settlement 白名单中', 'error'); return; }
   if (!amount || amount <= 0) { showToast('请输入提现金额', 'error'); return; }
+  if (WL_ON) wlFind(network, address).lastWd = mtNow();
   showToast('提币申请已提交，等待处理');
   document.getElementById('wdNetwork').value = '';
   document.getElementById('wdAddress').value = '';
@@ -6964,15 +6973,15 @@ function mtHistReset() {
 function mtGet(id) { return MT_ORDERS.filter(function(o) { return o.id === id; })[0]; }
 
 /* ─────────────────────────────────────────────────────
-   系统设置 › 提币白名单（PRD：提币白名单）
-   运营在管理后台按商户开启后，才显示「提币白名单」菜单，商户后台单笔提币只能选择白名单地址；
-   新增 / 删除需邮箱验证码 + 谷歌验证码，新增后立即生效；按「网络 + 地址」唯一，EVM 地址不区分大小写；最多 100 条
+   系统设置 › Settlement 白名单（PRD：Settlement 白名单）
+   运营在管理后台按商户开启后，才显示「Settlement 白名单」菜单，商户后台单笔提币只能选择白名单地址；
+   新增需邮箱验证码 + 谷歌验证码，删除只需二次确认；新增后立即生效；按「网络 + 地址」唯一，EVM 地址不区分大小写；最多 100 条
 ───────────────────────────────────────────────────── */
 var WL_ON = true;   // 原型：Settlement 页测试开关模拟运营开启 / 关闭
 var WL_MAX = 100;
 var WL_LIST = [
-  { id:5, name:'币安主账户', net:'TRON', addr:'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', remark:'日常结算', by:'张伟明', time:'2026-10-28 16:20:11', deleted:false },
-  { id:4, name:'OKX 归集', net:'Ethereum', addr:'0x8f3Cc1B5a9E2d4F6a7B8c9D0e1F2a3B4c5D6e7F8', remark:'', by:'张伟明', time:'2026-10-25 10:05:42', deleted:false },
+  { id:5, name:'币安主账户', net:'TRON', addr:'TPeH4FLWrPTGqsUrxA4JK12i8kUWc1eeHQ', remark:'日常结算', by:'张伟明', time:'2026-10-28 16:20:11', deleted:false, lastWd:'2026-10-30 09:40:22' },
+  { id:4, name:'OKX 归集', net:'Ethereum', addr:'0x8f3Cc1B5a9E2d4F6a7B8c9D0e1F2a3B4c5D6e7F8', remark:'', by:'张伟明', time:'2026-10-25 10:05:42', deleted:false, lastWd:'2026-10-27 11:20:45' },
   { id:3, name:'冷钱包', net:'TRON', addr:'TXpqZ3mNc4o6P8r0T2v4X6z8B0d2F4h6J8', remark:'大额资金归集', by:'李晓燕', time:'2026-10-20 09:31:08', deleted:false },
   { id:2, name:'旧收款地址', net:'TRON', addr:'TAd9zHCayg9LumQ2Kx5nWbYh8Rc4o6P8r0', remark:'', by:'张伟明', time:'2026-10-12 14:12:55', deleted:true }
 ];
@@ -7016,11 +7025,19 @@ function wlFillWdAddr() {
   kw.disabled = !net;
   kw.placeholder = net ? '请输入地址名称或地址搜索' : '请先选择网络';
   if (!WL_ON) return;
-  var list = wdAddrList();
-  if (net && !list.length) {
-    hint.innerHTML = '暂无可用白名单地址，<span class="wd-max-link" onclick="wlGoAdd()">去添加</span>';
-    hint.style.display = 'block';
-  }
+  wdWlHintRender();
+}
+// 地址框下方：左侧为已选白名单地址的最近一次提币时间；右侧常驻添加入口（没有任何白名单地址时提示先添加，所选网络下没有地址时一并说明）
+function wdWlHintRender() {
+  var net = document.getElementById('wdNetwork').value, hint = document.getElementById('wdWlHint');
+  var go = '<span class="wd-wl-link" onclick="wlGoAdd()">添加白名单地址</span>', right;
+  if (!wlActive().length) right = '暂无白名单地址，请先' + go;
+  else if (net && !wdAddrList().length) right = '该网络下暂无白名单地址，' + go;
+  else right = go;
+  var cur = wdAddrSel ? wlFind(net, wdAddrSel) : null;
+  var left = cur ? '<span class="wd-wl-last">' + (cur.lastWd ? '最近一次 Settlement：<span style="font-family:Inter">' + cur.lastWd + '</span>' : '该地址暂无提币记录') + '</span>' : '';
+  hint.innerHTML = left + '<span>' + right + '</span>';
+  hint.style.display = 'flex';
 }
 // 下拉：聚焦时展示该网络全部白名单地址；输入关键字后按地址名称 / 地址模糊匹配（不区分大小写）
 function wdAddrRender() {
@@ -7032,7 +7049,7 @@ function wdAddrRender() {
     var sel = w.addr === wdAddrSel;
     return '<div class="ms-option' + (sel ? ' selected' : '') + '" onmousedown="event.preventDefault();wdAddrPick(\'' + w.addr + '\')">' +
       '<span class="ms-option-text">' + mtEsc(wdAddrLabel(w)) + '</span><span class="ms-option-check">' + MS_CHECK_SVG + '</span></div>';
-  }).join('') || '<div class="ms-option-empty">无匹配的白名单地址</div>';
+  }).join('') || '<div class="ms-option-empty">无匹配的白名单地址，<span class="wd-wl-link" onmousedown="event.preventDefault();wdAddrClose();wlGoAdd()">添加白名单地址</span></div>';
 }
 function wdAddrOpen() {
   if (!wdAddrList().length) return;
@@ -7041,6 +7058,7 @@ function wdAddrOpen() {
 }
 function wdAddrInput() {
   wdAddrSel = '';
+  wdWlHintRender();
   wdCheckStep3();
   wdAddrOpen();
 }
@@ -7049,6 +7067,7 @@ function wdAddrPick(addr) {
   document.getElementById('wdAddrKw').value = wdAddrLabel(wlFind(document.getElementById('wdNetwork').value, addr));
   document.getElementById('wdAddrDd').style.display = 'none';
   document.getElementById('wdAddrKw').blur();
+  wdWlHintRender();
   wdCheckStep3();
 }
 // 失焦时未选中任何地址则清空输入的关键字
@@ -7056,9 +7075,10 @@ function wdAddrClose() {
   document.getElementById('wdAddrDd').style.display = 'none';
   if (!wdAddrSel) document.getElementById('wdAddrKw').value = '';
 }
+// 跳转到「系统设置 › Settlement 白名单」管理页
 function wlGoAdd() {
-  switchSubPage('pageWhitelist', '提币白名单');
-  if (poPerm('whitelist_manage')) wlOpenForm(null);
+  switchSubPage('pageWhitelist', 'Settlement 白名单');
+  lucide.createIcons();
 }
 
 /* ── 列表 ── */
@@ -7145,19 +7165,28 @@ function wlFormSubmit() {
   wlOpenVerify();
 }
 
-/* ── 删除 ── */
+/* ── 删除：二次确认后直接删除，不需要安全验证 ── */
+var wlDelId = null;
 function wlOpenDel(id) {
   var w = WL_LIST.filter(function(x) { return x.id === id; })[0];
-  wlPending = { action:'del', id:id };
+  wlDelId = id;
   document.getElementById('wlDelName').textContent = w.name;
   document.getElementById('wlDelNet').textContent = w.net;
   document.getElementById('wlDelAddr').textContent = w.addr;
   openModal('wlDelModal');
   lucide.createIcons();
 }
-function wlDelConfirm() { closeModal('wlDelModal'); wlOpenVerify(); }
+function wlDelConfirm() {
+  WL_LIST.filter(function(x) { return x.id === wlDelId; })[0].deleted = true;
+  wlDelId = null;
+  closeModal('wlDelModal');
+  showToast('已删除');
+  wlRender();
+  wlFillWdAddr();
+  wdCheckStep3();
+}
 
-/* ── 安全验证：邮箱验证码 + 谷歌验证码 ── */
+/* ── 安全验证（新增）：邮箱验证码 + 谷歌验证码 ── */
 function wlOpenVerify() {
   ['wlEmailCode', 'wlAuthCode'].forEach(function(id) { document.getElementById(id).value = ''; document.getElementById(id + 'Err').style.display = 'none'; });
   openModal('wlVerifyModal');
@@ -7170,15 +7199,10 @@ function wlVerifySubmit() {
     if (bad) ok = false;
   });
   if (!ok || !wlPending) return;
-  if (wlPending.action === 'add') {
-    var d = wlPending.data, me = MEMBERS.filter(function(m) { return m.email === PO_OPERATOR; })[0];
-    var nextId = Math.max.apply(null, WL_LIST.map(function(x) { return x.id; }).concat(0)) + 1;
-    WL_LIST.unshift({ id:nextId, name:d.name, net:d.net, addr:d.addr, remark:d.remark, by:me ? me.name : '—', time:mtNow(), deleted:false });
-    showToast('已添加');
-  } else {
-    WL_LIST.filter(function(x) { return x.id === wlPending.id; })[0].deleted = true;
-    showToast('已删除');
-  }
+  var d = wlPending.data, me = MEMBERS.filter(function(m) { return m.email === PO_OPERATOR; })[0];
+  var nextId = Math.max.apply(null, WL_LIST.map(function(x) { return x.id; }).concat(0)) + 1;
+  WL_LIST.unshift({ id:nextId, name:d.name, net:d.net, addr:d.addr, remark:d.remark, by:me ? me.name : '—', time:mtNow(), deleted:false });
+  showToast('已添加');
   wlPending = null;
   closeModal('wlVerifyModal');
   wlRender();
