@@ -90,6 +90,9 @@
     .stat-value { font-family:'Inter',sans-serif; font-size:26px; font-weight:700; color:#303133; line-height:1.2; }
     .stat-value .stat-unit { font-size:14px; font-weight:400; color:#606266; margin-left:4px; }
     .stat-sub { font-size:12px; color:#909399; }
+    #ovCardAsset .stat-row { align-items:flex-start; }   /* 链上账户多一行待匹配订单，各项顶部对齐 */
+    #ovCardAsset .stat-actions { align-self:center; }
+    .ov-pending-link { color:#409EFF; cursor:pointer; font-family:'Inter',sans-serif; }   /* 概览 · 待匹配订单金额：点击进充币记录并筛选待匹配订单 */
     .stat-sep { width:1px; height:48px; background:#EBEEF5; flex-shrink:0; }
     .stat-spacer { flex:1; }
     .stat-actions { display:flex; gap:8px; }
@@ -686,6 +689,7 @@
     <div class="nav-sub" id="navSubAsset">
       <div class="nav-sub-item" onclick="switchSubPage('pageDepositAsset','Top Up')"><span>Top Up</span></div>
       <div class="nav-sub-item" onclick="switchSubPage('pageWithdrawAsset','Settlement')"><span>Settlement</span></div>
+      <div class="nav-sub-item" onclick="switchSubPage('pageBatchWithdraw','批量提币')"><span>批量提币</span></div>
       <div class="nav-sub-item" id="navHistDep" onclick="switchSubPage('pageHistDep','充币记录')"><span>充币记录</span></div>
       <div class="nav-sub-item" id="navHistOrd" onclick="switchSubPage('pageHistOrd','充币订单')"><span>充币订单</span></div>
       <div class="nav-sub-item" id="navHistWdr" onclick="switchSubPage('pageHistWdr','提币记录')"><span>提币记录</span></div>
@@ -780,14 +784,34 @@
   <div class="page active" id="pageOverview">
     <div class="content-area">
       <h2 class="page-title">概览</h2>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="font-size:13px;color:#909399">模拟商户已开启自动匹配（测试用）</span>
+        <div class="el-switch on" id="ovAutoMatchSwitch" onclick="ovAutoMatchToggle()">
+          <div class="el-switch-track"><div class="el-switch-thumb"></div></div>
+        </div>
+      </div>
 
       <div class="stat-card" id="ovCardAsset">
-        <div class="section-label">总资产</div>
+        <div class="section-label">总资产（USDT）</div>
         <div class="stat-row">
           <div class="stat-item">
-            <div class="stat-label">余额</div>
-            <div class="stat-value"><span id="ovTotal">224,610.73</span><span class="stat-unit">USDT</span></div>
-            <div class="stat-sub" id="ovBalSub">可用 224,609.72 USDT &nbsp;|&nbsp; 冻结 1.01 USDT</div>
+            <div class="stat-label">总余额</div>
+            <div class="stat-value"><span id="ovTotal">224,610.73</span></div>
+          </div>
+          <div class="stat-sep"></div>
+          <!-- 链上账户：链上充币、Open API / 批量提币、互转、调账、法币付款都走该账户；待匹配订单金额计入余额，仅开启自动匹配的商户展示 -->
+          <div class="stat-item">
+            <div class="stat-label">链上账户</div>
+            <div class="stat-value"><span id="ovChainBal">224,610.73</span></div>
+            <div class="stat-sub" id="ovBalSub">可用 224,609.72 &nbsp;|&nbsp; 冻结 1.01</div>
+            <div class="stat-sub" id="ovPendingRow">待匹配订单 <span class="ov-pending-link" onclick="histDepGoPending()" id="ovPendingAmt">0.00</span></div>
+          </div>
+          <div class="stat-sep"></div>
+          <!-- 法币账户：法币入金记入；只有商户后台单笔 Settlement 出金 -->
+          <div class="stat-item">
+            <div class="stat-label">法币账户</div>
+            <div class="stat-value"><span id="ovFiatBal">0.00</span></div>
+            <div class="stat-sub" id="ovFiatSub">可用 0.00 &nbsp;|&nbsp; 冻结 0.00</div>
           </div>
           <div class="stat-sep"></div>
           <div class="stat-item">
@@ -1186,6 +1210,7 @@
       <div class="filter-card">
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" id="acctLedgerUid" placeholder="请输入客户 ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">账户</span><div class="filter-control"><div class="ms-lite" id="acctLedgerAcct-lite" tabindex="0" onclick="msLiteToggle('acctLedgerAcct')" onblur="setTimeout(function(){msLiteClose('acctLedgerAcct')},150)"><span class="ms-lite-text placeholder" id="acctLedgerAcct-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerAcct-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="acctLedgerToken-lite" tabindex="0" onclick="msLiteToggle('acctLedgerToken')" onblur="setTimeout(function(){msLiteClose('acctLedgerToken')},150)"><span class="ms-lite-text placeholder" id="acctLedgerToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerToken-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="acctLedgerNetwork-lite" tabindex="0" onclick="msLiteToggle('acctLedgerNetwork')" onblur="setTimeout(function(){msLiteClose('acctLedgerNetwork')},150)"><span class="ms-lite-text placeholder" id="acctLedgerNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerNetwork-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="acctLedgerType-lite" tabindex="0" onclick="msLiteToggle('acctLedgerType')" onblur="setTimeout(function(){msLiteClose('acctLedgerType')},150)"><span class="ms-lite-text placeholder" id="acctLedgerType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="acctLedgerType-dropdown" style="display:none"></div></div></div>
@@ -1196,31 +1221,54 @@
       </div>
       <div class="table-card">
         <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="acctLedgerCount">21</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table style="min-width:1000px">
-          <thead><tr><th style="width:170px">客户 ID</th><th style="width:110px">类型</th><th style="width:190px"><span>关联单号</span></th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:110px">金额</th><th style="width:120px">变动后余额</th><th style="width:160px">时间</th></tr></thead>
+        <div class="table-wrap"><table style="min-width:1090px">
+          <thead><tr><th style="width:170px">客户 ID</th><th style="width:110px">类型</th><th style="width:190px"><span>关联单号</span></th><th style="width:90px">账户</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:110px">金额</th><th style="width:120px">变动后余额</th><th style="width:160px">时间</th></tr></thead>
           <tbody id="acctLedgerTbody">
-            <tr>
+            <tr data-acct="fiat">
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td><span class="badge badge-blue">Settlement</span></td>
+              <td><div class="copy-cell"><span title="WDR-20261009-00718" class="ledger-ref-link" data-ref-kind="wdr" onclick="ledgerGoOrder('wdr','WDR-20261009-00718')">WDR-20261009-00718</span><span class="copy-icon" onclick="copyText('WDR-20261009-00718')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>法币账户</td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-3,000.00</td>
+              <td class="asset-num">8,557.67</td>
+              <td style="font-family:Inter">2026-10-09 14:21:30</td>
+            </tr>
+            <tr data-acct="fiat">
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td><span class="badge badge-blue">Settlement</span></td>
+              <td><div class="copy-cell"><span title="WDR-20261008-00701" class="ledger-ref-link" data-ref-kind="wdr" onclick="ledgerGoOrder('wdr','WDR-20261008-00701')">WDR-20261008-00701</span><span class="copy-icon" onclick="copyText('WDR-20261008-00701')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>法币账户</td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num" style="color:#F56C6C">-20,000.00</td>
+              <td class="asset-num">11,557.67</td>
+              <td style="font-family:Inter">2026-10-08 10:01:12</td>
+            </tr>
+            <tr data-acct="fiat">
               <td class="asset-num">291654802</td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="PZPI20261006-00124" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261006-00124')">PZPI20261006-00124</span><span class="copy-icon" onclick="copyText('PZPI20261006-00124')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>法币账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-158.59</td>
-              <td class="asset-num">224,610.73</td>
+              <td class="asset-num">31,557.67</td>
               <td style="font-family:Inter">2026-10-06 11:40:30</td>
             </tr>
-            <tr>
+            <tr data-acct="fiat">
               <td class="asset-num">291654802</td>
               <td><span class="badge badge-green">法币收款</span></td>
               <td><div class="copy-cell"><span title="PZPI20261006-00124" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261006-00124')">PZPI20261006-00124</span><span class="copy-icon" onclick="copyText('PZPI20261006-00124')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>法币账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+31,716.26</td>
-              <td class="asset-num">224,769.32</td>
+              <td class="asset-num">31,716.26</td>
               <td style="font-family:Inter">2026-10-06 11:40:30</td>
             </tr>
             <tr>
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="PZPI20261006-00120" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261006-00120')">PZPI20261006-00120</span><span class="copy-icon" onclick="copyText('PZPI20261006-00120')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-275.80</td>
               <td class="asset-num">193,053.06</td>
@@ -1230,6 +1278,7 @@
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-green">法币收款</span></td>
               <td><div class="copy-cell"><span title="PZPI20261006-00120" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261006-00120')">PZPI20261006-00120</span><span class="copy-icon" onclick="copyText('PZPI20261006-00120')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+55,158.71</td>
               <td class="asset-num">193,328.86</td>
@@ -1239,6 +1288,7 @@
               <td class="asset-num">635102950</td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="PZPI20261005-00098" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261005-00098')">PZPI20261005-00098</span><span class="copy-icon" onclick="copyText('PZPI20261005-00098')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-308.55</td>
               <td class="asset-num">138,170.15</td>
@@ -1248,6 +1298,7 @@
               <td class="asset-num">635102950</td>
               <td><span class="badge badge-green">法币收款</span></td>
               <td><div class="copy-cell"><span title="PZPI20261005-00098" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261005-00098')">PZPI20261005-00098</span><span class="copy-icon" onclick="copyText('PZPI20261005-00098')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+61,709.77</td>
               <td class="asset-num">138,478.70</td>
@@ -1257,6 +1308,7 @@
               <td class="asset-num">635102950</td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="PZPI20261004-00058" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261004-00058')">PZPI20261004-00058</span><span class="copy-icon" onclick="copyText('PZPI20261004-00058')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-137.90</td>
               <td class="asset-num">76,768.93</td>
@@ -1266,6 +1318,7 @@
               <td class="asset-num">635102950</td>
               <td><span class="badge badge-green">法币收款</span></td>
               <td><div class="copy-cell"><span title="PZPI20261004-00058" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261004-00058')">PZPI20261004-00058</span><span class="copy-icon" onclick="copyText('PZPI20261004-00058')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+27,579.35</td>
               <td class="asset-num">76,906.83</td>
@@ -1275,6 +1328,7 @@
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="PZPI20261004-00051" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261004-00051')">PZPI20261004-00051</span><span class="copy-icon" onclick="copyText('PZPI20261004-00051')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-241.13</td>
               <td class="asset-num">49,327.48</td>
@@ -1284,6 +1338,7 @@
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-green">法币收款</span></td>
               <td><div class="copy-cell"><span title="PZPI20261004-00051" class="ledger-ref-link" data-ref-kind="fiat" onclick="ledgerGoOrder('fiat','PZPI20261004-00051')">PZPI20261004-00051</span><span class="copy-icon" onclick="copyText('PZPI20261004-00051')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+48,225.30</td>
               <td class="asset-num">49,568.61</td>
@@ -1293,6 +1348,7 @@
               <td class="asset-num">635102950</td>
               <td><span class="badge badge-gray">提币</span></td>
               <td><div class="copy-cell"><span title="WDR-20260820-00631" class="ledger-ref-link" data-ref-kind="wdr" onclick="ledgerGoOrder('wdr','WDR-20260820-00631')">WDR-20260820-00631</span><span class="copy-icon" onclick="copyText('WDR-20260820-00631')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDC</td><td>BSC</td>
               <td class="asset-num" style="color:#F56C6C">-20.00</td>
               <td class="asset-num">509.47</td>
@@ -1302,6 +1358,7 @@
               <td><span class="cell-empty">—</span></td>
               <td><span class="badge badge-orange">调账</span></td>
               <td><div class="copy-cell"><span title="ADJ20260818001">ADJ20260818001</span><span class="copy-icon" onclick="copyText('ADJ20260818001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+6.22</td>
               <td class="asset-num">1,343.31</td>
@@ -1311,6 +1368,7 @@
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td><span class="badge badge-blue">Settlement</span></td>
               <td><div class="copy-cell"><span title="WDR-20260810-00586" class="ledger-ref-link" data-ref-kind="wdr" onclick="ledgerGoOrder('wdr','WDR-20260810-00586')">WDR-20260810-00586</span><span class="copy-icon" onclick="copyText('WDR-20260810-00586')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-50.00</td>
               <td class="asset-num">1,337.09</td>
@@ -1320,6 +1378,7 @@
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="52530912004096" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52530912004096')">52530912004096</span><span class="copy-icon" onclick="copyText('52530912004096')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-5.00</td>
               <td class="asset-num">1,387.09</td>
@@ -1329,6 +1388,7 @@
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-gray">网络费</span></td>
               <td><div class="copy-cell"><span title="52530912004096" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52530912004096')">52530912004096</span><span class="copy-icon" onclick="copyText('52530912004096')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-2.91</td>
               <td class="asset-num">1,392.09</td>
@@ -1338,6 +1398,7 @@
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-gray">充币</span></td>
               <td><div class="copy-cell"><span title="52530912004096" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52530912004096')">52530912004096</span><span class="copy-icon" onclick="copyText('52530912004096')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+1000.00</td>
               <td class="asset-num">1,395.00</td>
@@ -1347,6 +1408,7 @@
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="52501987328000" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52501987328000')">52501987328000</span><span class="copy-icon" onclick="copyText('52501987328000')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-2.00</td>
               <td class="asset-num">395.00</td>
@@ -1356,6 +1418,7 @@
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td><span class="badge badge-gray">网络费</span></td>
               <td><div class="copy-cell"><span title="52501987328000" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52501987328000')">52501987328000</span><span class="copy-icon" onclick="copyText('52501987328000')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#F56C6C">-3.00</td>
               <td class="asset-num">397.00</td>
@@ -1365,6 +1428,7 @@
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td><span class="badge badge-gray">充币</span></td>
               <td><div class="copy-cell"><span title="52501987328000" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52501987328000')">52501987328000</span><span class="copy-icon" onclick="copyText('52501987328000')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+400.00</td>
               <td class="asset-num">400.00</td>
@@ -1374,6 +1438,7 @@
               <td class="asset-num">460466237</td>
               <td><span class="badge badge-gray">充币</span></td>
               <td><div class="copy-cell"><span title="ADJ20260702001">ADJ20260702001</span><span class="copy-icon" onclick="copyText('ADJ20260702001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+2.01</td>
               <td class="asset-num">9.22</td>
@@ -1383,6 +1448,7 @@
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td><span class="badge badge-gray">手续费</span></td>
               <td><div class="copy-cell"><span title="52481426862080" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52481426862080')">52481426862080</span><span class="copy-icon" onclick="copyText('52481426862080')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDC</td><td>BSC</td>
               <td class="asset-num" style="color:#F56C6C">-0.53</td>
               <td class="asset-num">529.47</td>
@@ -1392,6 +1458,7 @@
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td><span class="badge badge-green">Top Up</span></td>
               <td><div class="copy-cell"><span title="52481426862080" class="ledger-ref-link" data-ref-kind="dep" onclick="ledgerGoOrder('dep','52481426862080')">52481426862080</span><span class="copy-icon" onclick="copyText('52481426862080')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDC</td><td>BSC</td>
               <td class="asset-num" style="color:#67C23A">+530.00</td>
               <td class="asset-num">530.00</td>
@@ -1401,6 +1468,7 @@
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
               <td><span class="badge badge-gray">充币</span></td>
               <td><div class="copy-cell"><span title="ADJ20260624001">ADJ20260624001</span><span class="copy-icon" onclick="copyText('ADJ20260624001')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num" style="color:#67C23A">+7.21</td>
               <td class="asset-num">7.21</td>
@@ -1417,6 +1485,7 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">关联订单号</span><div class="filter-control"><input class="field-input" id="frzRef" placeholder="请输入关联订单号"></div></div>
           <div class="filter-item"><span class="filter-label-el">类型</span><div class="filter-control"><div class="ms-lite" id="frzType-lite" tabindex="0" onclick="msLiteToggle('frzType')" onblur="setTimeout(function(){msLiteClose('frzType')},150)"><span class="ms-lite-text placeholder" id="frzType-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="frzType-dropdown" style="display:none"></div></div></div>
+          <div class="filter-item"><span class="filter-label-el">账户</span><div class="filter-control"><div class="ms-lite" id="frzAcct-lite" tabindex="0" onclick="msLiteToggle('frzAcct')" onblur="setTimeout(function(){msLiteClose('frzAcct')},150)"><span class="ms-lite-text placeholder" id="frzAcct-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="frzAcct-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="frzToken-lite" tabindex="0" onclick="msLiteToggle('frzToken')" onblur="setTimeout(function(){msLiteClose('frzToken')},150)"><span class="ms-lite-text placeholder" id="frzToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="frzToken-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="frzNet-lite" tabindex="0" onclick="msLiteToggle('frzNet')" onblur="setTimeout(function(){msLiteClose('frzNet')},150)"><span class="ms-lite-text placeholder" id="frzNet-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="frzNet-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">时间</span><div class="filter-control"><div class="drp-wrap" id="drpFrz"></div></div></div>
@@ -1424,9 +1493,9 @@
         <div class="filter-actions"><button class="btn btn-default" onclick="frzReset()">重置</button><button class="btn btn-primary" onclick="frzRender()">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="frzCount">0</span><span class="count-label">条</span><span class="count-label" style="margin-left:16px"><span>当前付款冻结：</span></span><span class="count-value" id="frzNow">0.00</span><span class="count-label">USDT</span><div class="summary-spacer"></div><button class="export-btn" id="frzExportBtn" onclick="frzExport()"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="frzCount">0</span><span class="count-label">条</span><span class="count-label" style="margin-left:16px"><span>当前冻结：</span></span><span class="count-value" id="frzNow">0.00</span><span class="count-label">USDT</span><div class="summary-spacer"></div><button class="export-btn" id="frzExportBtn" onclick="frzExport()"><i data-lucide="download" size="13"></i>导出</button></div>
         <div class="table-wrap"><table style="min-width:1000px">
-          <thead><tr><th style="width:120px">类型</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:120px">金额</th><th style="width:140px"><span>变动后付款冻结</span></th><th style="width:190px">关联订单号</th><th style="width:160px">时间</th></tr></thead>
+          <thead><tr><th style="width:120px">类型</th><th style="width:90px">账户</th><th style="width:70px">代币</th><th style="width:80px">网络</th><th style="width:120px">金额</th><th style="width:140px"><span>变动后冻结</span></th><th style="width:190px">关联订单号</th><th style="width:160px">时间</th></tr></thead>
           <tbody id="frzTbody"></tbody>
         </table></div>
       </div>
@@ -1436,13 +1505,7 @@
   <!-- ══ 提币 ═══════════════════════════════════════════ -->
   <div class="page" id="pageWithdrawAsset">
 
-    <div class="hist-page-hdr">
-      <h2 class="page-title" style="margin-bottom:14px"><span>Settlement</span></h2>
-      <div class="hist-tab-nav">
-        <div class="hist-tab-item active" onclick="switchWdTab('wdSingle',this)">单笔</div>
-        <div class="hist-tab-item" onclick="switchWdTab('wdBatch',this)">批量</div>
-      </div>
-    </div>
+    <div class="hist-page-hdr no-tabs"><h2 class="page-title"><span>Settlement</span></h2></div>
 
     <!-- ── 单笔提币 Pane ── -->
     <div class="hist-pane active" id="wdSingle">
@@ -1457,8 +1520,19 @@
         <div class="wd-step">
           <div class="wd-step-num" id="wdStep1Num">1</div>
           <div class="wd-step-body">
-            <div class="wd-step-title" id="wdStep1Title">选择币种</div>
+            <div class="wd-step-title" id="wdStep1Title">选择出金账户和币种</div>
             <div class="wd-field">
+              <span class="wd-field-label">出金账户</span>
+              <div class="select-wrap" style="width:100%">
+                <select class="field-select" style="width:100%" id="wdAcct" onchange="wdAcctChange()">
+                  <option value="chain">链上账户</option>
+                  <option value="fiat">法币账户</option>
+                </select>
+                <i data-lucide="chevron-down" class="select-caret" size="14"></i>
+              </div>
+            </div>
+            <div class="wd-field">
+              <span class="wd-field-label">币种</span>
               <div class="select-wrap" style="width:100%">
                 <select class="field-select" style="width:100%" id="wdToken" onchange="wdUpdateToken()">
                   <option>USDT1</option>
@@ -1506,7 +1580,8 @@
             <div id="wdStep3Content" style="display:none">
               <div class="wd-field">
                 <span class="wd-field-label">提现金额</span>
-                <input class="field-input" style="width:100%" id="wdAmount" type="number" placeholder="请输入提现金额" oninput="wdCalcNet()">
+                <input class="field-input" style="width:100%" id="wdAmount" type="number" placeholder="请输入提现金额" oninput="wdAmtErr('');wdCalcNet()">
+                <div class="field-err" id="wdAmountErr"></div>
                 <div class="wd-balance-row">
                   <span>可用余额：<span style="font-family:Inter;color:#606266" id="wdBalance">224,609.72</span>&nbsp;<span id="wdBalanceToken">USDT1</span></span>
                   <span class="wd-max-link" onclick="wdFillMax()">全部</span>
@@ -1523,8 +1598,13 @@
       </div>
     </div>
 
-    <!-- ── 批量提币 Pane ── -->
-    <div class="hist-pane" id="wdBatch">
+  </div>
+
+  <!-- ══ 批量提币（原 Settlement › 批量 Tab，独立为资产菜单项）══ -->
+  <div class="page" id="pageBatchWithdraw">
+    <div class="hist-page-hdr no-tabs"><h2 class="page-title"><span>批量提币</span></h2></div>
+
+    <div class="hist-pane active" id="wdBatch">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:13px;color:#909399">模拟余额不足（测试用）</span>
@@ -1883,6 +1963,7 @@
         <div class="filter-grid">
           <div class="filter-item"><span class="filter-label-el">订单号</span><div class="filter-control"><input class="field-input" id="histWdrNo" placeholder="请输入订单号"></div></div>
           <div class="filter-item"><span class="filter-label-el">客户 ID</span><div class="filter-control"><input class="field-input" id="histWdrUid" placeholder="请输入客户 ID"></div></div>
+          <div class="filter-item"><span class="filter-label-el">出金账户</span><div class="filter-control"><div class="ms-lite" id="histWdrAcct-lite" tabindex="0" onclick="msLiteToggle('histWdrAcct')" onblur="setTimeout(function(){msLiteClose('histWdrAcct')},150)"><span class="ms-lite-text placeholder" id="histWdrAcct-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrAcct-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">代币</span><div class="filter-control"><div class="ms-lite" id="histWdrToken-lite" tabindex="0" onclick="msLiteToggle('histWdrToken')" onblur="setTimeout(function(){msLiteClose('histWdrToken')},150)"><span class="ms-lite-text placeholder" id="histWdrToken-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrToken-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">网络</span><div class="filter-control"><div class="ms-lite" id="histWdrNetwork-lite" tabindex="0" onclick="msLiteToggle('histWdrNetwork')" onblur="setTimeout(function(){msLiteClose('histWdrNetwork')},150)"><span class="ms-lite-text placeholder" id="histWdrNetwork-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrNetwork-dropdown" style="display:none"></div></div></div>
           <div class="filter-item"><span class="filter-label-el">状态</span><div class="filter-control"><div class="ms-lite" id="histWdrStatus-lite" tabindex="0" onclick="msLiteToggle('histWdrStatus')" onblur="setTimeout(function(){msLiteClose('histWdrStatus')},150)"><span class="ms-lite-text placeholder" id="histWdrStatus-text">全部</span><i data-lucide="chevron-down" class="ms-caret" size="12"></i></div><div class="ms-dropdown" id="histWdrStatus-dropdown" style="display:none"></div></div></div>
@@ -1895,11 +1976,12 @@
         <div class="filter-actions"><button class="btn btn-default" onclick="histWdrReset()">重置</button><button class="btn btn-primary" onclick="histWdrSearch()">查询</button></div>
       </div>
       <div class="table-card">
-        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="histWdrCount">77</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
-        <div class="table-wrap"><table style="min-width:2100px">
+        <div class="summary-bar"><span class="count-label">共</span><span class="count-value" id="histWdrCount">80</span><span class="count-label">条</span><div class="summary-spacer"></div><button class="export-btn"><i data-lucide="download" size="13"></i>导出</button></div>
+        <div class="table-wrap"><table style="min-width:2190px">
           <thead><tr>
             <th style="width:300px">订单号</th>
             <th style="width:160px">客户 ID</th>
+            <th style="width:90px">出金账户</th>
             <th style="width:70px">代币</th>
             <th style="width:80px">网络</th>
             <th style="width:100px">提币金额</th>
@@ -1916,9 +1998,61 @@
             <th style="width:60px">操作</th>
           </tr></thead>
           <tbody id="histWdrTbody">
+            <tr data-kind="Settlement">
+              <td><div class="copy-cell"><span>WDR-20261009-00718</span><span class="copy-icon" onclick="copyText('WDR-20261009-00718')"><i data-lucide="copy" size="13"></i></span><span class="badge badge-blue" style="font-size:11px;padding:2px 6px">Settlement</span></div></td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>法币账户</td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num">-3,000.00</td><td class="asset-num">0.00</td>
+              <td class="asset-num">-3,000.00</td>
+              <td class="asset-num">8,557.67</td>
+              <td><div class="copy-cell"><span>TPeH4F…PTGq7</span><span class="copy-icon" onclick="copyText('TPeH4FLWrPTGq7Xs')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>7d2c9…e41a8</span><span class="copy-icon" onclick="copyText('7d2c9b4e1f6a3d8c0b5e2f7a9c4d1b6e3f8a0c5d2b7e4f9a1c6d3b8e0f5e41a8')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="color:#C0C4CC">-</td>
+              <td>单笔</td>
+              <td style="font-family:Inter">2026-10-09 14:20:00</td>
+              <td style="font-family:Inter">2026-10-09 14:21:30</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20261009-00718')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr data-kind="Settlement">
+              <td><div class="copy-cell"><span>WDR-20261008-00701</span><span class="copy-icon" onclick="copyText('WDR-20261008-00701')"><i data-lucide="copy" size="13"></i></span><span class="badge badge-blue" style="font-size:11px;padding:2px 6px">Settlement</span></div></td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>法币账户</td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num">-20,000.00</td><td class="asset-num">0.00</td>
+              <td class="asset-num">-20,000.00</td>
+              <td class="asset-num">11,557.67</td>
+              <td><div class="copy-cell"><span>TPeH4F…PTGq7</span><span class="copy-icon" onclick="copyText('TPeH4FLWrPTGq7Xs')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td><div class="copy-cell"><span>7d2c9…e41a8</span><span class="copy-icon" onclick="copyText('7d2c9b4e1f6a3d8c0b5e2f7a9c4d1b6e3f8a0c5d2b7e4f9a1c6d3b8e0f5e41a8')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="color:#C0C4CC">-</td>
+              <td>单笔</td>
+              <td style="font-family:Inter">2026-10-08 10:00:00</td>
+              <td style="font-family:Inter">2026-10-08 10:01:12</td>
+              <td><span class="badge badge-green">已到账</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20261008-00701')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
+            <tr data-kind="Settlement">
+              <td><div class="copy-cell"><span>WDR-20261007-00696</span><span class="copy-icon" onclick="copyText('WDR-20261007-00696')"><i data-lucide="copy" size="13"></i></span><span class="badge badge-blue" style="font-size:11px;padding:2px 6px">Settlement</span></div></td>
+              <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>法币账户</td>
+              <td>USDT</td><td>TRON</td>
+              <td class="asset-num">-5,000.00</td><td style="color:#C0C4CC">—</td>
+              <td style="color:#C0C4CC">—</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><div class="copy-cell"><span>TPeH4F…PTGq7</span><span class="copy-icon" onclick="copyText('TPeH4FLWrPTGq7Xs')"><i data-lucide="copy" size="13"></i></span></div></td>
+              <td style="color:#C0C4CC">—</td>
+              <td style="color:#C0C4CC">-</td>
+              <td>单笔</td>
+              <td style="font-family:Inter">2026-10-07 16:30:00</td>
+              <td style="color:#C0C4CC">—</td>
+              <td><span class="badge badge-red">提币失败</span></td>
+              <td><div class="action-cell"><span class="action-icon" title="查看详情" onclick="openWdrDetail('WDR-20261007-00696')"><i data-lucide="eye" size="14"></i></span></div></td>
+            </tr>
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260821-00640</span><span class="copy-icon" onclick="copyText('WDR-20260821-00640')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num">-30.00</td><td style="color:#C0C4CC">—</td>
               <td style="color:#C0C4CC">—</td>
@@ -1935,6 +2069,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260820-00631</span><span class="copy-icon" onclick="copyText('WDR-20260820-00631')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
+              <td>链上账户</td>
               <td>USDC</td><td>BSC</td>
               <td class="asset-num">-20.00</td><td class="asset-num">0.00</td>
               <td class="asset-num">-20.00</td>
@@ -1951,6 +2086,7 @@
             <tr data-kind="Settlement">
               <td><div class="copy-cell"><span>WDR-20260810-00586</span><span class="copy-icon" onclick="copyText('WDR-20260810-00586')"><i data-lucide="copy" size="13"></i></span><span class="badge badge-blue" style="font-size:11px;padding:2px 6px">Settlement</span></div></td>
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num">-50.00</td><td class="asset-num">0.00</td>
               <td class="asset-num">-50.00</td>
@@ -1967,6 +2103,7 @@
             <tr data-kind="Settlement">
               <td><div class="copy-cell"><span>WDR-20260702-00512</span><span class="copy-icon" onclick="copyText('WDR-20260702-00512')"><i data-lucide="copy" size="13"></i></span><span class="badge badge-blue" style="font-size:11px;padding:2px 6px">Settlement</span></div></td>
               <td class="asset-num">460466236</td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-2.01</td><td style="color:#C0C4CC">—</td>
               <td style="color:#C0C4CC">—</td>
@@ -1983,6 +2120,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260702-00511</span><span class="copy-icon" onclick="copyText('WDR-20260702-00511')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-2.01</td><td style="color:#C0C4CC">—</td>
               <td style="color:#C0C4CC">—</td>
@@ -1999,6 +2137,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260702-00510</span><span class="copy-icon" onclick="copyText('WDR-20260702-00510')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-2.01</td><td class="asset-num">-0.01</td>
               <td class="asset-num">-2.02</td>
@@ -2015,6 +2154,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260702-00509</span><span class="copy-icon" onclick="copyText('WDR-20260702-00509')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466237</td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-2.01</td><td class="asset-num">-0.01</td>
               <td class="asset-num">-2.02</td>
@@ -2031,6 +2171,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260629-00305</span><span class="copy-icon" onclick="copyText('WDR-20260629-00305')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466235</td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-0.74</td><td class="asset-num">-0.01</td>
               <td class="asset-num">-0.75</td>
@@ -2047,6 +2188,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260629-00304</span><span class="copy-icon" onclick="copyText('WDR-20260629-00304')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">460466235</td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-0.70</td><td class="asset-num">-0.01</td>
               <td class="asset-num">-0.71</td>
@@ -2063,6 +2205,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260624-00128</span><span class="copy-icon" onclick="copyText('WDR-20260624-00128')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-74.01</td><td class="asset-num">-0.01</td>
               <td class="asset-num">-74.02</td>
@@ -2079,6 +2222,7 @@
             <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260624-00127</span><span class="copy-icon" onclick="copyText('WDR-20260624-00127')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-7.31</td><td class="asset-num">-0.01</td>
               <td class="asset-num">-7.32</td>
@@ -2095,6 +2239,7 @@
             <tr data-kind="Settlement">
               <td><div class="copy-cell"><span>WDR-20260624-00126</span><span class="copy-icon" onclick="copyText('WDR-20260624-00126')"><i data-lucide="copy" size="13"></i></span><span class="badge badge-blue" style="font-size:11px;padding:2px 6px">Settlement</span></div></td>
               <td class="asset-num">291654802&nbsp;<span class="badge badge-blue" style="font-size:11px;padding:2px 6px">主账号</span></td>
+              <td>链上账户</td>
               <td>USDT1</td><td>TRON</td>
               <td class="asset-num">-7.21</td><td style="color:#C0C4CC">—</td>
               <td style="color:#C0C4CC">—</td>
@@ -2111,6 +2256,7 @@
                       <tr data-kind="提币">
               <td><div class="copy-cell"><span>WDR-20260616-00001</span><span class="copy-icon" onclick="copyText('WDR-20260616-00001')"><i data-lucide="copy" size="13"></i></span></div></td>
               <td class="asset-num">635102950</td>
+              <td>链上账户</td>
               <td>USDT</td><td>TRON</td>
               <td class="asset-num">-1.00</td><td style="color:#C0C4CC">—</td>
               <td style="color:#C0C4CC">—</td>
@@ -2126,7 +2272,7 @@
             </tr>
           </tbody>
         </table></div>
-        <div class="pagination-bar"><span class="pagination-total" id="histWdrPagTotal">共 77 条</span><select class="page-size-select"><option>20 条/页</option><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">4</button><button class="page-btn"><i data-lucide="chevron-right" size="14"></i></button></div>
+        <div class="pagination-bar"><span class="pagination-total" id="histWdrPagTotal">共 80 条</span><select class="page-size-select"><option>20 条/页</option><option>10 条/页</option></select><button class="page-btn" disabled><i data-lucide="chevron-left" size="14"></i></button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">4</button><button class="page-btn"><i data-lucide="chevron-right" size="14"></i></button></div>
       </div>
     </div>
   </div>
@@ -2601,7 +2747,7 @@
               <input class="field-input" style="width:100%" id="mtAmount" type="number" placeholder="请输入转账金额" oninput="mtClearErr('mtAmount');mtCalc()">
               <div class="field-err" id="mtAmountErr"></div>
               <div class="wd-balance-row">
-                <span>可用余额：<span style="font-family:Inter;color:#606266" id="mtAvail">0.00</span>&nbsp;<span id="mtAvailToken">USDT</span></span>
+                <span>链上账户可用余额：<span style="font-family:Inter;color:#606266" id="mtAvail">0.00</span>&nbsp;<span id="mtAvailToken">USDT</span></span>
                 <span class="wd-max-link" onclick="mtFillMax()">全部</span>
               </div>
             </div>
@@ -3268,13 +3414,13 @@
 <div class="modal-overlay" id="wdInsufficientModal">
   <div class="modal" style="width:440px">
     <div class="modal-header">
-      <span class="modal-title">账户余额不足</span>
+      <span class="modal-title">链上账户余额不足</span>
       <span class="modal-close" onclick="closeModal('wdInsufficientModal')"><i data-lucide="x" size="16"></i></span>
     </div>
     <div class="modal-body">
       <div class="alert-box alert-warning" style="margin-bottom:14px">
         <i data-lucide="triangle-alert" class="alert-icon" size="16"></i>
-        <span>账户余额不足，请先充值。</span>
+        <span>批量提币只从链上账户出金，链上账户余额不足，请先充值。</span>
       </div>
       <div id="wdInsufficientDetail"></div>
     </div>
@@ -3632,8 +3778,12 @@ const PERM_GROUPS = [
     ]},
     { id:'asset_withdraw', label:'<span>Settlement</span>', items:[
       { id:'asset_withdraw_view',  label:'查看' },
-      { id:'asset_withdraw_do',    label:'提币' },
-      { id:'asset_withdraw_batch', label:'批量提币' }
+      { id:'asset_withdraw_do',    label:'提币' }
+    ]},
+    // 批量提币独立为资产下的菜单，权限从 Settlement 分组拆出；存量有「批量提币」权限的用户迁移后同时拥有查看和提交
+    { id:'asset_batch', label:'批量提币', items:[
+      { id:'asset_batch_view',     label:'查看' },
+      { id:'asset_withdraw_batch', label:'提交' }
     ]},
     { id:'asset_hist_dep', label:'<span>充币记录</span>', items:[
       { id:'hist_dep_view',   label:'查看' },
@@ -4463,23 +4613,24 @@ function acctLedgerFiltersInit() {
 function acctLedgerSearch() {
   var uid = document.getElementById('acctLedgerUid').value.trim();
   var ref = document.getElementById('acctLedgerRef').value.trim();
-  var tokens = msLiteGet('acctLedgerToken'), nets = msLiteGet('acctLedgerNetwork'), types = msLiteGet('acctLedgerType');
+  var tokens = msLiteGet('acctLedgerToken'), nets = msLiteGet('acctLedgerNetwork'), types = msLiteGet('acctLedgerType'), accts = msLiteGet('acctLedgerAcct');
   var range = drpGet(document.getElementById('drpAcctLedger'));
   var tbody = document.getElementById('acctLedgerTbody'), n = 0;
   var empty = document.getElementById('acctLedgerEmpty');
   if (empty) empty.remove();
   Array.prototype.forEach.call(tbody.rows, function(tr) {
-    var c = tr.cells, day = c[7].textContent.trim().slice(0, 10);
+    var c = tr.cells, day = c[8].textContent.trim().slice(0, 10);
     var ok = (!uid || c[0].textContent.indexOf(uid) !== -1) &&
       (!ref || c[2].textContent.trim() === ref) &&
-      (!tokens.length || tokens.indexOf(c[3].textContent.trim()) !== -1) &&
-      (!nets.length || nets.indexOf(c[4].textContent.trim()) !== -1) &&
+      (!accts.length || accts.indexOf(c[3].textContent.trim()) !== -1) &&
+      (!tokens.length || tokens.indexOf(c[4].textContent.trim()) !== -1) &&
+      (!nets.length || nets.indexOf(c[5].textContent.trim()) !== -1) &&
       (!types.length || types.indexOf(c[1].textContent.trim()) !== -1) &&
       (!range || (day >= range.s && day <= range.e));
     tr.style.display = ok ? '' : 'none';
     if (ok) n++;
   });
-  if (!n) tbody.insertAdjacentHTML('beforeend', '<tr id="acctLedgerEmpty"><td colspan="8" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>');
+  if (!n) tbody.insertAdjacentHTML('beforeend', '<tr id="acctLedgerEmpty"><td colspan="9" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>');
   document.getElementById('acctLedgerCount').textContent = n;
 }
 function acctLedgerReset() {
@@ -4534,25 +4685,49 @@ function histDepSearch() {
       (!sts.length || sts.indexOf(histCellText(c[11])) !== -1) && histInRange(histCellText(c[10]), range);
   }, 'histDepCount', 'histDepPagTotal');
 }
+function ovPendingSync() {
+  var sum = 0;
+  document.querySelectorAll('#histDepTbody tr').forEach(function(tr) {
+    var c = tr.cells;
+    if (c.length > 11 && histCellText(c[11]) === '待匹配订单') sum += parseFloat(histCellText(c[6]).replace(/[+,]/g, '')) || 0;
+  });
+  document.getElementById('ovPendingAmt').textContent = fiatFmt(poR2(sum));
+}
+// 原型：未开启自动匹配的商户只展示链上账户余额，不展示待匹配订单金额
+var OV_AUTO_MATCH = true;
+function ovAutoMatchToggle() {
+  OV_AUTO_MATCH = !OV_AUTO_MATCH;
+  document.getElementById('ovAutoMatchSwitch').classList.toggle('on', OV_AUTO_MATCH);
+  document.getElementById('ovPendingRow').style.display = OV_AUTO_MATCH ? '' : 'none';
+}
+function histDepGoPending() {
+  if (!poPerm('hist_dep_view')) return;
+  switchSubPage('pageHistDep', '充币记录');
+  histDepReset();
+  msLiteSetSingle('histDepStatus', '待匹配订单');
+  histDepSearch();
+}
 function histDepReset() {
   ['histDepNo', 'histDepUid', 'histDepHash'].forEach(function(id){ document.getElementById(id).value = ''; });
   ['histDepAccttype', 'histDepType', 'histDepKind', 'histDepToken', 'histDepNetwork', 'histDepStatus'].forEach(msLiteReset);
   drpReset(document.getElementById('drpHistDepArr'));
   histDepSearch();
 }
-var HIST_WDR_ALL = 77;   // 提币记录总条数（原型只渲染第一页），无筛选条件时显示总数
+var HIST_WDR_ALL = 80;   // 提币记录总条数（原型只渲染第一页），无筛选条件时显示总数
 function histWdrSearch() {
   var no = document.getElementById('histWdrNo').value.trim(), uid = document.getElementById('histWdrUid').value.trim(), batch = document.getElementById('histWdrBatch').value.trim();
   var tokens = msLiteGet('histWdrToken'), nets = msLiteGet('histWdrNetwork'), sts = msLiteGet('histWdrStatus'), methods = msLiteGet('histWdrMethod');
   var kinds = msLiteGet('histWdrKind');   // 提币类型：Settlement / 提币，取行上的 data-kind
+  var accts = msLiteGet('histWdrAcct');
   var wr = drpGet(document.getElementById('drpHistWdrTime')), ar = drpGet(document.getElementById('drpHistWdrArr'));
-  var filtered = no || uid || batch || tokens.length || nets.length || sts.length || methods.length || kinds.length || wr || ar;
-  histApply('histWdrTbody', 16, function(c) {
+  var filtered = no || uid || batch || accts.length || tokens.length || nets.length || sts.length || methods.length || kinds.length || wr || ar;
+  histApply('histWdrTbody', 17, function(c) {
     return (!no || histCellText(c[0]).indexOf(no) !== -1) && (!uid || histCellText(c[1]).indexOf(uid) !== -1) &&
-      (!batch || histCellText(c[10]).indexOf(batch) !== -1) && (!kinds.length || kinds.indexOf(c[0].parentNode.dataset.kind) !== -1) &&
-      (!tokens.length || tokens.indexOf(histCellText(c[2])) !== -1) && (!nets.length || nets.indexOf(histCellText(c[3])) !== -1) &&
-      (!methods.length || methods.indexOf(histCellText(c[11])) !== -1) && (!sts.length || sts.indexOf(histCellText(c[14])) !== -1) &&
-      histInRange(histCellText(c[12]), wr) && histInRange(histCellText(c[13]), ar);
+      (!accts.length || accts.indexOf(histCellText(c[2])) !== -1) &&
+      (!batch || histCellText(c[11]).indexOf(batch) !== -1) && (!kinds.length || kinds.indexOf(c[0].parentNode.dataset.kind) !== -1) &&
+      (!tokens.length || tokens.indexOf(histCellText(c[3])) !== -1) && (!nets.length || nets.indexOf(histCellText(c[4])) !== -1) &&
+      (!methods.length || methods.indexOf(histCellText(c[12])) !== -1) && (!sts.length || sts.indexOf(histCellText(c[15])) !== -1) &&
+      histInRange(histCellText(c[13]), wr) && histInRange(histCellText(c[14]), ar);
   }, 'histWdrCount', 'histWdrPagTotal', filtered ? null : HIST_WDR_ALL);
 }
 // 概览「提币单进度」卡片、待处理表格「更多」：进入提币记录，先清空筛选，再按状态筛选并查询（同线上 /assets/history?type=withdraw&status=…）
@@ -4565,7 +4740,7 @@ function histWdrGoStatus(status) {
 }
 function histWdrReset() {
   ['histWdrNo', 'histWdrUid', 'histWdrBatch'].forEach(function(id){ document.getElementById(id).value = ''; });
-  ['histWdrToken', 'histWdrNetwork', 'histWdrStatus', 'histWdrMethod', 'histWdrKind'].forEach(msLiteReset);
+  ['histWdrAcct', 'histWdrToken', 'histWdrNetwork', 'histWdrStatus', 'histWdrMethod', 'histWdrKind'].forEach(msLiteReset);
   drpReset(document.getElementById('drpHistWdrTime'));
   drpReset(document.getElementById('drpHistWdrArr'));
   histWdrSearch();
@@ -4583,6 +4758,9 @@ function histDepFiltersInit() {
 function histWdrFiltersInit() {
   // 提币类型（PRD 3.1）：商户后台单笔提币为 Settlement，Excel 批量 / API 为提币
   msLiteInit('histWdrKind', [{value:'提币',label:'提币'},{value:'Settlement',label:'Settlement'}], '全部');
+  // 出金账户：Open API、Excel 批量提币固定为链上账户；商户后台单笔 Settlement 由商户选择
+  msLiteInit('histWdrAcct', [{value:'法币账户',label:'法币账户'},{value:'链上账户',label:'链上账户'}], '全部');
+  msLiteInit('acctLedgerAcct', [{value:'法币账户',label:'法币账户'},{value:'链上账户',label:'链上账户'}], '全部');
   msLiteInit('histWdrToken', [{value:'USDT1',label:'USDT1'},{value:'USDT',label:'USDT'},{value:'USDC',label:'USDC'}], '全部');
   msLiteInit('histWdrNetwork', [{value:'TRON',label:'TRON'},{value:'Ethereum',label:'Ethereum'},{value:'BSC',label:'BSC'}], '全部');
   msLiteInit('histWdrStatus', [{value:'风控待处理',label:'风控待处理'},{value:'提币中',label:'提币中'},{value:'已到账',label:'已到账'},{value:'提币失败',label:'提币失败'}], '全部');
@@ -4728,17 +4906,6 @@ document.querySelector('#histOrd tbody')?.addEventListener('click', function(e) 
 });
 
 
-/* ─────────────────────────────────────────────────────
-   提币 · 单笔 / 批量 Tab
-───────────────────────────────────────────────────── */
-function switchWdTab(paneId, el) {
-  document.querySelectorAll('#pageWithdrawAsset .hist-tab-item').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
-  document.querySelectorAll('#pageWithdrawAsset .hist-pane').forEach(function(p) { p.classList.remove('active'); });
-  document.getElementById(paneId).classList.add('active');
-  lucide.createIcons();
-}
-
 function wdCheckStep3() {
   var ready = !!document.getElementById('wdNetwork').value && !!wdAddrValue();
   document.getElementById('wdStep3Num').classList.toggle('pending', !ready);
@@ -4750,6 +4917,7 @@ function wdUpdateToken() {
   var token = document.getElementById('wdToken').value;
   document.getElementById('wdBalanceToken').textContent = token;
   document.getElementById('wdFeeToken').textContent = token;
+  wdNetSync();
   wdCalcNet();
 }
 
@@ -4774,6 +4942,8 @@ function submitSingleWithdraw() {
   // 后端校验（PRD 2.4）：白名单开启时，地址须在该商户白名单中且未删除
   if (WL_ON && !wlFind(network, address)) { showToast('该地址不在 Settlement 白名单中', 'error'); return; }
   if (!amount || amount <= 0) { showToast('请输入提现金额', 'error'); return; }
+  // 余额不足：提现金额输入框下方标红提示，带所选账户的可用余额
+  if (amount > wdAvail()) { wdAmtErr(wdAcctLabel() + '余额不足，可提 ' + fiatFmt(wdAvail()) + ' ' + document.getElementById('wdToken').value); return; }
   if (WL_ON) wlFind(network, address).lastWd = mtNow();
   showToast('提币申请已提交，等待处理');
   document.getElementById('wdNetwork').value = '';
@@ -4804,7 +4974,6 @@ var wdBatchInsufficient = false;
 var wdBatchForceInsufficient = false;
 var wdBatchLastGroups = [];
 var wdBatchLastTotalRequested = 0;
-var wdBatchLastTotalBalance = 0;
 
 function wdToggleInsufficientSwitch() {
   wdBatchForceInsufficient = !wdBatchForceInsufficient;
@@ -4924,31 +5093,36 @@ function wdGroupRowsByTokenChain(rows) {
   return order.map(function(key) { return groups[key]; });
 }
 
+// 余额校验：按代币 + 网络分组，每组的提现金额合计与链上账户该代币 + 网络的余额分别比较，任一组不足即拦截
+// 原型：打开「模拟余额不足」时，第一组的余额按提现金额的一半模拟
+function wdBatchBalanceOf(g, i) {
+  var balance = WD_BATCH_BALANCE[g.token + '|' + g.chain];
+  if (balance == null) balance = 0;
+  return wdBatchForceInsufficient && i === 0 ? Math.min(balance, Math.floor(g.total * 50) / 100) : balance;
+}
 function wdBatchBuildBalanceSummary(validRows) {
   var groups = wdGroupRowsByTokenChain(validRows);
+  groups.forEach(function(g, i) { g.balance = wdBatchBalanceOf(g, i); });
   wdBatchLastGroups = groups;
   wdBatchLastTotalRequested = groups.reduce(function(sum, g) { return sum + g.total; }, 0);
-  wdBatchLastTotalBalance = groups.reduce(function(sum, g) {
-    var balance = WD_BATCH_BALANCE[g.token + '|' + g.chain];
-    return sum + (balance != null ? balance : 0);
-  }, 0);
-  wdBatchInsufficient = wdBatchForceInsufficient || wdBatchLastTotalRequested > wdBatchLastTotalBalance;
+  wdBatchInsufficient = groups.some(function(g) { return g.total > g.balance; });
   document.getElementById('wdConfirmBalanceTbody').innerHTML = groups.map(function(g) {
-    var balance = WD_BATCH_BALANCE[g.token + '|' + g.chain];
-    var balanceText = balance != null ? balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+    var balanceText = g.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return '<tr><td>' + g.token + '</td><td>' + g.chain + '</td><td class="asset-num">' + balanceText + '</td>'
       + '<td class="asset-num" style="color:#F56C6C">-' + g.total.toFixed(2) + '</td></tr>';
   }).join('');
 }
 
+// 余额不足弹窗：只列出余额不足的代币 + 网络
 function wdRenderInsufficientDetail() {
-  var requestedText = wdBatchLastTotalRequested.toFixed(2);
-  var balanceText = wdBatchLastTotalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  document.getElementById('wdInsufficientDetail').innerHTML =
-    '<div class="lo-summary-bar">'
-    + '<div class="lo-summary-item"><span class="lo-summary-label">提现金额（合计）</span><span class="lo-summary-value" style="color:#F56C6C">' + requestedText + '</span></div>'
-    + '<div class="lo-summary-item"><span class="lo-summary-label">账户余额</span><span class="lo-summary-value">' + balanceText + '</span></div>'
-    + '</div>';
+  var fmt = function(n) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  document.getElementById('wdInsufficientDetail').innerHTML = wdBatchLastGroups.filter(function(g) { return g.total > g.balance; }).map(function(g) {
+    return '<div class="lo-summary-bar" style="margin-bottom:8px">'
+      + '<div class="lo-summary-item"><span class="lo-summary-label">代币 / 网络</span><span class="lo-summary-value">' + g.token + ' / ' + g.chain + '</span></div>'
+      + '<div class="lo-summary-item"><span class="lo-summary-label">提现金额（合计）</span><span class="lo-summary-value" style="color:#F56C6C">' + fmt(g.total) + '</span></div>'
+      + '<div class="lo-summary-item"><span class="lo-summary-label">链上账户余额</span><span class="lo-summary-value">' + fmt(g.balance) + '</span></div>'
+      + '</div>';
+  }).join('');
 }
 
 function wdGoDepositFromInsufficient() {
@@ -5074,6 +5248,9 @@ var RAMP_OUT_DATA = {
 var RAMP_STATUS_MAP = { '已完成':'badge-green', '处理中':'badge-orange', '追加验证中':'badge-orange', '失败':'badge-red', '待处理':'badge-gray', '等待付款':'badge-blue' };
 
 var WDR_HIST_DATA = {
+  'WDR-20261009-00718': { acct:'法币账户', uid:'291654802', main:true, token:'USDT', network:'TRON', amount:'3,000.00', fee:'0.00', net:'-3,000.00', addr:'TPeH4FLWrPTGq7Xs', batch:'-', method:'单笔', wdTime:'2026-10-09 14:20:00', arrTime:'2026-10-09 14:21:30', status:'已到账' },
+  'WDR-20261008-00701': { acct:'法币账户', uid:'291654802', main:true, token:'USDT', network:'TRON', amount:'20,000.00', fee:'0.00', net:'-20,000.00', addr:'TPeH4FLWrPTGq7Xs', batch:'-', method:'单笔', wdTime:'2026-10-08 10:00:00', arrTime:'2026-10-08 10:01:12', status:'已到账' },
+  'WDR-20261007-00696': { acct:'法币账户', uid:'291654802', main:true, token:'USDT', network:'TRON', amount:'5,000.00', fee:'—', net:'—', addr:'TPeH4FLWrPTGq7Xs', batch:'-', method:'单笔', wdTime:'2026-10-07 16:30:00', arrTime:'—', status:'提币失败' },
   'WDR-20260821-00640': { uid:'460466237', main:false, token:'USDT', network:'TRON', amount:'30.00', fee:'—', net:'—', addr:'TAd9zHCayg9LumQ2', batch:'-', method:'API', wdTime:'2026-08-21 10:15:00', arrTime:'—', status:'提币中' },
   'WDR-20260616-00001': { uid:'635102950', main:false, token:'USDT', network:'TRON', amount:'1.00', fee:'—', net:'—', addr:'TQ7mWzrbNKp4Ds', batch:'-', method:'API', wdTime:'2026-06-16 11:30:00', arrTime:'—', status:'风控待处理' },
   'WDR-20260820-00631': { uid:'635102950', main:false, token:'USDC', network:'BSC', amount:'20.00', fee:'0.00', net:'-20.00', addr:'0x5Bd3e1F9a2C4b6D8e0F1a3B5c7D9e2F47Ac91', batch:'-', method:'API', wdTime:'2026-08-20 09:00:00', arrTime:'2026-08-20 09:00:00', status:'已到账' },
@@ -5099,6 +5276,7 @@ function openWdrDetail(orderId) {
   var rows = [
     ['订单号', orderId],
     ['客户 ID', uidVal],
+    ['出金账户', d.acct || '链上账户'],
     ['代币 / 网络', d.token + ' / ' + d.network],
     ['提币金额', d.amount + ' ' + d.token],
     ['手续费', d.fee === '—' ? d.fee : d.fee + ' ' + d.token],
@@ -5400,7 +5578,21 @@ function fiatAppealDone(note) {
    商户动作：待确认到账可「确认到账」或「提交异议」；申诉中有有效付款记录时可「确认到账」（确认后订单成功、申诉自动关闭），异议 / 补充材料均追加到原申诉；终态只读
 ───────────────────────────────────────────────────── */
 var PO_T0 = 30, PO_T1 = 30, PO_T2 = 30;   // 分钟：派单后 30 分钟接单截止；接单后 30 分钟付款截止；提交凭证后 30 分钟确认截止
-var PO_BASE_TOTAL = 224610.73, PO_OTHER_FROZEN = 1.01;   // 代付发生前的总余额、其他冻结（同概览原值）
+// 提币（Settlement / API / 批量）冻结：提交时冻结出金账户，到账扣划解冻，失败或拒绝释放；同提币记录 mock
+var WDR_FRZ = [
+  { id:'WDR-20260616-00001', acct:'链上账户', token:'USDT', net:'TRON', amt:1.00,     frz:'2026-06-16 11:30:00' },                                  // 风控待处理
+  { id:'WDR-20260810-00586', acct:'链上账户', token:'USDT', net:'TRON', amt:50.00,    frz:'2026-08-10 10:00:00', deduct:'2026-08-10 10:00:00' },
+  { id:'WDR-20260821-00640', acct:'链上账户', token:'USDT', net:'TRON', amt:30.00,    frz:'2026-08-21 10:15:00' },                                  // 提币中
+  { id:'WDR-20261007-00696', acct:'法币账户', token:'USDT', net:'TRON', amt:5000.00,  frz:'2026-10-07 16:30:00', release:'2026-10-07 16:45:00' },
+  { id:'WDR-20261008-00701', acct:'法币账户', token:'USDT', net:'TRON', amt:20000.00, frz:'2026-10-08 10:00:00', deduct:'2026-10-08 10:01:12' },
+  { id:'WDR-20261009-00718', acct:'法币账户', token:'USDT', net:'TRON', amt:3000.00,  frz:'2026-10-09 14:20:00', deduct:'2026-10-09 14:21:30' }
+];
+function wdrFrozenOf(acct, token, net) {
+  return WDR_FRZ.filter(function(w){ return w.acct === acct && w.token === token && w.net === net && !w.deduct && !w.release; })
+    .reduce(function(s, w){ return Math.round((s + w.amt) * 100) / 100; }, 0);
+}
+// 其他冻结 = 链上账户 USDT / TRON 处理中的提币冻结
+var PO_BASE_TOTAL = 193053.06, PO_OTHER_FROZEN = wdrFrozenOf('链上账户', 'USDT', 'TRON');   // 代付发生前链上账户 TRON 余额、其他冻结（法币付款只走链上账户）
 var PO_ST = { pending:['待接单', 'badge-blue'], paying:['待付款', 'badge-blue'], confirming:['待确认到账', 'badge-orange'],
   appeal:['申诉中', 'badge-red'], success:['成功', 'badge-green'], failed:['失败', 'badge-gray'], rejected:['已拒绝', 'badge-gray'] };
 var PO_SRC_MP = { timeout:'付款超时', confirm_timeout:'商户确认超时', merchant:'商户异议', partner:'服务商付款异常', customer:'客户反馈' };
@@ -5906,7 +6098,7 @@ function poLedgerSync() {
   tbody.insertAdjacentHTML('afterbegin', rows.reverse().map(function(r){
     return '<tr data-po="1">' + poMainUid() + '<td><span class="badge ' + r[1] + '">' + r[0] + '</span></td>' +
       '<td><div class="copy-cell"><span title="' + r[4].id + '">' + r[4].id + '</span><span class="copy-icon" onclick="copyText(\'' + r[4].id + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
-      '<td>USDT</td><td>' + r[5] + '</td>' +
+      '<td>链上账户</td><td>USDT</td><td>' + r[5] + '</td>' +
       '<td class="asset-num" style="color:#F56C6C">-' + fiatFmt(r[2]) + '</td><td class="asset-num">' + fiatFmt(r[3]) + '</td>' +
       '<td style="font-family:Inter">' + r[4].done + '</td></tr>';
   }).join(''));
@@ -5915,41 +6107,52 @@ function poLedgerSync() {
   PO_NET_BAL = bal;
   return poR2(Object.keys(bal).reduce(function(s, k){ return s + bal[k]; }, 0));
 }
-var PO_FRZ_TYPES = { freeze:['付款冻结', 'badge-blue', '+'], deduct:['付款扣划解冻', 'badge-gray', '-'], release:['付款释放', 'badge-gray', '-'] };
+var PO_FRZ_TYPES = { freeze:['代付冻结', 'badge-blue', '+'], deduct:['代付扣划解冻', 'badge-gray', '-'], release:['代付释放', 'badge-gray', '-'],
+  wdr_freeze:['提币冻结', 'badge-blue', '+'], wdr_deduct:['提币扣划解冻', 'badge-gray', '-'], wdr_release:['提币释放', 'badge-gray', '-'] };
 function poFreezeRows() {
   var ev = [];
-  // 每笔订单按 freezeSplit 分网络逐行记录；变动后代付冻结按网络滚存
+  // 法币付款：每笔订单按 freezeSplit 分网络逐行记录，只走链上账户
   PO_ORDERS_MP.forEach(function(o){
     o.freezeSplit.forEach(function(s, i){
       var k = i / 100;   // 同一时间多网络时保持 freezeSplit 顺序
-      ev.push({ t:o.created, k:k, type:'freeze', o:o, net:s.net, amt:s.amt });
-      if (o.status === 'success') ev.push({ t:o.done, k:k, type:'deduct', o:o, net:s.net, amt:s.amt });
-      if (o.status === 'failed' || o.status === 'rejected') ev.push({ t:o.done, k:k, type:'release', o:o, net:s.net, amt:s.amt });
+      var base = { k:k, o:o, acct:'链上账户', token:'USDT', net:s.net, amt:s.amt };
+      ev.push(Object.assign({ t:o.created, type:'freeze' }, base));
+      if (o.status === 'success') ev.push(Object.assign({ t:o.done, type:'deduct' }, base));
+      if (o.status === 'failed' || o.status === 'rejected') ev.push(Object.assign({ t:o.done, type:'release' }, base));
     });
   });
+  // 提币：冻结所选出金账户；到账扣划解冻，失败 / 拒绝释放
+  WDR_FRZ.forEach(function(w){
+    var base = { k:0.5, o:{ id:w.id }, acct:w.acct, token:w.token, net:w.net, amt:w.amt };
+    ev.push(Object.assign({ t:w.frz, type:'wdr_freeze' }, base));
+    if (w.deduct) ev.push(Object.assign({ t:w.deduct, type:'wdr_deduct', k:0.6 }, base, { k:0.6 }));
+    if (w.release) ev.push(Object.assign({ t:w.release, type:'wdr_release' }, base, { k:0.6 }));
+  });
   ev.sort(function(a, b){ return poMsMP(a.t) - poMsMP(b.t) || a.k - b.k; });
+  // 变动后冻结按（账户, 代币, 网络）滚存
   var bal = {}, total = 0;
   ev.forEach(function(e){
-    var d = e.type === 'freeze' ? e.amt : -e.amt;
-    bal[e.net] = poR2((bal[e.net] || 0) + d); e.bal = bal[e.net];
+    var d = /freeze$/.test(e.type) ? e.amt : -e.amt, key = e.acct + '|' + e.token + '|' + e.net;
+    bal[key] = poR2((bal[key] || 0) + d); e.bal = bal[key];
     total = poR2(total + d); e.total = total;
   });
   return ev.reverse();
 }
 function frzRender() {
   var ref = document.getElementById('frzRef').value.trim(), types = msLiteGet('frzType'), range = drpGet(document.getElementById('drpFrz'));
-  var tokens = msLiteGet('frzToken'), nets = msLiteGet('frzNet');
+  var tokens = msLiteGet('frzToken'), nets = msLiteGet('frzNet'), accts = msLiteGet('frzAcct');
   var all = poFreezeRows(), rows = all.filter(function(e){
     var d = e.t.slice(0, 10);
     return (!ref || e.o.id.indexOf(ref) !== -1) && (!types.length || types.indexOf(e.type) !== -1) && (!range || (d >= range.s && d <= range.e)) &&
-      (!tokens.length || tokens.indexOf('USDT') !== -1) && (!nets.length || nets.indexOf(e.net) !== -1);
+      (!accts.length || accts.indexOf(e.acct) !== -1) &&
+      (!tokens.length || tokens.indexOf(e.token) !== -1) && (!nets.length || nets.indexOf(e.net) !== -1);
   });
   document.getElementById('frzTbody').innerHTML = rows.map(function(e){
     var t = PO_FRZ_TYPES[e.type];
-    return '<tr>' + '<td><span class="badge ' + t[1] + '">' + t[0] + '</span></td><td>USDT</td><td>' + e.net + '</td>' +
+    return '<tr>' + '<td><span class="badge ' + t[1] + '">' + t[0] + '</span></td><td>' + e.acct + '</td><td>' + e.token + '</td><td>' + e.net + '</td>' +
       '<td class="asset-num" style="color:' + (t[2] === '+' ? '#E6A23C' : '#909399') + '">' + t[2] + fiatFmt(e.amt) + '</td><td class="asset-num">' + fiatFmt(e.bal) + '</td>' +
       '<td class="asset-num">' + e.o.id + '</td><td style="font-family:Inter">' + e.t + '</td></tr>';
-  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#C0C4CC;height:80px">暂无数据</td></tr>';
   document.getElementById('frzCount').textContent = rows.length;
   document.getElementById('frzNow').textContent = fiatFmt(all.length ? all[0].total : 0);
 }
@@ -5960,7 +6163,7 @@ function frzExport() {
 }
 function frzReset() {
   document.getElementById('frzRef').value = '';
-  ['frzType', 'frzToken', 'frzNet'].forEach(msLiteReset);
+  ['frzType', 'frzAcct', 'frzToken', 'frzNet'].forEach(msLiteReset);
   drpReset(document.getElementById('drpFrz'));
   frzRender();
 }
@@ -5973,21 +6176,70 @@ function switchLedgerTab(paneId, el) {
 }
 
 // ── 余额：代付与提币共享可用余额；下单只冻结不改总余额，成功减总余额并解冻，失败 / 已拒绝仅释放冻结 ──
-function poBalanceSync(total) {
+function poBalanceSync() {
+  var total = chainTotal();
   var poFrozen = poR2(PO_ORDERS_MP.filter(function(o){ return o.status !== 'success' && o.status !== 'failed' && o.status !== 'rejected'; }).reduce(function(s, o){ return s + o.hold; }, 0));
   var frozen = poR2(PO_OTHER_FROZEN + poFrozen), avail = poR2(total - frozen);
-  document.getElementById('ovTotal').textContent = fiatFmt(total);
-  document.getElementById('ovBalSub').innerHTML = '可用 ' + fiatFmt(avail) + ' USDT &nbsp;|&nbsp; 冻结 ' + fiatFmt(frozen) + ' USDT（含付款冻结 ' + fiatFmt(poFrozen) + ' USDT）';
+  var fiatTotal = wdFiatTotal();
+  document.getElementById('ovTotal').textContent = fiatFmt(poR2(total + fiatTotal));
+  document.getElementById('ovChainBal').textContent = fiatFmt(total);
+  document.getElementById('ovBalSub').innerHTML = '可用 ' + fiatFmt(avail) + ' &nbsp;|&nbsp; 冻结 ' + fiatFmt(frozen);
+  document.getElementById('ovFiatBal').textContent = fiatFmt(fiatTotal);
+  document.getElementById('ovFiatSub').innerHTML = '可用 ' + fiatFmt(poR2(fiatTotal - FIAT_ACC_FROZEN)) + ' &nbsp;|&nbsp; 冻结 ' + fiatFmt(FIAT_ACC_FROZEN);
+  ovPendingSync();
   wdNetSync();
 }
-// 提币可用余额按所选网络计算：该网络余额－该网络其他冻结－该网络代付冻结（其他冻结记在 TRON；未选网络时按 TRON）
+// 法币账户（原型假设值）：按（代币, 网络）记余额，网络跟随收款服务商；余额 = 账户明细中法币账户最新一笔的变动后余额
+var FIAT_ACC_FROZEN = wdrFrozenOf('法币账户', 'USDT', 'TRON');
+function wdFiatBal(token, net) {
+  var best = null, bal = 0;
+  document.querySelectorAll('#acctLedgerTbody tr[data-acct="fiat"]').forEach(function(tr) {
+    var c = tr.cells, t = c[8].textContent.trim();
+    if (c[4].textContent.trim() !== token || c[5].textContent.trim() !== net) return;
+    if (best === null || t > best) { best = t; bal = parseFloat(c[7].textContent.replace(/,/g, '')) || 0; }
+  });
+  return bal;
+}
+function wdFiatTotal() { return wdFiatBal('USDT', 'TRON'); }
+var WD_ACCT_OPTS = {
+  chain: { tokens:['USDT1', 'USDT', 'USDC'], nets:['TRON', 'Ethereum'] },
+  fiat:  { tokens:['USDT'], nets:['TRON'] }   // 跟随收款服务商的代币 / 网络
+};
+function wdAcctLabel() { return document.getElementById('wdAcct').value === 'fiat' ? '法币账户' : '链上账户'; }
+// 切换出金账户：代币、网络选项只取该账户；清空已选代币、网络、地址和金额
+function wdAcctChange() {
+  var o = WD_ACCT_OPTS[document.getElementById('wdAcct').value];
+  document.getElementById('wdToken').innerHTML = o.tokens.map(function(t){ return '<option>' + t + '</option>'; }).join('');
+  document.getElementById('wdNetwork').innerHTML = '<option value="">选择网络</option>' + o.nets.map(function(n){ return '<option>' + n + '</option>'; }).join('');
+  document.getElementById('wdAddress').value = '';
+  document.getElementById('wdAmount').value = '';
+  wdAmtErr('');
+  wlFillWdAddr();
+  wdUpdateToken();
+  wdCheckStep3();
+  wdNetSync();
+}
+// 提现金额字段错误：显示在输入框下方并标红；msg 为空时清除
+function wdAmtErr(msg) {
+  var el = document.getElementById('wdAmountErr');
+  el.textContent = msg; el.style.display = msg ? 'block' : 'none';
+  document.getElementById('wdAmount').classList.toggle('is-error', !!msg);
+}
+function wdAvail() { return parseFloat(document.getElementById('wdBalance').textContent.replace(/,/g, '')) || 0; }
+// 提币可用余额按所选账户 + 网络计算
+// 链上账户：该网络余额－该网络其他冻结－该网络代付冻结（其他冻结记在 TRON；未选网络时按 TRON）；法币账户：该代币 + 网络余额－冻结
 function wdNetSync() {
   var net = document.getElementById('wdNetwork').value || 'TRON';
-  var poFrozen = poR2(PO_ORDERS_MP.filter(function(o){ return o.status !== 'success' && o.status !== 'failed' && o.status !== 'rejected'; })
+  if (document.getElementById('wdAcct').value === 'fiat') {
+    document.getElementById('wdBalance').textContent = fiatFmt(poR2(wdFiatBal(document.getElementById('wdToken').value, net) - FIAT_ACC_FROZEN));
+    document.getElementById('wdPoHint').textContent = '';
+    return;
+  }
+  var token = document.getElementById('wdToken').value;
+  var poFrozen = token !== 'USDT' ? 0 : poR2(PO_ORDERS_MP.filter(function(o){ return o.status !== 'success' && o.status !== 'failed' && o.status !== 'rejected'; })
     .reduce(function(s, o){ return s + o.freezeSplit.filter(function(x){ return x.net === net; }).reduce(function(t, x){ return t + x.amt; }, 0); }, 0));
-  var avail = poR2((PO_NET_BAL[net] || 0) - (net === 'TRON' ? PO_OTHER_FROZEN : 0) - poFrozen);
-  document.getElementById('wdBalance').textContent = fiatFmt(avail);
-  document.getElementById('wdPoHint').textContent = '可用余额已扣除付款冻结 ' + fiatFmt(poFrozen) + ' USDT（法币付款与提币共享可用余额）';
+  document.getElementById('wdBalance').textContent = fiatFmt(mtAvailOf(token, net));
+  document.getElementById('wdPoHint').textContent = token === 'USDT' ? '可用余额已扣除代付冻结 ' + fiatFmt(poFrozen) + ' USDT（法币付款与链上账户提币共享可用余额）' : '';
 }
 
 // ── 概览「法币代收/代付」· 代付部分：待确认到账 / 申诉中的笔数与冻结合计；终态后不再计入 ──
@@ -6011,7 +6263,8 @@ function poGoList(status) {
 
 function poRefreshAll() {
   renderPoOrders();
-  poBalanceSync(poLedgerSync());
+  poLedgerSync();
+  poBalanceSync();
   frzRender();
   poTodoSync();
   lucide.createIcons();
@@ -6019,6 +6272,7 @@ function poRefreshAll() {
 function poInit() {
   msLiteInit('histPayoutStatus', Object.keys(PO_ST).map(function(k){ return { value:k, label:PO_ST[k][0] }; }), '全部');
   msLiteInit('frzType', Object.keys(PO_FRZ_TYPES).map(function(k){ return { value:k, label:PO_FRZ_TYPES[k][0] }; }), '全部');
+  msLiteInit('frzAcct', [{ value:'法币账户', label:'法币账户' }, { value:'链上账户', label:'链上账户' }], '全部');
   msLiteInit('frzToken', [{ value:'USDT', label:'USDT' }], '全部');
   msLiteInit('frzNet', [{ value:'TRON', label:'TRON' }, { value:'Ethereum', label:'Ethereum' }], '全部');
   // 权限：hist_payout_view 控制「法币付款记录」菜单项；hist_payout_export 控制导出按钮
@@ -6034,6 +6288,7 @@ function poInit() {
   document.getElementById('navHistWdr').style.display = wdrView ? '' : 'none';
   document.getElementById('navHistRampIn').style.display = poPerm('hist_ramp_in_view') ? '' : 'none';
   document.querySelectorAll('#acctLedgerTbody span[data-ref-kind="dep"]').forEach(function(sp){ sp.classList.toggle('ledger-ref-link', depView); });
+  document.getElementById('ovPendingAmt').classList.toggle('ov-pending-link', depView);   // 概览待匹配订单：无充币记录查看权限时显示为普通文字
   document.querySelectorAll('#acctLedgerTbody span[data-ref-kind="wdr"]').forEach(function(sp){ sp.classList.toggle('ledger-ref-link', wdrView); });
   document.querySelectorAll('#histDepTbody [onclick^="histDepLinkOrder"]').forEach(function(ic){ ic.style.display = ordView ? '' : 'none'; });
   document.querySelectorAll('#ovCardProgress .progress-card').forEach(function(c){ c.classList.toggle('no-link', !wdrView); });
@@ -6785,19 +7040,37 @@ function mtNow() {
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
 }
 function mtEnabledPayees() { return MT_GROUP.members.filter(function(p) { return p.status === 'enabled'; }); }
-// 账户明细中该代币 + 网络最新一笔的变动后余额；skipMt 时不计转账流水（用作转账流水的滚存起点）
+// 账户明细中链上账户该代币 + 网络最新一笔的变动后余额；skipMt 时不计转账流水（用作转账流水的滚存起点）
 function mtLedgerLatest(token, net, skipMt) {
   var best = null, bal = 0;
   Array.prototype.forEach.call(document.getElementById('acctLedgerTbody').rows, function(tr) {
-    if (tr.id === 'acctLedgerEmpty' || (skipMt && tr.hasAttribute('data-mt')) || tr.cells.length < 8) return;
-    var c = tr.cells, t = c[7].textContent.trim();
-    if (c[3].textContent.trim() !== token || c[4].textContent.trim() !== net) return;
-    if (best === null || t > best) { best = t; bal = parseFloat(c[6].textContent.replace(/,/g, '')) || 0; }
+    if (tr.id === 'acctLedgerEmpty' || tr.dataset.acct === 'fiat' || (skipMt && tr.hasAttribute('data-mt')) || tr.cells.length < 9) return;
+    var c = tr.cells, t = c[8].textContent.trim();
+    if (c[4].textContent.trim() !== token || c[5].textContent.trim() !== net) return;
+    if (best === null || t > best) { best = t; bal = parseFloat(c[7].textContent.replace(/,/g, '')) || 0; }
   });
+  if (best === null && token === 'USDT' && PO_NET_BASE[net] != null) return PO_NET_BASE[net];
   return bal;
 }
-// 可用余额 = 账户明细该代币 + 网络最新余额（转账无冻结）
-function mtAvailOf(token, net) { return Math.max(0, mtLedgerLatest(token, net, false)); }
+// 链上账户总余额：账户明细中链上账户各代币 + 网络的最新余额合计（USDT、USDC 按 1:1 合计）
+function chainTotal() {
+  var keys = { 'USDT|TRON':1, 'USDT|Ethereum':1 };
+  document.querySelectorAll('#acctLedgerTbody tr').forEach(function(tr) {
+    if (tr.id === 'acctLedgerEmpty' || tr.dataset.acct === 'fiat' || tr.cells.length < 9) return;
+    var token = tr.cells[4].textContent.trim();
+    if (token === 'USDT' || token === 'USDC') keys[token + '|' + tr.cells[5].textContent.trim()] = 1;
+  });
+  return poR2(Object.keys(keys).reduce(function(sum, k) { var a = k.split('|'); return sum + mtLedgerLatest(a[0], a[1], false); }, 0));
+}
+// 链上账户该代币 + 网络的冻结：法币付款冻结（USDT，按网络拆分）＋ 其他冻结（记在 USDT / TRON）
+function chainFrozenOf(token, net) {
+  if (token !== 'USDT') return 0;
+  var poFrozen = PO_ORDERS_MP.filter(function(o){ return o.status !== 'success' && o.status !== 'failed' && o.status !== 'rejected'; })
+    .reduce(function(s, o){ return s + o.freezeSplit.filter(function(x){ return x.net === net; }).reduce(function(t, x){ return t + x.amt; }, 0); }, 0);
+  return poR2((net === 'TRON' ? PO_OTHER_FROZEN : 0) + poFrozen);
+}
+// 可用余额 = 链上账户该代币 + 网络最新余额 − 冻结（转账本身不冻结，直接扣减）
+function mtAvailOf(token, net) { return Math.max(0, poR2(mtLedgerLatest(token, net, false) - chainFrozenOf(token, net))); }
 
 // 菜单：所在转账关系为启用且该关系内还有其他启用的成员时才显示；子项再按权限 transfer_view / transfer_hist_view 显示，都无权限时一级菜单隐藏
 // 操作按钮：提交跟随 transfer_submit，导出跟随 transfer_hist_export
@@ -6862,7 +7135,7 @@ function mtSubmit() {
   var payee = MT_GROUP.members.filter(function(p) { return p.id === toId; })[0];
   if (payee.pairs.indexOf(token + '|' + net) === -1) { mtErr('mtNet', '收款商户未开通 ' + token + '（' + net + '），暂不可转账'); return; }
   if (!raw || !(x > 0) || !/^\d+(\.\d{1,2})?$/.test(raw)) { mtErr('mtAmount', raw ? '请输入正确的转账金额' : '请输入转账金额'); return; }
-  if (mtAvailOf(token, net) < x) { mtErr('mtAmount', '可用余额不足'); return; }
+  if (mtAvailOf(token, net) < x) { mtErr('mtAmount', '链上账户可用余额不足'); return; }
   if (!mtGaBound) { mtErr('mtForm', '未绑定谷歌验证器，请先绑定后再转账'); return; }
   mtDraft = { payee:payee, token:token, net:net, amount:x, remark:document.getElementById('mtRemark').value.trim() };
   var meta = [
@@ -6925,7 +7198,7 @@ function mtLedgerSync() {
     var o = r[5];
     return '<tr data-mt="1">' + poMainUid() + '<td><span class="badge ' + r[1] + '">' + r[0] + '</span></td>' +
       '<td><div class="copy-cell"><span title="' + o.id + '"' + (poPerm('transfer_hist_view') ? ' class="ledger-ref-link"' : '') + ' data-ref-kind="mt" onclick="ledgerGoOrder(\'mt\',\'' + o.id + '\')">' + o.id + '</span><span class="copy-icon" onclick="copyText(\'' + o.id + '\')"><i data-lucide="copy" size="13"></i></span></div></td>' +
-      '<td>' + o.token + '</td><td>' + o.net + '</td>' +
+      '<td>链上账户</td><td>' + o.token + '</td><td>' + o.net + '</td>' +
       '<td class="asset-num" style="color:' + (r[2] === '+' ? '#67C23A' : '#F56C6C') + '">' + r[2] + mtFmt(r[3]) + '</td><td class="asset-num">' + mtFmt(r[4]) + '</td>' +
       '<td style="font-family:Inter">' + o.time + '</td></tr>';
   }).join(''));
